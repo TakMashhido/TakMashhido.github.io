@@ -738,6 +738,10 @@ select {
     margin: 0;
 }
 
+.about .about-content .timeline .timeline-text.thesis-title {
+    margin-top: 15px; /* Adjust this value for spacing between institute name and thesis title */
+}
+
 /* Services Section */
 
 .service .container {
