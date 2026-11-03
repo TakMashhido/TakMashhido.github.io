@@ -1,0 +1,174 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import headshot from '../assets/headshot.jpg';
+import ClayArt from '../components/ClayArt.astro';
+import { site } from '../data/site';
+import { bio, education, experience, skills, domains, awards, service } from '../data/cv';
+---
+<Base title="About" description="Background, education, research experience, skills and service of Koustav Kumar Mondal.">
+  <section class="page-hero wrap intro">
+    <div>
+      <h1>About me</h1>
+      {bio.map((p, i) => <p class={i === 0 ? 'lede first' : 'body-text'}>{p}</p>)}
+      <div class="cta">
+        <a class="btn btn-primary" href="/publications/">See my publications</a>
+        <a class="btn" href="/contact/">Contact me</a>
+      </div>
+    </div>
+    <div class="mini clay">
+      <Picture src={headshot} alt="Koustav Kumar Mondal" widths={[240, 360]} sizes="260px" formats={['avif', 'webp']} />
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <h2>Research domains</h2>
+    <ul class="domains">{domains.map((d, i) => <li class={`dom dom-${i % 4}`}>{d}</li>)}</ul>
+  </section>
+
+  <section class="section wrap two">
+    <div>
+      <div class="h-art"><h2 id="experience">Research experience</h2><span class="mini-art"><ClayArt name="chip" /></span></div>
+      <ol class="timeline">
+        {experience.map((e) => (
+          <li>
+            <div class="clay-sm entry">
+              <span class="when">{e.period}</span>
+              <h3>{e.role}</h3>
+              <p class="org">{e.org}</p>
+              {'links' in e && e.links && <p class="aff">{e.links.map((l) => <a class="chip" href={l.url} rel="noopener">{l.label}</a>)}</p>}
+              <ul>{e.points.map((p) => <li>{p}</li>)}</ul>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+    <div>
+      <div class="h-art"><h2 id="education">Education</h2><span class="mini-art"><ClayArt name="cap" /></span></div>
+      <ol class="timeline">
+        {education.map((e) => (
+          <li>
+            <div class="clay-sm entry">
+              <span class="when">{e.period}</span>
+              <h3>{e.degree}</h3>
+              <p class="org">{e.school}</p>
+              {e.note && <p class="note">{e.note}</p>}
+              <p class="thesis"><span class="muted">Thesis:</span> {e.thesis}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <h2 id="skills">Skills and tools</h2>
+    <p class="lede skills-lede">From soldering iron to Kubernetes: the hardware, software and infrastructure I use to build and test secure systems.</p>
+    <div class="skills">
+      {skills.map((s) => (
+        <article class={`clay skill tone-${s.tone}`}>
+          <header class="skill-head">
+            <span class="skill-art"><ClayArt name={s.art} /></span>
+            <span>
+              <h3>{s.group}</h3>
+              <span class="skill-count">{s.items.length} tools</span>
+            </span>
+          </header>
+          <ul class="skill-list">{s.items.map((i) => <li><span class="dot" aria-hidden="true"></span>{i}</li>)}</ul>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section wrap two">
+    <div>
+      <div class="h-art"><h2 id="awards">Honours and awards</h2><span class="mini-art"><ClayArt name="shield" /></span></div>
+      <ul class="awards clay">
+        {awards.map((a) => (
+          <li><span class="yr">{a.year}</span><span>{a.text}</span></li>
+        ))}
+      </ul>
+    </div>
+    <div>
+      <h2 id="service">Professional service</h2>
+      <div class="clay service">
+        <h3>Journal reviewer</h3>
+        <ul class="chips plain">{service.journals.map((j) => <li class="chip flat">{j}</li>)}</ul>
+        <h3>Technical programme committee</h3>
+        <ul class="list">
+          {service.tpcMember.map((t) => <li>Member: {t}</li>)}
+          {service.tpcReviewer.map((t) => <li>Reviewer: {t}</li>)}
+        </ul>
+        <h3>Membership</h3>
+        <ul class="list">{service.membership.map((m) => <li>{m}</li>)}</ul>
+      </div>
+    </div>
+  </section>
+
+</Base>
+
+<style>
+  .intro { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: clamp(28px, 5vw, 64px); align-items: start; }
+  .first { color: var(--ink); }
+  .body-text { max-width: 62ch; color: var(--ink-soft); }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 24px; }
+  .mini { padding: 12px; border-radius: 40px 40px 40px 12px; rotate: 2deg; margin-top: 20px; }
+  .mini :global(img) { border-radius: 30px 30px 30px 6px; aspect-ratio: 4/5; object-fit: cover; object-position: 50% 20%; }
+
+  .h-art { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 0.5em; }
+  .h-art h2 { margin: 0; }
+  .mini-art { width: 74px; flex: none; }
+  .domains { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 12px; }
+  .dom { padding: 10px 18px; border-radius: var(--pill); font-weight: 700; box-shadow: var(--clay-sm); }
+  .dom-0 { background: var(--primary); color: var(--primary-ink); box-shadow: var(--clay-primary); }
+  .dom-1 { background: var(--mint); color: var(--mint-ink); }
+  .dom-2 { background: var(--butter); color: var(--butter-ink); }
+  .dom-3 { background: var(--surface); color: var(--ink); }
+  ul.plain { list-style: none; padding: 0; margin: 0; }
+  .chip.flat { box-shadow: none; background: var(--surface-2); font-weight: 600; }
+
+  .two { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 440px), 1fr)); gap: 48px; align-items: start; }
+  .entry { padding: 20px 22px; }
+  .entry h3 { margin: 6px 0 4px; }
+  .org { font-weight: 650; color: var(--ink-soft); margin-bottom: 8px; }
+  .entry ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; color: var(--ink-soft); }
+  .aff { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 12px; }
+  .note { font-weight: 600; margin-bottom: 6px; }
+  .thesis { margin: 0; font-family: var(--font-read); font-size: 0.97rem; }
+
+  .skills-lede { margin-bottom: 28px; }
+  .skills { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 330px), 1fr)); }
+  .skill { --tint: var(--primary); padding: 22px; display: grid; gap: 18px; align-content: start; transition: transform .2s ease; }
+  .skill:hover { transform: translateY(-3px); }
+  .skill:nth-child(odd) { border-radius: var(--r-xl) var(--r-lg) var(--r-xl) var(--r-lg); }
+  .skill:nth-child(even) { border-radius: var(--r-lg) var(--r-xl) var(--r-lg) var(--r-xl); }
+  .tone-mint { --tint: var(--mint); }
+  .tone-butter { --tint: var(--butter); }
+  .tone-rose { --tint: var(--rose); }
+  .skill-head { display: flex; align-items: center; gap: 16px; }
+  .skill-head h3 { margin: 0 0 2px; }
+  .skill-art { flex: none; width: 84px; height: 84px; padding: 8px; border-radius: 24px; display: grid; place-items: center;
+    background: color-mix(in srgb, var(--tint) 30%, var(--surface-2)); box-shadow: var(--clay-pressed); }
+  .skill-count { font-size: 13px; font-weight: 650; color: var(--ink-soft); }
+  .skill-list { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+  .skill-list li { display: inline-flex; align-items: center; gap: 8px; padding: 7px 12px; border-radius: var(--pill);
+    background: var(--surface-2); font-size: var(--step--1); font-weight: 600; line-height: 1.25; }
+  .skill-list .dot { width: 9px; height: 9px; border-radius: 50%; flex: none; background: var(--tint);
+    box-shadow: inset -1px -1px 2px rgba(0,0,0,.18), inset 1px 1px 2px rgba(255,255,255,.5); }
+
+  .awards { list-style: none; margin: 0; padding: 12px clamp(18px, 3vw, 28px); }
+  .awards li { display: grid; grid-template-columns: 56px 1fr; gap: 12px; padding: 14px 0; border-bottom: 2px solid var(--surface-2); }
+  .awards li:last-child { border-bottom: 0; }
+  .yr { font-weight: 800; color: var(--primary); font-variant-numeric: tabular-nums; }
+  .service { padding: clamp(20px, 3vw, 30px); }
+  .service h3 { margin-top: 18px; }
+  .service h3:first-child { margin-top: 0; }
+  .list { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; color: var(--ink-soft); }
+
+
+  @media (max-width: 800px) {
+    .intro { grid-template-columns: 1fr; }
+    .mini { order: -1; width: 200px; }
+  }
+</style>

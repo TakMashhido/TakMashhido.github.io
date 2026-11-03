@@ -1,0 +1,192 @@
+---
+// Decorative clay-style illustrations for research topics. Purely decorative: aria-hidden.
+// name: chip | chain | qubit | vehicle | cluster | network
+export type ArtName = 'chip' | 'chain' | 'qubit' | 'vehicle' | 'cluster' | 'network' | 'gauge' | 'paper' | 'mail' | 'cap' | 'shield' | 'code';
+interface Props { name: ArtName; class?: string }
+const { name, class: cls = '' } = Astro.props;
+const id = `ca-${name}-${Math.random().toString(36).slice(2, 8)}`;
+---
+<svg class={`clay-art ${cls}`} viewBox="0 0 200 160" aria-hidden="true" focusable="false">
+  <defs>
+    <radialGradient id={`${id}-p`} cx="35%" cy="28%" r="80%">
+      <stop offset="0" style="stop-color: color-mix(in srgb, var(--primary) 55%, white)" />
+      <stop offset="0.55" style="stop-color: var(--primary)" />
+      <stop offset="1" style="stop-color: color-mix(in srgb, var(--primary) 70%, black)" />
+    </radialGradient>
+    <radialGradient id={`${id}-m`} cx="35%" cy="28%" r="80%">
+      <stop offset="0" style="stop-color: color-mix(in srgb, var(--mint) 45%, white)" />
+      <stop offset="0.55" style="stop-color: var(--mint)" />
+      <stop offset="1" style="stop-color: color-mix(in srgb, var(--mint) 70%, black)" />
+    </radialGradient>
+    <radialGradient id={`${id}-b`} cx="35%" cy="28%" r="80%">
+      <stop offset="0" style="stop-color: color-mix(in srgb, var(--butter) 45%, white)" />
+      <stop offset="0.55" style="stop-color: var(--butter)" />
+      <stop offset="1" style="stop-color: color-mix(in srgb, var(--butter) 72%, black)" />
+    </radialGradient>
+    <radialGradient id={`${id}-s`} cx="35%" cy="28%" r="85%">
+      <stop offset="0" style="stop-color: color-mix(in srgb, var(--surface) 60%, white)" />
+      <stop offset="0.6" style="stop-color: var(--surface)" />
+      <stop offset="1" style="stop-color: color-mix(in srgb, var(--surface-2) 70%, black)" />
+    </radialGradient>
+    <filter id={`${id}-sh`} x="-30%" y="-30%" width="160%" height="170%">
+      <feDropShadow dx="4" dy="8" stdDeviation="6" flood-opacity="0.22" />
+    </filter>
+  </defs>
+
+  {name === 'chip' && (
+    <g filter={`url(#${id}-sh)`}>
+      {[0, 1, 2, 3, 4].map((i) => (
+        <>
+          <rect x={60 + i * 18} y="14" width="10" height="22" rx="5" fill={`url(#${id}-s)`} />
+          <rect x={60 + i * 18} y="124" width="10" height="22" rx="5" fill={`url(#${id}-s)`} />
+          <rect x="34" y={44 + i * 18} width="22" height="10" rx="5" fill={`url(#${id}-s)`} />
+          <rect x="144" y={44 + i * 18} width="22" height="10" rx="5" fill={`url(#${id}-s)`} />
+        </>
+      ))}
+      <rect x="50" y="30" width="100" height="100" rx="26" fill={`url(#${id}-p)`} />
+      <rect x="72" y="52" width="56" height="56" rx="14" fill={`url(#${id}-s)`} />
+      {[0, 1, 2].map((r) => [0, 1, 2].map((c) => (
+        <circle cx={86 + c * 14} cy={66 + r * 14} r="4.5" fill={(r * 3 + c) % 3 === 0 ? `url(#${id}-m)` : (r + c) % 2 ? `url(#${id}-b)` : `url(#${id}-p)`} />
+      )))}
+      <ellipse cx="78" cy="42" rx="18" ry="6" fill="white" opacity="0.35" />
+    </g>
+  )}
+
+  {name === 'chain' && (
+    <g filter={`url(#${id}-sh)`}>
+      <rect x="52" y="70" width="34" height="14" rx="7" fill={`url(#${id}-s)`} />
+      <rect x="114" y="70" width="34" height="14" rx="7" fill={`url(#${id}-s)`} />
+      <rect x="14" y="46" width="56" height="62" rx="18" fill={`url(#${id}-m)`} />
+      <rect x="72" y="40" width="56" height="74" rx="18" fill={`url(#${id}-p)`} />
+      <rect x="130" y="46" width="56" height="62" rx="18" fill={`url(#${id}-b)`} />
+      {[0, 1, 2].map((i) => <rect x="84" y={56 + i * 14} width={32 - i * 8} height="6" rx="3" fill="white" opacity="0.55" />)}
+      <ellipse cx="34" cy="56" rx="10" ry="4" fill="white" opacity="0.4" />
+      <ellipse cx="92" cy="50" rx="10" ry="4" fill="white" opacity="0.35" />
+      <ellipse cx="150" cy="56" rx="10" ry="4" fill="white" opacity="0.45" />
+    </g>
+  )}
+
+  {name === 'qubit' && (
+    <g filter={`url(#${id}-sh)`}>
+      <circle cx="100" cy="80" r="58" fill={`url(#${id}-s)`} />
+      <ellipse cx="100" cy="80" rx="58" ry="18" fill="none" style="stroke: var(--ink-soft)" stroke-width="2.5" opacity="0.45" />
+      <line x1="100" y1="22" x2="100" y2="138" style="stroke: var(--ink-soft)" stroke-width="2.5" stroke-dasharray="4 5" opacity="0.5" stroke-linecap="round" />
+      <line x1="100" y1="80" x2="138" y2="44" style="stroke: var(--primary)" stroke-width="7" stroke-linecap="round" />
+      <circle cx="140" cy="42" r="13" fill={`url(#${id}-b)`} />
+      <circle cx="100" cy="80" r="9" fill={`url(#${id}-p)`} />
+      <ellipse cx="78" cy="44" rx="18" ry="8" fill="white" opacity="0.45" />
+    </g>
+  )}
+
+  {name === 'vehicle' && (
+    <g filter={`url(#${id}-sh)`}>
+      <path d="M150 34 a28 28 0 0 1 28 28" fill="none" style="stroke: var(--mint)" stroke-width="7" stroke-linecap="round" />
+      <path d="M150 50 a12 12 0 0 1 12 12" fill="none" style="stroke: var(--mint)" stroke-width="7" stroke-linecap="round" />
+      <path d="M40 92 Q44 62 74 58 L118 56 Q138 56 150 78 L166 84 Q178 88 178 102 L178 108 Q178 116 170 116 L34 116 Q24 116 24 106 L24 100 Q24 92 40 92 Z" fill={`url(#${id}-b)`} />
+      <path d="M62 82 Q66 68 80 66 L100 66 L100 84 Z" fill={`url(#${id}-s)`} />
+      <path d="M108 66 L118 66 Q130 66 138 84 L108 84 Z" fill={`url(#${id}-s)`} />
+      <circle cx="62" cy="116" r="18" fill={`url(#${id}-p)`} />
+      <circle cx="146" cy="116" r="18" fill={`url(#${id}-p)`} />
+      <circle cx="62" cy="116" r="7" fill={`url(#${id}-s)`} />
+      <circle cx="146" cy="116" r="7" fill={`url(#${id}-s)`} />
+      <ellipse cx="70" cy="70" rx="14" ry="4" fill="white" opacity="0.4" />
+    </g>
+  )}
+
+  {name === 'cluster' && (
+    <g filter={`url(#${id}-sh)`}>
+      {[0, 1, 2].map((i) => (
+        <>
+          <rect x="40" y={22 + i * 40} width="120" height="34" rx="14" fill={i === 1 ? `url(#${id}-p)` : `url(#${id}-s)`} />
+          <circle cx="62" cy={39 + i * 40} r="5" fill={`url(#${id}-m)`} />
+          <circle cx="78" cy={39 + i * 40} r="5" fill={i === 2 ? `url(#${id}-b)` : `url(#${id}-m)`} />
+          {[0, 1, 2, 3].map((k) => <rect x={104 + k * 11} y={31 + i * 40} width="6" height="16" rx="3" fill="black" opacity="0.12" />)}
+        </>
+      ))}
+      <ellipse cx="66" cy="28" rx="16" ry="4" fill="white" opacity="0.45" />
+    </g>
+  )}
+
+  {name === 'network' && (
+    <g filter={`url(#${id}-sh)`}>
+      <path d="M52 112 Q100 70 148 112" fill="none" style="stroke: var(--q)" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10" />
+      <path d="M52 112 Q76 60 100 44" fill="none" style="stroke: var(--q)" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10" />
+      <path d="M148 112 Q124 60 100 44" fill="none" style="stroke: var(--q)" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 10" />
+      <circle cx="100" cy="44" r="26" fill={`url(#${id}-p)`} />
+      <circle cx="48" cy="114" r="24" fill={`url(#${id}-m)`} />
+      <circle cx="152" cy="114" r="24" fill={`url(#${id}-b)`} />
+      <ellipse cx="92" cy="32" rx="9" ry="4" fill="white" opacity="0.45" />
+      <ellipse cx="40" cy="104" rx="8" ry="3.5" fill="white" opacity="0.45" />
+      <ellipse cx="144" cy="104" rx="8" ry="3.5" fill="white" opacity="0.45" />
+    </g>
+  )}
+
+  {name === 'gauge' && (
+    <g filter={`url(#${id}-sh)`}>
+      <rect x="22" y="26" width="156" height="112" rx="26" fill={`url(#${id}-s)`} />
+      <path d="M52 108 A48 48 0 0 1 148 108" fill="none" style="stroke: var(--surface-2)" stroke-width="16" stroke-linecap="round" />
+      <path d="M52 108 A48 48 0 0 1 124 66" fill="none" style="stroke: var(--mint)" stroke-width="16" stroke-linecap="round" />
+      <line x1="100" y1="108" x2="128" y2="76" style="stroke: var(--primary)" stroke-width="7" stroke-linecap="round" />
+      <circle cx="100" cy="108" r="11" fill={`url(#${id}-p)`} />
+      <rect x="40" y="40" width="34" height="8" rx="4" fill={`url(#${id}-b)`} />
+      <ellipse cx="60" cy="34" rx="18" ry="4" fill="white" opacity="0.5" />
+    </g>
+  )}
+
+  {name === 'paper' && (
+    <g filter={`url(#${id}-sh)`}>
+      <rect x="66" y="22" width="92" height="118" rx="16" fill={`url(#${id}-b)`} transform="rotate(8 112 81)" />
+      <rect x="46" y="18" width="92" height="118" rx="16" fill={`url(#${id}-s)`} />
+      <rect x="60" y="36" width="50" height="10" rx="5" fill={`url(#${id}-p)`} />
+      {[0, 1, 2, 3].map((i) => <rect x="60" y={58 + i * 16} width={i === 3 ? 40 : 64} height="7" rx="3.5" style="fill: var(--surface-2)" />)}
+      <circle cx="122" cy="118" r="12" fill={`url(#${id}-m)`} />
+      <ellipse cx="74" cy="26" rx="18" ry="4" fill="white" opacity="0.5" />
+    </g>
+  )}
+
+  {name === 'mail' && (
+    <g filter={`url(#${id}-sh)`}>
+      <rect x="26" y="40" width="148" height="100" rx="24" fill={`url(#${id}-p)`} />
+      <path d="M36 54 L100 98 L164 54" fill="none" style="stroke: var(--surface)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.85" />
+      <circle cx="158" cy="42" r="18" fill={`url(#${id}-b)`} />
+      <ellipse cx="62" cy="50" rx="20" ry="5" fill="white" opacity="0.35" />
+    </g>
+  )}
+
+  {name === 'cap' && (
+    <g filter={`url(#${id}-sh)`}>
+      <path d="M58 82 L58 112 Q100 136 142 112 L142 82 Z" fill={`url(#${id}-p)`} />
+      <path d="M100 30 L182 66 L100 102 L18 66 Z" fill={`url(#${id}-p)`} />
+      <path d="M100 66 L156 82 L156 118" fill="none" style="stroke: var(--butter)" stroke-width="5" stroke-linecap="round" />
+      <circle cx="156" cy="122" r="9" fill={`url(#${id}-b)`} />
+      <ellipse cx="86" cy="52" rx="22" ry="6" fill="white" opacity="0.35" />
+    </g>
+  )}
+
+  {name === 'code' && (
+    <g filter={`url(#${id}-sh)`}>
+      <rect x="22" y="24" width="156" height="114" rx="24" fill={`url(#${id}-s)`} />
+      <rect x="22" y="24" width="156" height="30" rx="15" fill={`url(#${id}-p)`} />
+      <circle cx="44" cy="39" r="5" fill={`url(#${id}-b)`} />
+      <circle cx="60" cy="39" r="5" fill={`url(#${id}-m)`} />
+      <path d="M70 76 L52 92 L70 108" fill="none" style="stroke: var(--primary)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M130 76 L148 92 L130 108" fill="none" style="stroke: var(--primary)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" />
+      <path d="M108 70 L92 114" fill="none" style="stroke: var(--butter)" stroke-width="8" stroke-linecap="round" />
+      <ellipse cx="96" cy="32" rx="22" ry="4" fill="white" opacity="0.35" />
+    </g>
+  )}
+
+  {name === 'shield' && (
+    <g filter={`url(#${id}-sh)`}>
+      <path d="M100 18 L156 38 Q160 96 100 142 Q40 96 44 38 Z" fill={`url(#${id}-m)`} />
+      <rect x="78" y="70" width="44" height="38" rx="10" fill={`url(#${id}-s)`} />
+      <path d="M86 70 V60 a14 14 0 0 1 28 0 V70" fill="none" style="stroke: var(--surface)" stroke-width="7" />
+      <circle cx="100" cy="88" r="6" fill={`url(#${id}-p)`} />
+      <ellipse cx="80" cy="40" rx="16" ry="5" fill="white" opacity="0.45" />
+    </g>
+  )}
+</svg>
+
+<style>
+  .clay-art { display: block; width: 100%; height: auto; overflow: visible; }
+</style>

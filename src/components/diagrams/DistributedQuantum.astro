@@ -1,0 +1,68 @@
+---
+// Architecture: fault-tolerant distributed quantum computing. viewBox 1000×530.
+const qpus = [100, 400, 700];
+const lw = (s: string) => Math.ceil(s.length * 7.4 + 16);
+const labels = [
+  { cx: 294, y: 76, t: 'SUBCIRCUITS' },
+  { cx: 294, y: 420, t: 'EPR PAIRS' },
+  { cx: 706, y: 420, t: 'REMOTE GATES' },
+];
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 530" role="img" aria-labelledby="dqc-title dqc-desc">
+      <title id="dqc-title">Fault-tolerant distributed quantum computing</title>
+      <desc id="dqc-desc">A distributed compiler splits a circuit across three error-corrected quantum processors, which share entangled pairs through an entanglement network to run gates between processors.</desc>
+      <defs>
+        <marker id="dqc-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <path class="mk" d="M0,0 L10,4 L0,8 Z" />
+        </marker>
+      </defs>
+
+      <!-- Classical control (dashed), drawn before boxes -->
+      <path class="ln dash" d="M380,76 H208 Q200,76 200,84 V207" marker-end="url(#dqc-arrow)" />
+      <line class="ln dash" x1="500" y1="112" x2="500" y2="207" marker-end="url(#dqc-arrow)" />
+      <path class="ln dash" d="M620,76 H792 Q800,76 800,84 V207" marker-end="url(#dqc-arrow)" />
+
+      <!-- Quantum links (entanglement is undirected: no arrowheads) -->
+      <path class="qln" d="M200,280 V412 Q200,420 208,420 H380" />
+      <line class="qln" x1="500" y1="280" x2="500" y2="384" />
+      <path class="qln" d="M800,280 V412 Q800,420 792,420 H620" />
+
+      {labels.map((l) => (
+        <g>
+          <rect class="mask" x={l.cx - lw(l.t) / 2} y={l.y - 26} width={lw(l.t)} height="16" />
+          <text class="lbl" x={l.cx} y={l.y - 14} text-anchor="middle">{l.t}</text>
+        </g>
+      ))}
+
+      <!-- Compiler -->
+      <rect class="box" x="380" y="40" width="240" height="72" rx="8" />
+      <text class="name" x="500" y="72" text-anchor="middle">Distributed compiler</text>
+      <text class="sub" x="500" y="94" text-anchor="middle">partition and schedule</text>
+
+      <!-- QPUs -->
+      {qpus.map((x, i) => (
+        <g>
+          <rect class="box2" x={x} y="208" width="200" height="72" rx="8" />
+          <text class="name" x={x + 100} y="240" text-anchor="middle">{`QPU ${'ABC'[i]}`}</text>
+          <text class="sub" x={x + 100} y="262" text-anchor="middle">error-corrected qubits</text>
+        </g>
+      ))}
+
+      <!-- Focal: shared entanglement resource -->
+      <rect class="focal" x="380" y="384" width="240" height="72" rx="8" />
+      <text class="name focal-text" x="500" y="416" text-anchor="middle">Entanglement network</text>
+      <text class="sub" x="500" y="438" text-anchor="middle">EPR pair distribution</text>
+
+      <!-- Legend strip -->
+      <g transform="translate(150 500)">
+        <line class="qln" x1="0" x2="40" y1="0" y2="0" /><text class="sub" x="50" y="4">quantum link (entanglement)</text>
+        <line class="ln dash" x1="300" x2="340" y1="0" y2="0" marker-end="url(#dqc-arrow)" /><text class="sub" x="350" y="4">classical control</text>
+        <rect class="focal" x="520" y="-8" width="28" height="16" rx="4" /><text class="sub" x="558" y="4">shared, fault-prone resource</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption><strong>Splitting one computation across many quantum processors.</strong> No single QPU has enough qubits, so the circuit is partitioned. Gates that cross processors consume entangled pairs, and every link, qubit and pair is a place where faults must be detected and corrected.</figcaption>
+</figure>

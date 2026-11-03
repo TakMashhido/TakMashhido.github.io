@@ -1,0 +1,135 @@
+---
+import Icon from './Icon.astro';
+import { nav, site } from '../data/site';
+const path = Astro.url.pathname;
+const isActive = (href: string) => (href === '/' ? path === '/' : path.startsWith(href));
+---
+<header class="site-header">
+  <div class="wrap">
+    <div class="bar clay">
+      <a class="brand" href="/" aria-label={`${site.name}, home`}>
+        <span class="mark" aria-hidden="true">KM</span>
+        <span class="brand-name">Koustav Kumar Mondal</span>
+      </a>
+
+      <nav class="nav" id="site-nav" aria-label="Main">
+        <ul>
+          {nav.map((n) => (
+            <li><a href={n.href} aria-current={isActive(n.href) ? 'page' : undefined}>{n.label}</a></li>
+          ))}
+        </ul>
+      </nav>
+
+      <div class="tools">
+        <button class="icon-btn" type="button" data-open-search aria-label="Search the site (Ctrl K)" title="Search (Ctrl K or /)">
+          <Icon name="search" />
+        </button>
+        <button class="icon-btn" id="theme-toggle" type="button" aria-label="Switch colour theme">
+          <span class="i-sun"><Icon name="sun" /></span>
+          <span class="i-moon"><Icon name="moon" /></span>
+        </button>
+        <button class="icon-btn menu-btn" id="menu-toggle" type="button" aria-expanded="false" aria-controls="site-nav" aria-label="Open menu">
+          <span class="i-open"><Icon name="menu" /></span>
+          <span class="i-close"><Icon name="close" /></span>
+        </button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header { position: sticky; top: 0; z-index: 50; padding-top: 14px; }
+  .bar {
+    position: relative;
+    display: flex; align-items: center; gap: 12px;
+    padding: 8px 8px 8px 10px; border-radius: var(--pill);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font-weight: 750; min-width: 0; }
+  .mark {
+    display: grid; place-items: center; flex: none;
+    width: 44px; height: 44px; border-radius: 16px 16px 16px 6px;
+    background: var(--primary); color: var(--primary-ink); box-shadow: var(--clay-primary);
+    font-size: 0.95rem; letter-spacing: 0.02em;
+  }
+  .brand-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+  .nav { margin-left: auto; display: flex; align-items: center; gap: 10px; }
+  .nav ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 2px; }
+  .nav ul a {
+    display: block; padding: 10px 14px; border-radius: var(--pill);
+    color: var(--ink); text-decoration: none; font-weight: 600; font-size: 0.97rem;
+    transition: box-shadow .15s ease, background .15s ease;
+  }
+  .nav ul a:hover { background: var(--surface-2); }
+  .nav ul a[aria-current='page'] { box-shadow: var(--clay-pressed); background: var(--surface-2); color: var(--primary); }
+
+  .tools { display: flex; gap: 8px; }
+  .icon-btn {
+    display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%;
+    background: var(--surface); color: var(--ink); box-shadow: var(--clay-sm); cursor: pointer;
+  }
+  .icon-btn:active { box-shadow: var(--clay-pressed); }
+  .icon-btn :global(svg) { width: 20px; height: 20px; }
+  .i-moon, .i-close { display: none; }
+  :global(:root[data-theme='dark']) .i-sun { display: none; }
+  :global(:root[data-theme='dark']) .i-moon { display: block; }
+  @media (prefers-color-scheme: dark) {
+    :global(:root:not([data-theme='light'])) .i-sun { display: none; }
+    :global(:root:not([data-theme='light'])) .i-moon { display: block; }
+  }
+  .menu-btn { display: none; }
+  .menu-btn[aria-expanded='true'] .i-open { display: none; }
+  .menu-btn[aria-expanded='true'] .i-close { display: block; }
+
+  @media (max-width: 1180px) {
+    .brand-name { display: none; }
+  }
+  @media (max-width: 980px) {
+    .brand-name { display: inline; }
+    .menu-btn { display: grid; }
+    .tools { margin-left: auto; }
+    .nav {
+      display: none;
+      position: absolute; left: 0; right: 0; top: calc(100% + 12px);
+      flex-direction: column; align-items: stretch; gap: 12px;
+      padding: 14px; border-radius: var(--r-lg);
+      background: var(--surface); box-shadow: var(--clay);
+    }
+    .nav.open { display: flex; }
+    .nav ul { flex-direction: column; gap: 4px; }
+    .nav ul a { padding: 14px 18px; font-size: 1.08rem; }
+    .nav-cv { align-self: stretch; min-height: 50px; }
+  }
+  @media (max-width: 380px) {
+    .brand-name { display: none; }
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const themeBtn = document.getElementById('theme-toggle');
+  const current = () =>
+    root.getAttribute('data-theme') ?? (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+  const label = () => themeBtn?.setAttribute('aria-label', current() === 'dark' ? 'Switch to light theme' : 'Switch to dark theme');
+  label();
+  themeBtn?.addEventListener('click', () => {
+    const next = current() === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('theme', next); } catch {}
+    label();
+  });
+
+  const menuBtn = document.getElementById('menu-toggle');
+  const navEl = document.getElementById('site-nav');
+  const setMenu = (open: boolean) => {
+    navEl?.classList.toggle('open', open);
+    menuBtn?.setAttribute('aria-expanded', String(open));
+    menuBtn?.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+  };
+  menuBtn?.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') setMenu(false); });
+  document.addEventListener('click', (e) => {
+    const t = e.target as Node;
+    if (navEl?.classList.contains('open') && !navEl.contains(t) && !menuBtn?.contains(t)) setMenu(false);
+  });
+</script>

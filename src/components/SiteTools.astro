@@ -1,0 +1,159 @@
+---
+// Site-wide tools: search palette (Ctrl/⌘ K or /), back-to-top button, image and figure zoom.
+import Icon from './Icon.astro';
+---
+<dialog class="palette" id="palette" aria-label="Search the site">
+  <div class="palette-box clay">
+    <div class="palette-search">
+      <Icon name="search" />
+      <input id="palette-q" type="search" placeholder="Search pages, posts and publications" autocomplete="off" aria-controls="palette-list" />
+      <kbd>Esc</kbd>
+    </div>
+    <ul id="palette-list" class="palette-list" role="listbox" aria-label="Results"></ul>
+    <p class="palette-empty" id="palette-empty" hidden>No matches. Try a shorter word, a co-author's name or a venue.</p>
+  </div>
+</dialog>
+
+<dialog class="zoom" id="zoom" aria-label="Enlarged figure">
+  <button class="icon-btn zoom-close" type="button" id="zoom-close" aria-label="Close enlarged view"><Icon name="close" /></button>
+  <div class="zoom-body" id="zoom-body"></div>
+</dialog>
+
+<button class="to-top icon-btn" id="to-top" type="button" aria-label="Back to top" hidden>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5m0 0-6 6m6-6 6 6" /></svg>
+</button>
+
+<style is:global>
+  .palette, .zoom { border: 0; padding: 0; background: transparent; max-width: none; max-height: none; }
+  .palette::backdrop, .zoom::backdrop { background: color-mix(in srgb, var(--bg) 55%, transparent); backdrop-filter: blur(6px); }
+  .palette { width: min(640px, calc(100vw - 32px)); margin: 12vh auto auto; }
+  .palette-box { padding: 14px; border-radius: var(--r-lg); }
+  .palette-search { display: flex; align-items: center; gap: 10px; padding: 6px 14px; border-radius: var(--pill); background: var(--surface-2); box-shadow: var(--clay-pressed); }
+  .palette-search svg { width: 20px; height: 20px; color: var(--ink-soft); flex: none; }
+  .palette-search input { flex: 1; min-width: 0; min-height: 44px; border: 0; background: transparent; color: var(--ink); font: 500 var(--step-0) var(--font-ui); outline: none; }
+  .palette kbd { font: 600 12px var(--font-code); color: var(--ink-soft); padding: 3px 7px; border-radius: 6px; background: var(--surface); }
+  .palette-list { list-style: none; margin: 10px 0 0; padding: 0; max-height: 52vh; overflow-y: auto; }
+  .palette-list a { display: grid; gap: 2px; padding: 10px 14px; border-radius: var(--r-sm); color: var(--ink); text-decoration: none; }
+  .palette-list a[aria-selected='true'], .palette-list a:hover { background: var(--surface-2); box-shadow: var(--clay-pressed); }
+  .palette-list .k { font-size: 12px; font-weight: 700; color: var(--primary); }
+  .palette-list .t { font-weight: 650; }
+  .palette-empty { margin: 14px; color: var(--ink-soft); }
+  .zoom { width: 100vw; height: 100dvh; }
+  .zoom-body { width: 100%; height: 100%; overflow: auto; padding: 64px 16px 24px; display: grid; place-items: center; }
+  .zoom-body > * { max-width: min(1400px, 100%); }
+  .zoom-body img { border-radius: var(--r-md); box-shadow: var(--clay); background: var(--surface); }
+  .zoom-body .figure { margin: 0; }
+  .zoom-body .dg, .zoom-body .viz > svg { min-width: 900px; }
+  .zoom-close { position: fixed; top: 16px; right: 16px; z-index: 2; }
+  .zoomable { cursor: zoom-in; }
+  .expand-btn { position: absolute; top: 14px; right: 14px; z-index: 2; }
+  .figure { position: relative; }
+  .to-top { position: fixed; right: 18px; bottom: 18px; z-index: 40; }
+  .to-top svg { width: 20px; height: 20px; }
+  .icon-btn { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: var(--surface); color: var(--ink); box-shadow: var(--clay-sm); cursor: pointer; }
+  .icon-btn:active { box-shadow: var(--clay-pressed); }
+  .icon-btn svg { width: 20px; height: 20px; }
+  @media print { .to-top, .expand-btn { display: none !important; } }
+</style>
+
+<script>
+  // ---------- Search palette ----------
+  type Item = { t: string; u: string; k: string; d: string };
+  const dlg = document.getElementById('palette') as HTMLDialogElement;
+  const q = document.getElementById('palette-q') as HTMLInputElement;
+  const list = document.getElementById('palette-list')!;
+  const empty = document.getElementById('palette-empty')!;
+  let items: Item[] | null = null;
+  let sel = 0;
+
+  async function load() {
+    if (items) return items;
+    try { items = await (await fetch('/search.json')).json(); } catch { items = []; }
+    return items!;
+  }
+  function score(it: Item, terms: string[]) {
+    const t = it.t.toLowerCase(), d = it.d.toLowerCase();
+    let s = 0;
+    for (const term of terms) {
+      if (t.includes(term)) s += t.startsWith(term) ? 6 : 4;
+      else if (d.includes(term)) s += 1;
+      else return 0;
+    }
+    return s + (it.k === 'Page' ? 1 : 0);
+  }
+  function render() {
+    const terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    const res = (items ?? [])
+      .map((it) => ({ it, s: terms.length ? score(it, terms) : it.k === 'Page' || it.k === 'Post' ? 1 : 0 }))
+      .filter((r) => r.s > 0).sort((a, b) => b.s - a.s).slice(0, 12);
+    sel = 0;
+    list.innerHTML = '';
+    res.forEach(({ it }, i) => {
+      const li = document.createElement('li');
+      const a = document.createElement('a');
+      a.href = it.u; a.setAttribute('role', 'option'); a.setAttribute('aria-selected', String(i === 0));
+      a.innerHTML = `<span class="k"></span><span class="t"></span>`;
+      (a.querySelector('.k') as HTMLElement).textContent = it.k;
+      (a.querySelector('.t') as HTMLElement).textContent = it.t;
+      li.appendChild(a); list.appendChild(li);
+    });
+    empty.hidden = res.length > 0;
+  }
+  function move(d: number) {
+    const links = Array.from(list.querySelectorAll('a'));
+    if (!links.length) return;
+    links[sel]?.setAttribute('aria-selected', 'false');
+    sel = (sel + d + links.length) % links.length;
+    links[sel].setAttribute('aria-selected', 'true');
+    links[sel].scrollIntoView({ block: 'nearest' });
+  }
+  async function open() {
+    await load(); q.value = ''; render();
+    if (!dlg.open) dlg.showModal();
+    q.focus();
+  }
+  q.addEventListener('input', render);
+  q.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown') { e.preventDefault(); move(1); }
+    if (e.key === 'ArrowUp') { e.preventDefault(); move(-1); }
+    if (e.key === 'Enter') { const a = list.querySelectorAll('a')[sel]; if (a) location.href = a.getAttribute('href')!; }
+  });
+  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+  document.addEventListener('keydown', (e) => {
+    const typing = /INPUT|TEXTAREA|SELECT/.test((e.target as HTMLElement).tagName);
+    if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) { e.preventDefault(); open(); }
+  });
+  document.querySelectorAll('[data-open-search]').forEach((b) => b.addEventListener('click', open));
+
+  // ---------- Back to top ----------
+  const top = document.getElementById('to-top')!;
+  const onScroll = () => (top.hidden = scrollY < 900);
+  addEventListener('scroll', onScroll, { passive: true }); onScroll();
+  top.addEventListener('click', () => scrollTo({ top: 0, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }));
+
+  // ---------- Zoom for figures and article images ----------
+  const zoom = document.getElementById('zoom') as HTMLDialogElement;
+  const body = document.getElementById('zoom-body')!;
+  const show = (node: Node) => { body.innerHTML = ''; body.appendChild(node); zoom.showModal(); };
+  document.getElementById('zoom-close')?.addEventListener('click', () => zoom.close());
+  zoom.addEventListener('click', (e) => { if (e.target === body || e.target === zoom) zoom.close(); });
+  zoom.addEventListener('close', () => (body.innerHTML = ''));
+  document.querySelectorAll<HTMLImageElement>('.prose img').forEach((img) => {
+    img.classList.add('zoomable'); img.tabIndex = 0;
+    const go = () => { const c = img.cloneNode() as HTMLImageElement; c.removeAttribute('class'); c.removeAttribute('tabindex'); show(c); };
+    img.addEventListener('click', go);
+    img.addEventListener('keydown', (e) => { if (e.key === 'Enter') go(); });
+  });
+  document.querySelectorAll<HTMLElement>('.figure:has(.dg), .figure.viz').forEach((fig) => {
+    const btn = document.createElement('button');
+    btn.type = 'button'; btn.className = 'icon-btn expand-btn'; btn.setAttribute('aria-label', 'Enlarge figure');
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 4h5v5M9 20H4v-5M20 4l-6 6M4 20l6-6"/></svg>';
+    btn.addEventListener('click', () => {
+      const svg = fig.querySelector('svg.dg, .viz svg');
+      if (!svg) return;
+      const wrap = document.createElement('div'); wrap.className = `figure${fig.classList.contains('viz') ? ' viz' : ''}`;
+      wrap.appendChild(svg.cloneNode(true)); show(wrap);
+    });
+    fig.appendChild(btn);
+  });
+</script>

@@ -1,0 +1,21 @@
+---
+import ClayArt, { type ArtName } from './ClayArt.astro';
+interface Props { title: string; art: ArtName }
+const { title, art } = Astro.props;
+---
+<section class="page-hero wrap ph">
+  <div class="ph-text">
+    <h1>{title}</h1>
+    <slot />
+  </div>
+  <div class="ph-art"><ClayArt name={art} /></div>
+</section>
+
+<style>
+  .ph { display: grid; grid-template-columns: minmax(0, 1fr) clamp(140px, 22vw, 260px); gap: clamp(20px, 4vw, 56px); align-items: center; }
+  .ph-art { filter: saturate(1.05); }
+  @media (max-width: 640px) {
+    .ph { grid-template-columns: minmax(0, 1fr) 96px; align-items: start; }
+    .ph-art { margin-top: 8px; }
+  }
+</style>

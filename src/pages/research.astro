@@ -1,0 +1,101 @@
+---
+import PageHero from '../components/PageHero.astro';
+import Base from '../layouts/Base.astro';
+import { projects } from '../data/cv';
+import { publications } from '../data/publications';
+import ClayArt from '../components/ClayArt.astro';
+import TrustStack from '../components/diagrams/TrustStack.astro';
+import PufAuthSequence from '../components/diagrams/PufAuthSequence.astro';
+import DistributedQuantum from '../components/diagrams/DistributedQuantum.astro';
+const art = { puf: 'chip', chain: 'chain', quantum: 'qubit', vehicles: 'vehicle' } as const;
+
+const themes = [
+  { id: 'puf', title: 'Hardware identity with PUFs', text: 'A PUF lets a device prove who it is without storing a secret key in memory. My work builds PUF-based authentication protocols for vehicles and IoT, evaluation tooling (PUFAnalytics), a blockchain-integrated PUF framework, and a MEMS-based PUF device with a filed Indian patent.', keys: ['PUF', 'PISTON'] },
+  { id: 'chain', title: 'Blockchain consensus', text: 'Consensus protocols that stay fast on constrained hardware: reputation-aware proof-of-energy for EV energy trading, reputation-based consensus, and ledgers that anchor device identity from the PUF upwards.', keys: ['Blockchain', 'RPoE', 'RBCET'] },
+  { id: 'quantum', title: 'Quantum-era security', text: 'At the qCLOUDS Lab, University of Melbourne, I work on fault-tolerant distributed quantum computing: keeping computations correct when they run across many networked quantum processors. Earlier work prepares distributed systems for quantum adversaries with post-quantum cryptography in the trust stack, quantum-aware distributed ledgers and quantum-driven sensing for vehicles.', keys: ['Quantum', 'qIoV'] },
+  { id: 'vehicles', title: 'Vehicles, edge and robots', text: 'Software-defined fog computing for VANETs, drone-assisted IoV security, EV intrusion response, predictive maintenance across edge, fog and cloud, and LoRa localization for robots in GPS-denied spaces.', keys: ['Vehicle', 'VANET', 'IoV', 'Edge', 'Electric'] },
+];
+const related = (keys: string[]) =>
+  publications.filter((p) => keys.some((k) => p.title.includes(k))).slice(0, 4);
+---
+<Base title="Research" description="Research themes, funded projects and lab infrastructure built by Koustav Kumar Mondal.">
+  <PageHero title="Research" art="shield">
+    <p class="lede">My thesis builds a trust architecture that runs from hardware to consensus. These are the threads it pulls together, and the projects and testbeds behind them.</p>
+  </PageHero>
+
+  <section class="section wrap">
+    <TrustStack />
+  </section>
+
+  <section class="section wrap">
+    <div class="themes">
+      {themes.map((t) => (
+        <article class="theme clay" id={t.id}>
+          <div class="theme-head">
+            <h2>{t.title}</h2>
+            <div class="theme-art"><ClayArt name={art[t.id as keyof typeof art]} /></div>
+          </div>
+          <p>{t.text}</p>
+          {related(t.keys).length > 0 && (
+            <>
+              <h3>Related papers</h3>
+              <ul>{related(t.keys).map((p) => <li><a href={`/publications/#${p.id}`}>{p.title}</a> <span class="muted">({p.year})</span></li>)}</ul>
+            </>
+          )}
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="how-puf">
+    <div class="section-head"><h2 id="how-puf">How a PUF login works</h2></div>
+    <PufAuthSequence />
+  </section>
+
+  <section class="section wrap" aria-labelledby="now-dqc">
+    <div class="section-head">
+      <h2 id="now-dqc">Now: fault-tolerant distributed quantum computing</h2>
+    </div>
+    <p class="lede dqc-lede">At the qCLOUDS Lab, University of Melbourne, I study how to keep a quantum computation correct when it is spread across several smaller quantum processors.</p>
+    <DistributedQuantum />
+  </section>
+
+  <section class="section wrap">
+    <div class="section-head">
+      <h2>Projects and infrastructure</h2>
+    </div>
+    <ol class="timeline">
+      {projects.map((p) => (
+        <li>
+          <article class="proj clay-sm">
+            <div class="head">
+              <span class="when">{p.period}</span>
+              <span class="chip">{p.kind}</span>
+            </div>
+            <h3>{p.title}</h3>
+            <ul>{p.points.map((pt) => <li>{pt}</li>)}</ul>
+          </article>
+        </li>
+      ))}
+    </ol>
+  </section>
+</Base>
+
+<style>
+  .themes { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 460px), 1fr)); }
+  .theme { padding: clamp(22px, 4vw, 40px); border-radius: var(--r-xl); scroll-margin-top: 110px; }
+  .theme:nth-child(1) { border-top-left-radius: 80px; }
+  .theme:nth-child(4) { border-bottom-right-radius: 80px; }
+  .theme h2 { font-size: var(--step-2); margin: 0; }
+  .theme-head { display: grid; grid-template-columns: minmax(0, 1fr) 110px; gap: 16px; align-items: center; margin-bottom: 16px; }
+  .theme-art { width: 110px; }
+  .dqc-lede { margin-bottom: 28px; }
+  @media (max-width: 480px) { .theme-head { grid-template-columns: minmax(0, 1fr) 80px; } .theme-art { width: 80px; } }
+  .theme > p { font-family: var(--font-read); max-width: 60ch; }
+  .theme h3 { font-size: var(--step-0); margin-top: 20px; color: var(--ink-soft); }
+  .theme ul { margin: 0; padding-left: 1.1em; display: grid; gap: 8px; font-size: var(--step--1); }
+  .theme:target { outline: 4px solid var(--butter); outline-offset: 6px; }
+  .proj { padding: 22px 24px; }
+  .head { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; margin-bottom: 8px; }
+  .proj ul { margin: 0; padding-left: 1.1em; display: grid; gap: 6px; color: var(--ink-soft); }
+</style>

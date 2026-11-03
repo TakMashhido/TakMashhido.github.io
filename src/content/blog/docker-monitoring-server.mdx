@@ -1,0 +1,319 @@
+---
+title: Build your own monitoring server with Docker, Prometheus and Grafana
+description: A complete, tested setup with Prometheus, Grafana, Node Exporter, cAdvisor, Alertmanager, Blackbox Exporter and Pushgateway, plus how to monitor your own experiments and batch jobs.
+date: 2026-11-02
+category: Technical
+tags: [Monitoring, Docker, Prometheus, Grafana, DevOps]
+art: gauge
+---
+import MonitoringArch from '../../components/diagrams/MonitoringArch.astro';
+import CodeFile from '../../components/CodeFile.astro';
+import compose from '../../../resources/monitoring-stack/docker-compose.yml?raw';
+import envExample from '../../../resources/monitoring-stack/.env.example?raw';
+import promConfig from '../../../resources/monitoring-stack/prometheus/prometheus.yml?raw';
+import nodesTargets from '../../../resources/monitoring-stack/prometheus/targets/nodes.yml?raw';
+import alertRules from '../../../resources/monitoring-stack/prometheus/rules/alerts.yml?raw';
+import amConfig from '../../../resources/monitoring-stack/alertmanager/alertmanager.yml?raw';
+import blackboxConfig from '../../../resources/monitoring-stack/blackbox/blackbox.yml?raw';
+import gfDatasource from '../../../resources/monitoring-stack/grafana/provisioning/datasources/prometheus.yml?raw';
+import gfDashboards from '../../../resources/monitoring-stack/grafana/provisioning/dashboards/dashboards.yml?raw';
+import trainPy from '../../../resources/monitoring-stack/experiment/train_with_metrics.py?raw';
+import batchSh from '../../../resources/monitoring-stack/experiment/run_batch_job.sh?raw';
+import pushPy from '../../../resources/monitoring-stack/experiment/push_results.py?raw';
+
+When you run experiments on a lab cluster, the questions are always the same. Is the GPU node still alive? Which container is eating all the memory? Did last night's job finish, or did it die at 3 a.m.? Is my training run still making progress?
+
+This guide builds one server that answers all of them. Everything runs in Docker, every configuration file is shown in full, and the whole stack was started and tested before publishing: all eight scrape targets came up healthy and a deliberately failing job fired its alert.
+
+**Download everything:** [monitoring-stack.zip](/downloads/monitoring-stack.zip) contains every file in this post, ready to run.
+
+## What you will build
+
+<MonitoringArch />
+
+| Component | Job | Port |
+|---|---|---|
+| **Prometheus** | Pulls metrics, stores them as time series, evaluates alert rules | 9090 |
+| **Grafana** | Dashboards on top of Prometheus | 3000 |
+| **Alertmanager** | Groups alerts and sends them to email, Slack or Telegram | 9093 |
+| **Node Exporter** | CPU, memory, disk, network and temperature of a machine | 9100 |
+| **cAdvisor** | CPU, memory and network of every Docker container | 8080 (internal) |
+| **Blackbox Exporter** | Checks that websites and services answer, and how fast | 9115 (internal) |
+| **Pushgateway** | Holds metrics pushed by short-lived batch jobs | 9091 |
+
+The versions used here were current when I wrote this (Prometheus 3.15, Grafana 13.3, Alertmanager 0.34, Node Exporter 1.12, cAdvisor 0.60, Blackbox Exporter 0.29, Pushgateway 1.11). They are pinned in the compose file so the setup does not change under you.
+
+### What you need
+
+- A Linux machine (a VM, a mini PC or a spare lab server) with 2 CPU cores, 2 GB RAM and 20 GB of disk.
+- Docker Engine with the Compose plugin. Check with `docker compose version`.
+- Ports 3000, 9090, 9091 and 9093 free on that machine.
+
+## Step 1: Create the folder layout
+
+```text
+monitoring-stack/
+├── docker-compose.yml
+├── .env
+├── prometheus/
+│   ├── prometheus.yml
+│   ├── rules/alerts.yml
+│   └── targets/nodes.yml
+├── alertmanager/alertmanager.yml
+├── blackbox/blackbox.yml
+├── grafana/
+│   ├── provisioning/
+│   │   ├── datasources/prometheus.yml
+│   │   └── dashboards/dashboards.yml
+│   └── dashboards/            # dashboard JSON files go here
+└── experiment/                # examples for your own jobs
+```
+
+```bash
+mkdir -p monitoring-stack/{prometheus/{rules,targets},alertmanager,blackbox,grafana/{provisioning/{datasources,dashboards},dashboards},experiment}
+cd monitoring-stack
+```
+
+## Step 2: Settings in `.env`
+
+Compose reads this file automatically. The only value you must change is the Grafana password; Compose refuses to start Grafana until it is set.
+
+<CodeFile code={envExample} lang="bash" file=".env.example" note="copy to .env, then edit" />
+
+```bash
+cp .env.example .env
+nano .env    # set GRAFANA_ADMIN_PASSWORD
+```
+
+## Step 3: The Compose file
+
+This is the heart of the setup. Read the notes below it before you start the stack.
+
+<CodeFile code={compose} lang="yaml" file="docker-compose.yml" />
+
+A few lines deserve an explanation:
+
+- **`x-defaults`** is a YAML anchor shared by every service: restart automatically, join one private network, and rotate logs so they never fill your disk.
+- **Only Prometheus, Grafana, Alertmanager and Pushgateway publish ports.** Node Exporter, cAdvisor and Blackbox are reachable only inside the Docker network, which is all Prometheus needs.
+- **Node Exporter** gets `pid: host` and the host's root filesystem mounted read-only at `/host` (with `rslave` so new mounts appear). Without these it would report the container, not the machine. The `$$` in the exclude pattern is how Compose writes a literal `$`.
+- **cAdvisor** needs `privileged`, `/dev/kmsg` and read-only access to `/sys`, `/var/run` and `/var/lib/docker` to read per-container cgroup statistics. Note that recent releases are published at `ghcr.io/google/cadvisor`, not the old `gcr.io` registry.
+- **`extra_hosts: host.docker.internal:host-gateway`** lets Prometheus reach programs running directly on the host, such as your experiment scripts.
+- **`--web.enable-lifecycle`** lets you reload Prometheus after editing its config without restarting it.
+
+## Step 4: Tell Prometheus what to scrape
+
+<CodeFile code={promConfig} lang="yaml" file="prometheus/prometheus.yml" />
+
+How the pieces work:
+
+- **`scrape_interval: 15s`** is a good default. The `experiments` job overrides it with `5s` because training metrics change quickly.
+- **`file_sd_configs`** reads extra machines from `targets/nodes.yml`. Prometheus re-reads that file every minute, so adding a node needs no restart.
+- **The `blackbox-http` job** looks odd but is the standard pattern: Prometheus calls the Blackbox Exporter's `/probe` endpoint, and the `relabel_configs` pass each website as the `target` parameter while keeping its URL as the `instance` label.
+- **`honor_labels: true`** on the Pushgateway job keeps the `job` label your batch job pushed, instead of overwriting it with `pushgateway`.
+
+Start the node list empty; Step 10 shows how to fill it.
+
+<CodeFile code={nodesTargets} lang="yaml" file="prometheus/targets/nodes.yml" />
+
+## Step 5: Alert rules
+
+Alert rules are PromQL expressions that should normally return nothing. When one returns a result for longer than its `for:` duration, the alert fires.
+
+<CodeFile code={alertRules} lang="yaml" file="prometheus/rules/alerts.yml" />
+
+- **`for: 2m`** stops a single failed scrape from waking you up.
+- **`predict_linear`** fits a line to the last 6 hours of free disk space and fires if that line hits zero within 24 hours. You get warned before the disk is full, not after.
+- **`ExperimentStalled`** uses a timestamp your experiment updates on every step (Step 11). If it stops moving for 10 minutes, the run has hung or crashed.
+
+## Step 6: Where alerts go
+
+Alertmanager receives firing alerts from Prometheus, groups related ones into one message, and sends them to a receiver.
+
+<CodeFile code={amConfig} lang="yaml" file="alertmanager/alertmanager.yml" />
+
+Uncomment one receiver and fill it in:
+
+- **Gmail:** turn on two-step verification, create an *app password* in your Google account's security settings, and use it as `auth_password`. Never use your real password.
+- **Telegram:** create a bot with `@BotFather` to get the token, send the bot a message, then open `https://api.telegram.org/bot<TOKEN>/getUpdates` to find your `chat_id`.
+- **Slack:** create an incoming webhook for a channel and paste its URL.
+
+The `inhibit_rules` block silences warnings for a machine while a critical alert for the same machine is firing, so a dead server sends one message instead of five.
+
+## Step 7: Uptime probes
+
+<CodeFile code={blackboxConfig} lang="yaml" file="blackbox/blackbox.yml" />
+
+`http_2xx` is used by the `blackbox-http` job. Add your own websites to the `targets` list in `prometheus.yml`. `tcp_connect` checks that a port accepts connections (an SSH server or a database), and `icmp` is a ping.
+
+## Step 8: Connect Grafana automatically
+
+Provisioning files mean you never click through Grafana's setup screens: the data source and dashboards exist from the first start.
+
+<CodeFile code={gfDatasource} lang="yaml" file="grafana/provisioning/datasources/prometheus.yml" />
+
+<CodeFile code={gfDashboards} lang="yaml" file="grafana/provisioning/dashboards/dashboards.yml" />
+
+Any dashboard JSON file you drop into `grafana/dashboards/` appears in a **Lab** folder. The download includes two dashboards I wrote for this setup, *Host and container overview* and *Experiments*. For a very detailed host view, also import the community dashboard **Node Exporter Full** (ID `1860`): in Grafana go to *Dashboards → New → Import*, enter `1860` and pick the Prometheus data source.
+
+## Step 9: Start and check it
+
+Validate the configs first. Both tools ship inside the official images, so there is nothing to install:
+
+```bash
+docker run --rm -v "$PWD/prometheus:/etc/prometheus:ro" --entrypoint promtool \
+  prom/prometheus:v3.15.1 check config /etc/prometheus/prometheus.yml
+
+docker run --rm -v "$PWD/alertmanager:/etc/alertmanager:ro" --entrypoint amtool \
+  prom/alertmanager:v0.34.2 check-config /etc/alertmanager/alertmanager.yml
+```
+
+Then start everything and check that all containers are running:
+
+```bash
+docker compose up -d
+docker compose ps
+```
+
+Open `http://<server-ip>:9090/targets`. Every target should be green and **UP**. (The `experiments` target stays down until Step 11 starts an experiment.)
+
+![Prometheus target health page showing alertmanager, blackbox, cAdvisor, experiments and node targets all UP](/images/blog/prometheus-targets.webp)
+
+Now open Grafana at `http://<server-ip>:3000`, sign in with the user and password from `.env`, and open *Dashboards → Lab → Host and container overview*:
+
+![Grafana host overview dashboard with targets up, CPU, memory, disk and network panels](/images/blog/grafana-host-overview.webp)
+
+After editing any Prometheus file later, reload it without downtime:
+
+```bash
+curl -X POST http://localhost:9090/-/reload
+```
+
+## Step 10: Monitor more machines
+
+Run Node Exporter on every machine you want to watch. On each one:
+
+```bash
+docker run -d --name node-exporter --restart unless-stopped \
+  --net host --pid host -v /:/host:ro,rslave \
+  prom/node-exporter:v1.12.1 --path.rootfs=/host
+```
+
+Then list it in `prometheus/targets/nodes.yml` on the monitoring server. Labels such as `role` let you filter dashboards and alerts later:
+
+```yaml
+- targets: ["192.168.1.21:9100"]
+  labels: { instance_name: jetson-01, role: edge }
+- targets: ["192.168.1.22:9100"]
+  labels: { instance_name: rpi5-01, role: edge }
+```
+
+Within a minute the new machines appear in the `instance` drop-down of the host dashboard. Node Exporter publishes ARM64 images, so this works on Raspberry Pi and Jetson boards too. If a node has a firewall, allow port 9100 **only from the monitoring server's IP**.
+
+To watch the containers on another Docker host, run cAdvisor there with the same volumes as in the compose file and add a target for its port 8080.
+
+## Step 11: Monitor your own experiments
+
+This is where the setup pays off for research. There are two patterns, and choosing the right one matters.
+
+| Your program… | Use | Why |
+|---|---|---|
+| runs for minutes to days (training, simulations, servers) | **Expose `/metrics`**, Prometheus pulls | You see progress live and can alert on stalls |
+| finishes in seconds or minutes (backups, sweeps, cron jobs) | **Push** to the Pushgateway at the end | The program may exit before Prometheus ever scrapes it |
+
+### Long-running experiments: expose metrics
+
+The official Python client starts a tiny web server inside your program. Update gauges and counters as your loop runs:
+
+<CodeFile code={trainPy} lang="python" file="experiment/train_with_metrics.py" note="pip install prometheus-client" />
+
+Which metric type to use:
+
+- **Gauge** for values that go up and down: loss, accuracy, learning rate, GPU temperature.
+- **Counter** for things that only increase: steps, samples, errors. Always query them with `rate()`.
+- **Histogram** for durations: step time, request latency. It lets you ask for percentiles.
+
+Run it on the monitoring server (or change the `experiments` target to the machine's IP), and the *Experiments* dashboard comes alive:
+
+![Grafana experiments dashboard with epoch, loss, validation accuracy, steps per second, step time percentiles and batch job panels](/images/blog/grafana-experiments.webp)
+
+Running several experiments? Give each one its own port and target, with an `experiment` label naming it:
+
+```yaml
+- job_name: experiments
+  scrape_interval: 5s
+  static_configs:
+    - targets: ["host.docker.internal:8000"]
+      labels: { experiment: xor-puf-k4 }
+    - targets: ["host.docker.internal:8001"]
+      labels: { experiment: xor-puf-k6 }
+```
+
+### Short jobs: push when you finish
+
+This wrapper runs any command, then pushes its duration and success to the Pushgateway. Because the job name is part of the URL, each job keeps its own last result.
+
+<CodeFile code={batchSh} lang="bash" file="experiment/run_batch_job.sh" />
+
+```bash
+./run_batch_job.sh nightly-backup tar czf /backup/data.tgz /data
+./run_batch_job.sh dataset-sync rsync -a lab:/datasets/ /data/
+```
+
+In crontab, a nightly job becomes `0 2 * * * /opt/monitoring-stack/experiment/run_batch_job.sh nightly-backup /opt/scripts/backup.sh`. If it fails, the `BatchJobFailed` alert fires. If a job stops running at all, alert on its age:
+
+```text
+time() - batch_job_last_run_timestamp_seconds{job="nightly-backup"} > 26 * 3600
+```
+
+From Python, push final results of a parameter sweep with labels, so you can compare runs in Grafana:
+
+<CodeFile code={pushPy} lang="python" file="experiment/push_results.py" />
+
+## Step 12: Useful PromQL to start with
+
+| Question | PromQL |
+|---|---|
+| CPU used per machine (%) | `100 - avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100` |
+| Memory used (%) | `(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) * 100` |
+| Free disk on `/` (GB) | `node_filesystem_avail_bytes{mountpoint="/"} / 1e9` |
+| Top 5 containers by memory | `topk(5, container_memory_working_set_bytes{name!=""})` |
+| Training steps per second | `rate(experiment_steps_total[1m])` |
+| 95th percentile step time | `histogram_quantile(0.95, sum by (le) (rate(experiment_step_duration_seconds_bucket[5m])))` |
+| Is a website up? | `probe_success{job="blackbox-http"}` |
+| Which targets are down? | `up == 0` |
+
+Try each one in Prometheus under *Query* before you put it on a dashboard.
+
+## Step 13: Keep it safe and healthy
+
+- **Do not expose Prometheus, Alertmanager or Pushgateway to the internet.** They have no login. Either change their port lines to `"127.0.0.1:9090:9090"` and reach them through an SSH tunnel, or allow them only from your lab network in the firewall.
+- **Put Grafana behind HTTPS** with a reverse proxy such as Caddy or Nginx if people reach it from outside, and keep sign-up disabled.
+- **Retention:** `PROM_RETENTION=30d` keeps a month of data. Each scraped series costs roughly 1–2 bytes per sample; a few machines for a year fits comfortably in a few GB.
+- **Back up the Grafana volume**, which holds users and any dashboards edited in the UI:
+
+```bash
+docker run --rm -v monitoring_grafana-data:/data -v "$PWD":/backup alpine \
+  tar czf /backup/grafana-$(date +%F).tgz -C /data .
+```
+
+- **Update deliberately:** change one image tag at a time in `docker-compose.yml`, then run `docker compose pull && docker compose up -d`.
+
+## Troubleshooting
+
+| Symptom | Likely cause and fix |
+|---|---|
+| Grafana will not start: *set GRAFANA_ADMIN_PASSWORD* | `.env` is missing or the password is empty. Copy `.env.example` to `.env`. |
+| `experiments` target is DOWN with *connection refused* | Your script is not running, or it listens only on `127.0.0.1` inside another container. `start_http_server(8000)` listens on all interfaces by default. |
+| A remote node is DOWN with *context deadline exceeded* | Firewall on the node. Allow port 9100 from the monitoring server. |
+| cAdvisor shows no containers | It needs `privileged: true` and the `/var/lib/docker` and `/sys` mounts. On cgroup v2 hosts, keep the image up to date. |
+| Disk panel shows odd mount points | Adjust the `mount-points-exclude` pattern on Node Exporter, or filter by `mountpoint` in the query. |
+| Pushed metrics never disappear | That is by design: the Pushgateway keeps the last push. Delete a job's group with `curl -X DELETE http://localhost:9091/metrics/job/<name>`. |
+| Alerts show in Prometheus but no message arrives | Check `http://<server-ip>:9093` to see if Alertmanager received them, then check the receiver settings and the Alertmanager logs with `docker compose logs alertmanager`. |
+
+## Where to go next
+
+- **GPUs:** NVIDIA's `dcgm-exporter` exposes GPU utilisation, memory and temperature for data-centre and desktop GPUs; run it on GPU nodes and add a target.
+- **Logs:** Grafana Loki stores logs next to your metrics, so you can jump from a spike on a chart to the log lines from that minute.
+- **Long-term storage:** if you need years of history across many machines, look at Thanos or Grafana Mimir.
+
+The complete, tested stack is in [monitoring-stack.zip](/downloads/monitoring-stack.zip). Unzip it, set the password in `.env`, and run `docker compose up -d`.

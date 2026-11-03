@@ -1,0 +1,11 @@
+---
+// Arrow label on an opaque mask. anchor 'middle' centres on x; 'start' places it to the right of x.
+interface Props { x: number; y: number; text: string; anchor?: 'middle' | 'start' }
+const { x, y, text, anchor = 'middle' } = Astro.props;
+const w = Math.ceil(text.length * 7.4 + 16);
+const rx = anchor === 'middle' ? x - w / 2 : x;
+---
+<g>
+  <rect class="mask" x={rx} y={y - 12} width={w} height="16" />
+  <text class="lbl" x={anchor === 'middle' ? x : x + 8} y={y} text-anchor={anchor}>{text}</text>
+</g>

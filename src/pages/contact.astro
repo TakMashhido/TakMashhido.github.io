@@ -1,0 +1,118 @@
+---
+import PageHero from '../components/PageHero.astro';
+import Base from '../layouts/Base.astro';
+import Icon from '../components/Icon.astro';
+import { site, socials } from '../data/site';
+---
+<Base title="Contact" description="Get in touch with Koustav Kumar Mondal about research collaborations, talks or visiting positions.">
+  <PageHero title="Contact" art="mail">
+    <p class="lede">Write about collaborations, talks, reviewing or visiting positions. I usually reply within a few days.</p>
+  </PageHero>
+
+  <section class="section wrap grid">
+    <form class="form clay" id="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
+      <input type="hidden" name="access_key" value={site.web3formsKey} />
+      <input type="hidden" name="subject" value="New message from koustav.isroot.in" />
+      <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+      <div class="row">
+        <div class="field">
+          <label for="name">Your name</label>
+          <input class="input" id="name" name="name" required autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" id="email" name="email" type="email" required autocomplete="email" />
+        </div>
+      </div>
+      <div class="field">
+        <label for="topic">Topic</label>
+        <select class="input" id="topic" name="topic">
+          <option>Research collaboration</option>
+          <option>Invited talk or tutorial</option>
+          <option>Visiting or postdoctoral position</option>
+          <option>Question about a paper</option>
+          <option>Something else</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="message">Message</label>
+        <textarea class="input" id="message" name="message" required minlength="10"></textarea>
+      </div>
+      <button class="btn btn-primary" type="submit" id="send"><Icon name="mail" /> Send message</button>
+      <p class="form-status" id="form-status" role="status" aria-live="polite"></p>
+    </form>
+
+    <aside class="side">
+      <div class="clay card">
+        <h2>Email</h2>
+        <p><a href={`mailto:${site.email}`}>{site.email}</a></p>
+      </div>
+      <div class="clay card">
+        <h2>Where</h2>
+        <p>{site.lab.name}<br />{site.school.name}<br />{site.faculty.name}<br />{site.uni.name}, Australia</p>
+      </div>
+      <div class="clay card">
+        <h2>Profiles</h2>
+        <ul class="chips">{socials.map((s) => <li><a class="chip" href={s.href} rel="me noopener">{s.label}</a></li>)}</ul>
+      </div>
+    </aside>
+  </section>
+</Base>
+
+<style>
+  .grid { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 32px; align-items: start; }
+  .form { padding: clamp(22px, 4vw, 40px); border-radius: var(--r-xl); display: grid; gap: 20px; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  select.input { appearance: none; background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%); background-position: calc(100% - 22px) 50%, calc(100% - 16px) 50%; background-size: 6px 6px; background-repeat: no-repeat; }
+  .form .btn { justify-self: start; }
+  .form-status { margin: 0; font-weight: 650; min-height: 1.5em; }
+  .form-status.ok { color: var(--primary); }
+  .form-status.err { color: #c0283c; }
+  .side { display: grid; gap: 24px; }
+  .card { padding: 24px; }
+  .card h2 { font-size: var(--step-1); }
+  .card p { margin: 0 0 6px; word-break: break-word; }
+  .chips { list-style: none; padding: 0; margin: 0; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  @media (max-width: 560px) { .row { grid-template-columns: 1fr; } .form .btn { justify-self: stretch; } }
+</style>
+
+<script>
+  const form = document.getElementById('contact-form') as HTMLFormElement;
+  const status = document.getElementById('form-status')!;
+  const send = document.getElementById('send') as HTMLButtonElement;
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    status.className = 'form-status';
+    if (!form.checkValidity()) {
+      const bad = form.querySelector<HTMLInputElement>(':invalid');
+      status.textContent = bad?.id === 'email' ? 'Enter a valid email address.' : 'Fill in your name, email and a message of at least 10 characters.';
+      status.classList.add('err');
+      bad?.focus();
+      return;
+    }
+    const key = (form.elements.namedItem('access_key') as HTMLInputElement).value;
+    if (!key || key.startsWith('YOUR_')) {
+      status.textContent = 'The form is not connected yet. Please email me directly for now.';
+      status.classList.add('err');
+      return;
+    }
+    send.disabled = true;
+    status.textContent = 'Sending…';
+    try {
+      const res = await fetch(form.action, { method: 'POST', headers: { Accept: 'application/json' }, body: new FormData(form) });
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.message);
+      form.reset();
+      status.textContent = 'Message sent. Thank you, I will reply by email.';
+      status.classList.add('ok');
+    } catch {
+      status.textContent = 'The message could not be sent. Check your connection and try again, or email me directly.';
+      status.classList.add('err');
+    } finally {
+      send.disabled = false;
+    }
+  });
+</script>

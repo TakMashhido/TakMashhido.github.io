@@ -1,0 +1,46 @@
+---
+// Architecture of the Docker monitoring stack. viewBox 1000×540.
+import DgBox from './DgBox.astro';
+import DgLabel from './DgLabel.astro';
+import DgMarkers from './DgMarkers.astro';
+const targets = [
+  { name: 'Node Exporter', sub: ':9100 host metrics', yc: 80, port: 196, mid: 370 },
+  { name: 'cAdvisor', sub: ':8080 containers', yc: 160, port: 218, mid: 350 },
+  { name: 'Your experiment', sub: ':8000 /metrics', yc: 240, port: 240, mid: 0 },
+  { name: 'Pushgateway', sub: ':9091 batch jobs', yc: 320, port: 262, mid: 350 },
+  { name: 'Blackbox', sub: ':9115 uptime probes', yc: 400, port: 284, mid: 370 },
+];
+const path = (t: (typeof targets)[number]) => {
+  if (!t.mid) return `M260,${t.yc} H399`;
+  const up = t.port < t.yc;
+  return `M260,${t.yc} H${t.mid - 8} Q${t.mid},${t.yc} ${t.mid},${t.yc + (up ? -8 : 8)} V${t.port + (up ? 8 : -8)} Q${t.mid},${t.port} ${t.mid + 8},${t.port} H399`;
+};
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 540" role="img" aria-labelledby="mon-title mon-desc">
+      <title id="mon-title">Docker monitoring stack</title>
+      <desc id="mon-desc">Prometheus pulls metrics every 15 seconds from Node Exporter, cAdvisor, your experiment, the Pushgateway and the Blackbox exporter. Grafana queries Prometheus to draw dashboards, and Prometheus sends firing alerts to Alertmanager, which notifies you by email, Slack or Telegram.</desc>
+      <DgMarkers id="mon" />
+      <text class="eyebrow" x="40" y="32">SCRAPE TARGETS, PULLED EVERY 15 S</text>
+
+      {targets.map((t) => <path class="ln" d={path(t)} marker-end="url(#mon-arrow)" />)}
+      <path class="ln" d="M720,136 H568 Q560,136 560,144 V179" marker-end="url(#mon-arrow)" />
+      <path class="acc" d="M620,270 H752 Q760,270 760,278 V299" marker-end="url(#mon-acc)" />
+      <line class="ln" x1="830" x2="830" y1="372" y2="439" marker-end="url(#mon-arrow)" />
+
+      <DgLabel x={640} y={124} text="PROMQL" />
+      <DgLabel x={690} y={258} text="ALERTS" />
+      <DgLabel x={838} y={410} text="NOTIFY" anchor="start" />
+
+      {targets.map((t) => <DgBox x={40} y={t.yc - 32} w={220} h={64} name={t.name} sub={t.sub} kind={t.name === 'Your experiment' ? 'box2' : 'box'} />)}
+      <DgBox x={400} y={180} w={220} h={120} name="Prometheus" sub="stores time series" kind="focal" />
+      <text class="sub" x="510" y="281" text-anchor="middle">evaluates alert rules</text>
+      <DgBox x={720} y={100} w={220} h={72} name="Grafana" sub=":3000 dashboards" />
+      <DgBox x={720} y={300} w={220} h={72} name="Alertmanager" sub=":9093 group, route" />
+      <DgBox x={720} y={440} w={220} h={64} name="You" sub="email, Slack, Telegram" />
+    </svg>
+  </div>
+  <figcaption><strong>Pull, not push.</strong> Every component exposes plain-text metrics over HTTP and Prometheus collects them on a schedule. Only short batch jobs push, and they push to the Pushgateway, which Prometheus then pulls like any other target.</figcaption>
+</figure>

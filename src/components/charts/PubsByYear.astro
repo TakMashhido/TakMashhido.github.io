@@ -1,0 +1,60 @@
+---
+import { publications, typeLabels, type PubType } from '../../data/publications';
+// Stacked bars: publications per year, split by type.
+const types: PubType[] = ['journal', 'conference', 'chapter', 'patent'];
+const colors: Record<PubType, string> = { journal: 'var(--s1)', conference: 'var(--s2)', chapter: 'var(--s3)', patent: 'var(--s4)' };
+const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => a - b);
+const data = years.map((yr) => ({ yr, ...Object.fromEntries(types.map((t) => [t, publications.filter((p) => p.year === yr && p.type === t).length])) })) as ({ yr: number } & Record<PubType, number>)[];
+const totals = data.map((d) => types.reduce((s, t) => s + d[t], 0));
+const W = 760, H = 280, L = 40, R = 12, T = 24, B = 40;
+const pw = W - L - R, ph = H - T - B;
+const ymax = Math.max(...totals) + 1;
+const y = (v: number) => T + ph - (v / ymax) * ph;
+const slot = pw / years.length, bwid = Math.min(56, slot * 0.55);
+---
+<figure class="figure viz pubs-chart">
+  <ul class="viz-legend" aria-hidden="true">
+    {types.map((t) => <li><i style={`background: ${colors[t]}`}></i>{typeLabels[t]}</li>)}
+  </ul>
+  <div class="dg-scroll"><svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="pby-title pby-desc">
+    <title id="pby-title">Publications per year by type</title>
+    <desc id="pby-desc">{data.map((d, i) => `${d.yr}: ${totals[i]}`).join(', ')}.</desc>
+    {Array.from({ length: ymax + 1 }, (_, v) => v).filter((v) => v % 2 === 0).map((v) => (
+      <g>
+        <line class={v === 0 ? 'base' : 'grid'} x1={L} x2={W - R} y1={y(v)} y2={y(v)} />
+        <text x={L - 8} y={y(v) + 4} text-anchor="end">{v}</text>
+      </g>
+    ))}
+    {data.map((d, i) => {
+      const cx = L + slot * i + slot / 2, bx = cx - bwid / 2;
+      let acc = 0;
+      const segs = types.filter((t) => d[t] > 0).map((t) => { const s = { t, from: acc, to: acc + d[t] }; acc += d[t]; return s; });
+      return (
+        <g>
+          {segs.map((s, k) => {
+            const top = y(s.to), bot = y(s.from) - (k > 0 ? 2 : 0); // 2px surface gap between stacked segments
+            const isTop = k === segs.length - 1, r = isTop ? Math.min(4, (bot - top) / 2) : 0;
+            return <path d={`M${bx},${bot} V${top + r} Q${bx},${top} ${bx + r},${top} H${bx + bwid - r} Q${bx + bwid},${top} ${bx + bwid},${top + r} V${bot} Z`} style={`fill: ${colors[s.t]}`} />;
+          })}
+          <text x={cx} y={y(totals[i]) - 8} text-anchor="middle" class="direct">{totals[i]}</text>
+          <text x={cx} y={T + ph + 20} text-anchor="middle">{d.yr}</text>
+          <rect class="hit" tabindex="0" x={L + slot * i} y={T} width={slot} height={ph}
+            data-tip={`<b>${d.yr}</b>: ${totals[i]} total<br/>` + types.filter((t) => d[t]).map((t) => `${typeLabels[t]}: ${d[t]}`).join('<br/>')}
+            aria-label={`${d.yr}: ` + types.map((t) => `${d[t]} ${typeLabels[t].toLowerCase()}`).join(', ')} />
+        </g>
+      );
+    })}
+  </svg></div>
+  <details class="viz-table">
+    <summary>Show the numbers</summary>
+    <table>
+      <thead><tr><th>Year</th>{types.map((t) => <th>{typeLabels[t]}</th>)}<th>Total</th></tr></thead>
+      <tbody>{data.map((d, i) => <tr><td>{d.yr}</td>{types.map((t) => <td>{d[t]}</td>)}<td>{totals[i]}</td></tr>)}</tbody>
+    </table>
+  </details>
+</figure>
+
+<script>
+  import { bindTooltips } from '../../scripts/viz';
+  bindTooltips();
+</script>

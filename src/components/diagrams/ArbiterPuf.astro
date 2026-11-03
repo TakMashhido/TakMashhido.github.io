@@ -1,0 +1,63 @@
+---
+// Architecture of an arbiter PUF: two racing paths through switch stages into an arbiter. viewBox 1000×330.
+import DgBox from './DgBox.astro';
+import DgMarkers from './DgMarkers.astro';
+const TOP = 136, BOT = 184;
+const stages = [
+  { x: 210, label: 'STAGE 1', c: 0 },
+  { x: 380, label: 'STAGE 2', c: 1 },
+  { x: 610, label: 'STAGE n', c: 1 },
+];
+const SW = 120, SY = 100, SH = 120;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 330" role="img" aria-labelledby="arb-title arb-desc">
+      <title id="arb-title">How an arbiter PUF races two signals</title>
+      <desc id="arb-desc">One rising edge splits into a top and a bottom path. Each stage either passes the two paths straight or swaps them, depending on one challenge bit. An arbiter at the end outputs 1 if the top signal arrives first and 0 otherwise.</desc>
+      <DgMarkers id="arb" />
+
+      <!-- Wires between blocks (drawn first) -->
+      {[[152, 210], [330, 380], [500, 530], [580, 610], [730, 790]].map(([a, b]) => (
+        <g>
+          <line class="ln" x1={a} x2={b} y1={TOP} y2={TOP} />
+          <line class="ln" x1={a} x2={b} y1={BOT} y2={BOT} />
+        </g>
+      ))}
+      <text class="name" x="555" y="166" text-anchor="middle">…</text>
+      <line class="acc" x1="910" x2="960" y1="160" y2="160" marker-end="url(#arb-acc)" />
+      <text class="name focal-text" x="972" y="166">r</text>
+
+      <DgBox x={32} y={120} w={120} h={80} name="Pulse" sub="one rising edge" />
+
+      {stages.map((s) => (
+        <g>
+          <rect class="box2" x={s.x} y={SY} width={SW} height={SH} rx="8" />
+          <text class="eyebrow" x={s.x + SW / 2} y={SY - 12} text-anchor="middle">{s.label}</text>
+          {s.c === 0 ? (
+            <g>
+              <line class="ln" x1={s.x} x2={s.x + SW} y1={TOP} y2={TOP} />
+              <line class="ln" x1={s.x} x2={s.x + SW} y1={BOT} y2={BOT} />
+            </g>
+          ) : (
+            <g>
+              <path class="ln" d={`M${s.x},${TOP} H${s.x + 24} L${s.x + SW - 24},${BOT} H${s.x + SW}`} />
+              <path class="ln" d={`M${s.x},${BOT} H${s.x + 24} L${s.x + SW - 24},${TOP} H${s.x + SW}`} />
+            </g>
+          )}
+          <text class="sub" x={s.x + SW / 2} y={SY + SH + 24} text-anchor="middle">{`c = ${s.c}`}</text>
+          <text class="sub" x={s.x + SW / 2} y={SY + SH + 42} text-anchor="middle">{s.c ? 'paths swap' : 'paths straight'}</text>
+        </g>
+      ))}
+
+      <DgBox x={790} y={110} w={120} h={100} name="Arbiter" sub="who won?" kind="focal" />
+      <text class="sub" x="850" y="250" text-anchor="middle">r = 1 if top</text>
+      <text class="sub" x="850" y="268" text-anchor="middle">arrives first</text>
+
+      <text class="eyebrow" x="181" y="128" text-anchor="middle">TOP</text>
+      <text class="eyebrow" x="181" y="204" text-anchor="middle">BOTTOM</text>
+    </svg>
+  </div>
+  <figcaption><strong>Same design, different winner.</strong> Every switch adds a delay that differs by picoseconds from chip to chip. The challenge bits choose which delays each signal collects, so the arbiter's verdict depends on both the challenge and the chip's physical variation.</figcaption>
+</figure>

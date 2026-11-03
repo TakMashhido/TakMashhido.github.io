@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.astro/
+.DS_Store
+
+# private source files (not part of the site)
+CV.pdf
+Polished Professional Headshot.png
+
+.env

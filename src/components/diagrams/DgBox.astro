@@ -1,0 +1,13 @@
+---
+// One diagram node: opaque box, name (sans 650) and optional mono sublabel. Use inside an <svg class="dg">.
+interface Props { x: number; y: number; w: number; h: number; name: string; sub?: string; kind?: 'box' | 'box2' | 'focal'; eyebrow?: string }
+const { x, y, w, h, name, sub, kind = 'box', eyebrow } = Astro.props;
+const cx = x + w / 2;
+const nameY = sub ? y + h / 2 - 2 : y + h / 2 + 6;
+---
+<g>
+  <rect class={kind} x={x} y={y} width={w} height={h} rx="8" />
+  {eyebrow && <text class="eyebrow" x={cx} y={y - 10} text-anchor="middle">{eyebrow}</text>}
+  <text class={`name${kind === 'focal' ? ' focal-text' : ''}`} x={cx} y={nameY} text-anchor="middle">{name}</text>
+  {sub && <text class="sub" x={cx} y={nameY + 21} text-anchor="middle">{sub}</text>}
+</g>

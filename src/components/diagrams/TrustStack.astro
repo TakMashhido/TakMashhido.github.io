@@ -1,0 +1,49 @@
+---
+// Layer stack: hardware-anchored trust architecture. viewBox 1000×400.
+const rows = [
+  { tag: 'L5', name: 'IoT, vehicle and energy applications', sub: 'IoV, IoEV energy trading, CPS' },
+  { tag: 'L4', name: 'Blockchain consensus', sub: 'reputation-aware proof-of-energy' },
+  { tag: 'L3', name: 'Post-quantum cryptography', sub: 'quantum-safe keys and signatures' },
+  { tag: 'L2', name: 'Device authentication', sub: 'lightweight PUF protocols' },
+  { tag: 'L1', name: 'Silicon fingerprint (PUF)', sub: 'SRAM, arbiter and MEMS PUFs' },
+];
+const X = 160, W = 800, Y0 = 40, H = 64;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 400" role="img" aria-labelledby="trust-stack-title trust-stack-desc">
+      <title id="trust-stack-title">Hardware-anchored trust architecture</title>
+      <desc id="trust-stack-desc">Five layers from a silicon PUF fingerprint at the base, through device authentication, post-quantum cryptography and blockchain consensus, up to IoT and vehicle applications.</desc>
+      <defs>
+        <marker id="ts-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <path class="mk" d="M0,0 L10,4 L0,8 Z" />
+        </marker>
+      </defs>
+
+      <!-- Direction indicator, outside the stack -->
+      <line class="ln" x1="100" y1="352" x2="100" y2="52" marker-end="url(#ts-arrow)" />
+      <text class="eyebrow" x="100" y="378" text-anchor="middle">TRUST</text>
+      <text class="eyebrow" x="100" y="394" text-anchor="middle">BUILDS UP</text>
+
+      <!-- Stack silhouette and dividers -->
+      <rect class="box" x={X} y={Y0} width={W} height={H * 5} rx="10" />
+      {[1, 2, 3].map((i) => <line class="rule" x1={X} x2={X + W} y1={Y0 + i * H} y2={Y0 + i * H} />)}
+      <!-- Focal base layer: the PUF anchors everything above it -->
+      <path class="focal" d={`M${X},${Y0 + 4 * H} H${X + W} V${Y0 + 5 * H - 10} Q${X + W},${Y0 + 5 * H} ${X + W - 10},${Y0 + 5 * H} H${X + 10} Q${X},${Y0 + 5 * H} ${X},${Y0 + 5 * H - 10} Z`} />
+
+      {rows.map((r, i) => {
+        const y = Y0 + i * H;
+        const focal = i === 4;
+        return (
+          <g>
+            <text class={`eyebrow${focal ? ' focal-text' : ''}`} x={X + 24} y={y + 37}>{r.tag}</text>
+            <text class={`name${focal ? ' focal-text' : ''}`} x={X + 80} y={y + 38}>{r.name}</text>
+            <text class="sub" x={X + W - 24} y={y + 37} text-anchor="end">{r.sub}</text>
+          </g>
+        );
+      })}
+    </svg>
+  </div>
+  <figcaption><strong>Trust from silicon to consensus.</strong> Each layer only trusts what the layer below can prove. The PUF at the base gives every device an identity that cannot be copied, so nothing above it depends on a stored secret key.</figcaption>
+</figure>

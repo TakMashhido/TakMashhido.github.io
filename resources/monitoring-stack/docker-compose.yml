@@ -1,0 +1,108 @@
+# Monitoring server: Prometheus + Grafana + Alertmanager + exporters.
+# Start:  docker compose up -d     Stop: docker compose down
+name: monitoring
+
+x-defaults: &defaults
+  restart: unless-stopped
+  networks: [monitoring]
+  logging:
+    driver: json-file
+    options: { max-size: "10m", max-file: "3" }
+
+services:
+  prometheus:
+    <<: *defaults
+    image: prom/prometheus:v3.15.1
+    container_name: prometheus
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --storage.tsdb.retention.time=${PROM_RETENTION:-30d}
+      - --web.enable-lifecycle          # allows: curl -X POST localhost:9090/-/reload
+    volumes:
+      - ./prometheus:/etc/prometheus:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "${PROM_PORT:-9090}:9090"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"   # lets Prometheus scrape apps running on the host
+
+  alertmanager:
+    <<: *defaults
+    image: prom/alertmanager:v0.34.2
+    container_name: alertmanager
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - ./alertmanager:/etc/alertmanager:ro
+      - alertmanager-data:/alertmanager
+    ports:
+      - "${ALERTMANAGER_PORT:-9093}:9093"
+
+  grafana:
+    <<: *defaults
+    image: grafana/grafana:13.3.0
+    container_name: grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:?set GRAFANA_ADMIN_PASSWORD in .env}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+      GF_ANALYTICS_REPORTING_ENABLED: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "${GRAFANA_PORT:-3000}:3000"
+    depends_on: [prometheus]
+
+  node-exporter:
+    <<: *defaults
+    image: prom/node-exporter:v1.12.1
+    container_name: node-exporter
+    command:
+      - --path.rootfs=/host
+      - --collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+
+  cadvisor:
+    <<: *defaults
+    image: ghcr.io/google/cadvisor:v0.60.6
+    container_name: cadvisor
+    privileged: true
+    devices: ["/dev/kmsg"]
+    command:
+      - --docker_only=true
+      - --housekeeping_interval=15s
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+
+  blackbox:
+    <<: *defaults
+    image: prom/blackbox-exporter:v0.29.1
+    container_name: blackbox
+    command: [--config.file=/etc/blackbox/blackbox.yml]
+    volumes:
+      - ./blackbox:/etc/blackbox:ro
+
+  pushgateway:
+    <<: *defaults
+    image: prom/pushgateway:v1.11.5
+    container_name: pushgateway
+    ports:
+      - "${PUSHGATEWAY_PORT:-9091}:9091"
+
+networks:
+  monitoring:
+
+volumes:
+  prometheus-data:
+  alertmanager-data:
+  grafana-data:

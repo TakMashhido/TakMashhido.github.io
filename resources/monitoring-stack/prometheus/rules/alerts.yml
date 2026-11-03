@@ -1,0 +1,62 @@
+groups:
+  - name: hosts
+    rules:
+      - alert: TargetDown
+        expr: up == 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: "{{ $labels.job }} target {{ $labels.instance }} is down"
+          description: "Prometheus could not scrape it for 2 minutes."
+
+      - alert: HighCpuUsage
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels: { severity: warning }
+        annotations:
+          summary: "CPU above 90% on {{ $labels.instance }}"
+          description: "Current value: {{ $value | printf \"%.1f\" }}%"
+
+      - alert: LowMemory
+        expr: node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes < 0.10
+        for: 5m
+        labels: { severity: warning }
+        annotations:
+          summary: "Less than 10% memory left on {{ $labels.instance }}"
+
+      - alert: DiskWillFillIn24h
+        expr: predict_linear(node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"}[6h], 24 * 3600) < 0
+        for: 30m
+        labels: { severity: warning }
+        annotations:
+          summary: "{{ $labels.mountpoint }} on {{ $labels.instance }} will be full within 24 h"
+
+  - name: services
+    rules:
+      - alert: WebsiteDown
+        expr: probe_success{job="blackbox-http"} == 0
+        for: 2m
+        labels: { severity: critical }
+        annotations:
+          summary: "{{ $labels.instance }} is not responding"
+
+      - alert: ContainerRestarting
+        expr: changes(container_start_time_seconds{name!=""}[15m]) > 2
+        labels: { severity: warning }
+        annotations:
+          summary: "Container {{ $labels.name }} restarted more than twice in 15 minutes"
+
+  - name: experiments
+    rules:
+      - alert: ExperimentStalled
+        expr: time() - experiment_last_step_timestamp_seconds > 600
+        for: 1m
+        labels: { severity: warning }
+        annotations:
+          summary: "Experiment {{ $labels.experiment }} has not reported progress for 10 minutes"
+
+      - alert: BatchJobFailed
+        expr: batch_job_success == 0
+        labels: { severity: critical }
+        annotations:
+          summary: "Batch job {{ $labels.job }} reported failure"

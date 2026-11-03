@@ -1,0 +1,171 @@
+---
+import { Picture } from 'astro:assets';
+import Base from '../layouts/Base.astro';
+import PufDemo from '../components/PufDemo.astro';
+import PubItem from '../components/PubItem.astro';
+import PostCard from '../components/PostCard.astro';
+import Icon from '../components/Icon.astro';
+import ClayArt from '../components/ClayArt.astro';
+import headshot from '../assets/headshot.jpg';
+import { site } from '../data/site';
+import { publications } from '../data/publications';
+import { getPosts } from '../scripts/blog';
+
+const posts = (await getPosts()).slice(0, 3);
+const selected = ['mondal2025aes', 'mondal2025bcpuf', 'mondal2026rpoe', 'nahar2024clouds'].map((id) => publications.find((p) => p.id === id)!);
+
+const themes = [
+  { id: 'puf', title: 'Hardware identity with PUFs', text: 'Authentication rooted in silicon variation: SRAM, arbiter and MEMS-based PUFs, and protocols light enough for vehicles and sensors.', tone: 'primary', art: 'chip' },
+  { id: 'chain', title: 'Blockchain consensus', text: 'Reputation-aware and proof-of-energy consensus for EV energy trading and tamper-evident IoT ledgers.', tone: 'mint', art: 'chain' },
+  { id: 'quantum', title: 'Quantum-era security', text: 'Fault-tolerant distributed quantum computing, post-quantum cryptography and quantum-aware distributed ledgers.', tone: 'butter', art: 'network' },
+  { id: 'vehicles', title: 'Vehicles, edge and robots', text: 'Fog computing for VANETs, collaborative autonomous driving and LoRa localization where GPS fails.', tone: 'plain', art: 'vehicle' },
+];
+---
+<Base>
+  <section class="hero wrap">
+    <div class="hero-text">
+      <p class="status"><span class="dot" aria-hidden="true"></span>{site.status}</p>
+      <h1>Koustav Kumar Mondal</h1>
+      <p class="lede">{site.headline}</p>
+      <p class="role">Visiting Researcher at</p>
+      <ul class="aff" aria-label="Current affiliation">
+        <li><a class="chip aff-main" href={site.lab.url} rel="noopener">{site.lab.name}</a></li>
+        <li><a class="chip" href={site.school.url} rel="noopener" title={site.school.name}>CIS</a></li>
+        <li><a class="chip" href={site.faculty.url} rel="noopener" title={site.faculty.name}>FEIT</a></li>
+        <li><a class="chip" href={site.uni.url} rel="noopener">{site.uni.name}</a></li>
+      </ul>
+      <div class="cta">
+        <a class="btn btn-primary" href="/publications/">Read my publications</a>
+        <a class="btn" href="/about/">About me</a>
+      </div>
+    </div>
+    <figure class="portrait">
+      <div class="frame clay">
+        <Picture src={headshot} alt="Portrait of Koustav Kumar Mondal in a dark suit and blue tie" widths={[320, 480, 720]} sizes="(max-width: 860px) 70vw, 420px" formats={['avif', 'webp']} loading="eager" fetchpriority="high" />
+      </div>
+      <figcaption class="badge clay-sm"><Icon name="pin" /> Melbourne, Australia</figcaption>
+    </figure>
+  </section>
+
+  <div class="wrap demo-wrap">
+    <PufDemo />
+  </div>
+
+  <section class="section wrap" aria-labelledby="themes-h">
+    <div class="section-head">
+      <h2 id="themes-h">What I work on</h2>
+      <a href="/research/">See research projects</a>
+    </div>
+    <div class="bento">
+      {themes.map((t) => (
+        <a class={`tile clay tone-${t.tone}`} href={`/research/#${t.id}`}>
+          <div class="art"><ClayArt name={t.art as any} /></div>
+          <h3>{t.title}</h3>
+          <p>{t.text}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="pubs-h">
+    <div class="section-head">
+      <h2 id="pubs-h">Selected publications</h2>
+      <a href="/publications/">All {publications.length} publications</a>
+    </div>
+    <div class="pubs">
+      {selected.map((p) => <PubItem pub={p} compact />)}
+    </div>
+  </section>
+
+  <section class="section wrap" aria-labelledby="blog-h">
+    <div class="section-head">
+      <h2 id="blog-h">Latest writing</h2>
+      <a href="/blog/">Open the blog</a>
+    </div>
+    <div class="grid-3">
+      {posts.map((p) => <PostCard post={p} />)}
+    </div>
+  </section>
+
+  <section class="section wrap">
+    <div class="invite clay">
+      <div>
+        <h2>Working on trustworthy IoT, vehicles or quantum security?</h2>
+        <p class="muted">I am open to research collaborations, visiting positions and invited talks.</p>
+      </div>
+      <a class="btn btn-primary" href="/contact/"><Icon name="mail" /> Get in touch</a>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.85fr);
+    gap: clamp(32px, 6vw, 72px); align-items: center;
+    padding-block: clamp(40px, 7vw, 88px) clamp(36px, 6vw, 64px);
+  }
+  .status {
+    display: inline-flex; align-items: center; gap: 10px;
+    padding: 8px 16px; border-radius: var(--pill);
+    background: var(--surface); box-shadow: var(--clay-sm);
+    font-weight: 650; font-size: var(--step--1);
+  }
+  .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--mint); box-shadow: inset -2px -2px 3px rgba(0,0,0,.15), 0 0 0 4px color-mix(in srgb, var(--mint) 35%, transparent); }
+  .hero h1 { margin-top: 22px; font-size: clamp(2.6rem, 1.6rem + 4.6vw, 5.4rem); font-weight: 800; line-height: 0.98; max-width: 11ch; }
+  .hero .lede { color: var(--ink); font-size: clamp(1.15rem, 1.05rem + 0.5vw, 1.45rem); max-width: 34ch; }
+  .role { font-weight: 650; color: var(--ink-soft); margin: 0 0 10px; }
+  .aff { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .aff .chip { color: var(--ink); min-height: 38px; }
+  .aff .chip:hover { color: var(--primary); transform: translateY(-1px); }
+  .aff .aff-main { background: var(--primary); color: var(--primary-ink); box-shadow: var(--clay-primary); }
+  .aff .aff-main:hover { color: var(--primary-ink); }
+  .cta { display: flex; flex-wrap: wrap; gap: 14px; margin-top: 28px; }
+
+  .portrait { margin: 0; position: relative; justify-self: center; width: min(100%, 420px); }
+  .frame { padding: 14px; border-radius: 48% 52% 44% 56% / 38% 40% 60% 62%; overflow: hidden; }
+  .frame :global(img) { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; object-position: 50% 20%; border-radius: 46% 50% 42% 54% / 36% 38% 58% 60%; }
+  .badge {
+    position: absolute; left: -6%; bottom: 8%;
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 18px; border-radius: var(--pill); font-weight: 700; font-size: var(--step--1);
+  }
+  .badge :global(svg) { width: 18px; height: 18px; color: var(--primary); }
+
+  .bento { display: grid; gap: 24px; grid-template-columns: 1.3fr 1fr 1fr; grid-template-rows: auto auto; }
+  .tile { display: block; padding: clamp(22px, 3vw, 32px); text-decoration: none; color: var(--ink); transition: transform .2s ease; }
+  .tile:hover { transform: translateY(-4px); }
+  .tile:active { box-shadow: var(--clay-pressed); transform: none; }
+  .tile p { margin: 0; color: inherit; opacity: .85; }
+  .tile { display: grid; grid-template-columns: minmax(0, 1fr) 76px; grid-template-areas: 'h art' 'p p'; column-gap: 16px; align-content: start; align-items: center; }
+  .tile h3 { grid-area: h; } .tile p { grid-area: p; }
+  .art { grid-area: art; width: 76px; }
+  .tile h3 { margin: 0 0 10px; }
+  .tile:nth-child(1) { grid-template-columns: 1fr; grid-template-areas: 'art' 'h' 'p'; }
+  .tile:nth-child(1) .art { width: min(220px, 70%); margin-bottom: 18px; }
+  .tone-primary .art { --primary: #f1f4fb; --surface: #3d63e6; --surface-2: #2a49b8; }
+  .tile:nth-child(1) { grid-row: span 2; border-radius: var(--r-xl) var(--r-xl) var(--r-xl) 64px; align-content: end; min-height: 300px; }
+  .tile:nth-child(1) h3 { font-size: var(--step-2); }
+  .tile:nth-child(4) { grid-column: span 2; }
+  .tone-primary { background: var(--primary); color: var(--primary-ink); box-shadow: var(--clay-primary); }
+  .tone-mint { background: var(--mint); color: var(--mint-ink); }
+  .tone-butter { background: var(--butter); color: var(--butter-ink); }
+
+  .pubs { display: grid; gap: 22px; }
+  .invite { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px; padding: clamp(26px, 5vw, 52px); border-radius: var(--r-xl); }
+  .invite h2 { font-size: var(--step-2); max-width: 22ch; }
+  .invite p { margin: 0; }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; }
+    .portrait { order: -1; width: min(78%, 340px); }
+    .badge { left: auto; right: -4%; bottom: 4%; }
+    .bento { grid-template-columns: 1fr 1fr; }
+    .tile:nth-child(1) { grid-row: auto; grid-column: span 2; min-height: 220px; }
+    .tile:nth-child(4) { grid-column: span 2; }
+  }
+  @media (max-width: 560px) {
+    .bento { grid-template-columns: 1fr; }
+    .tile:nth-child(1), .tile:nth-child(4) { grid-column: auto; }
+    .cta .btn { flex: 1 1 100%; }
+  }
+</style>

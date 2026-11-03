@@ -1,0 +1,92 @@
+---
+// Sequence: PUF-based device authentication with a blockchain ledger. viewBox 1000×700.
+const A = { dev: 180, ver: 500, led: 820 };
+type Kind = 'call' | 'return' | 'async' | 'headline';
+const msgs: { y: number; from: number; to: number; label: string; kind: Kind }[] = [
+  { y: 152, from: A.dev, to: A.ver, label: 'AUTH REQUEST', kind: 'call' },
+  { y: 204, from: A.ver, to: A.led, label: 'FETCH CRP', kind: 'call' },
+  { y: 256, from: A.led, to: A.ver, label: 'C, H(R)', kind: 'return' },
+  { y: 308, from: A.ver, to: A.dev, label: 'CHALLENGE C', kind: 'call' },
+  { y: 432, from: A.dev, to: A.ver, label: 'RESPONSE R', kind: 'call' },
+  { y: 556, from: A.ver, to: A.led, label: 'LOG EVENT', kind: 'async' },
+  { y: 608, from: A.ver, to: A.dev, label: 'SESSION KEY', kind: 'headline' },
+];
+const selfMsgs = [
+  { x: A.dev, y: 352, label: 'R = PUF(C)' },
+  { x: A.ver, y: 476, label: 'CHECK H(R)' },
+];
+const lw = (s: string) => Math.ceil(s.length * 7.4 + 16);
+const actors = [
+  { x: A.dev, name: 'IoT device', sub: 'PUF on chip', focal: true },
+  { x: A.ver, name: 'Edge verifier', sub: 'gateway or RSU', focal: false },
+  { x: A.led, name: 'Blockchain ledger', sub: 'CRP commitments', focal: false },
+];
+const cls = (k: Kind) => (k === 'headline' ? 'acc' : k === 'call' ? 'ln' : 'ln dash');
+const mk = (k: Kind) => (k === 'headline' ? 'url(#seq-arrow-acc)' : k === 'async' ? 'url(#seq-arrow-open)' : 'url(#seq-arrow)');
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 700" role="img" aria-labelledby="puf-seq-title puf-seq-desc">
+      <title id="puf-seq-title">PUF authentication with a blockchain ledger</title>
+      <desc id="puf-seq-desc">An IoT device asks an edge verifier to authenticate it; the verifier fetches a stored challenge and response hash from the ledger, challenges the device, checks the PUF response, logs the event and issues a session key.</desc>
+      <defs>
+        <marker id="seq-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <path class="mk" d="M0,0 L10,4 L0,8 Z" />
+        </marker>
+        <marker id="seq-arrow-acc" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <path class="mk-acc" d="M0,0 L10,4 L0,8 Z" />
+        </marker>
+        <marker id="seq-arrow-open" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto">
+          <polyline class="mk-open" points="0,0 10,4 0,8" />
+        </marker>
+      </defs>
+
+      <!-- Lifelines -->
+      {actors.map((a) => <line class="life" x1={a.x} x2={a.x} y1="96" y2="644" />)}
+
+      <!-- Messages (drawn before labels and actors) -->
+      {msgs.map((m) => (
+        <line class={cls(m.kind)} x1={m.from} x2={m.to > m.from ? m.to - 1 : m.to + 1} y1={m.y} y2={m.y} marker-end={mk(m.kind)} />
+      ))}
+      {selfMsgs.map((s) => (
+        <path class="ln" d={`M${s.x},${s.y} H${s.x + 48} Q${s.x + 56},${s.y} ${s.x + 56},${s.y + 8} V${s.y + 20} Q${s.x + 56},${s.y + 28} ${s.x + 48},${s.y + 28} H${s.x + 2}`} marker-end="url(#seq-arrow)" />
+      ))}
+
+      <!-- Labels on opaque masks, 10px above their line -->
+      {msgs.map((m) => {
+        const cx = (m.from + m.to) / 2, w = lw(m.label);
+        return (
+          <g>
+            <rect class="mask" x={cx - w / 2} y={m.y - 26} width={w} height="16" />
+            <text class={`lbl${m.kind === 'headline' ? ' focal-text' : ''}`} x={cx} y={m.y - 14} text-anchor="middle">{m.label}</text>
+          </g>
+        );
+      })}
+      {selfMsgs.map((s) => (
+        <g>
+          <rect class="mask" x={s.x + 66} y={s.y + 6} width={lw(s.label)} height="16" />
+          <text class="lbl" x={s.x + 74} y={s.y + 18}>{s.label}</text>
+        </g>
+      ))}
+
+      <!-- Actors -->
+      {actors.map((a) => (
+        <g>
+          <rect class={a.focal ? 'focal' : 'box'} x={a.x - 100} y="32" width="200" height="64" rx="8" />
+          <text class={`name${a.focal ? ' focal-text' : ''}`} x={a.x} y="60" text-anchor="middle">{a.name}</text>
+          <text class="sub" x={a.x} y="80" text-anchor="middle">{a.sub}</text>
+        </g>
+      ))}
+
+      <!-- Legend strip -->
+      <g transform="translate(120 676)">
+        <line class="ln" x1="0" x2="36" y1="0" y2="0" marker-end="url(#seq-arrow)" /><text class="sub" x="46" y="4">call</text>
+        <line class="ln dash" x1="150" x2="186" y1="0" y2="0" marker-end="url(#seq-arrow)" /><text class="sub" x="196" y="4">reply</text>
+        <line class="ln dash" x1="300" x2="336" y1="0" y2="0" marker-end="url(#seq-arrow-open)" /><text class="sub" x="346" y="4">one-way event</text>
+        <line class="acc" x1="510" x2="546" y1="0" y2="0" marker-end="url(#seq-arrow-acc)" /><text class="sub" x="556" y="4">successful outcome</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption><strong>How a device proves who it is.</strong> The ledger stores only a hash of each expected response, so a stolen ledger copy does not reveal the PUF. The device never stores a key: it regenerates its answer from the silicon each time.</figcaption>
+</figure>

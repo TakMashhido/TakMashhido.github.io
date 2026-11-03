@@ -1,0 +1,249 @@
+{
+ "mondal2026rpoe": {
+  "doi": "10.1109/tvt.2026.3667645",
+  "year": 2026,
+  "details": "vol. 75, no. 8, pp. 16137–16149",
+  "bibtex": "@article{mondal2026rpoe,\n  title = {RPoE: A Reputation-Aware Proof-of-Energy Blockchain Protocol for Electric Vehicle Energy Trading in IoEV},\n  volume = {75},\n  ISSN = {1939-9359},\n  url = {http://dx.doi.org/10.1109/tvt.2026.3667645},\n  DOI = {10.1109/tvt.2026.3667645},\n  number = {8},\n  journal = {IEEE Transactions on Vehicular Technology},\n  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},\n  author = {Mondal, Koustav Kumar and Kumar, Amritesh and Das, Debasis},\n  year = {2026},\n  month = Aug,\n  pages = {16137–16149}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., Kumar, A., & Das, D. (2026). RPoE: A Reputation-Aware Proof-of-Energy Blockchain Protocol for Electric Vehicle Energy Trading in IoEV. IEEE Transactions on Vehicular Technology, 75(8), 16137–16149. https://doi.org/10.1109/tvt.2026.3667645",
+   "ieee": "K. K. Mondal, A. Kumar, and D. Das, “RPoE: A Reputation-Aware Proof-of-Energy Blockchain Protocol for Electric Vehicle Energy Trading in IoEV,” IEEE Transactions on Vehicular Technology, vol. 75, no. 8, pp. 16137–16149, Aug. 2026, doi: 10.1109/tvt.2026.3667645.",
+   "mla": "Mondal, Koustav Kumar, et al. “RPoE: A Reputation-Aware Proof-of-Energy Blockchain Protocol for Electric Vehicle Energy Trading in IoEV.” IEEE Transactions on Vehicular Technology, vol. 75, no. 8, Aug. 2026, pp. 16137–49. https://doi.org/10.1109/tvt.2026.3667645.",
+   "chicago": "Mondal, Koustav Kumar, Amritesh Kumar, and Debasis Das. 2026. “RPoE: A Reputation-Aware Proof-of-Energy Blockchain Protocol for Electric Vehicle Energy Trading in IoEV.” IEEE Transactions on Vehicular Technology 75 (8): 16137–49. https://doi.org/10.1109/tvt.2026.3667645.",
+   "harvard": "Mondal, K.K., Kumar, A. and Das, D. (2026) ‘RPoE: A Reputation-Aware Proof-of-Energy Blockchain Protocol for Electric Vehicle Energy Trading in IoEV,’ IEEE Transactions on Vehicular Technology, 75(8), pp. 16137–16149. Available at: https://doi.org/10.1109/tvt.2026.3667645."
+  }
+ },
+ "kandpal2026spog": {
+  "doi": "10.1109/lgrs.2026.3720215",
+  "year": 2026,
+  "details": "vol. 23, pp. 2506305–2506305",
+  "bibtex": "@article{kandpal2026spog,\n  title = {SPOG: A GPU Rasterization Pipeline for Artifact-Reduced Photovoltaic Farm Orthomosaics},\n  volume = {23},\n  ISSN = {1558-0571},\n  url = {http://dx.doi.org/10.1109/lgrs.2026.3720215},\n  DOI = {10.1109/lgrs.2026.3720215},\n  journal = {IEEE Geoscience and Remote Sensing Letters},\n  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},\n  author = {Kandpal, Udit and Mondal, Koustav Kumar and Das, Debasis},\n  year = {2026},\n  pages = {2506305–2506305}\n}",
+  "styles": {
+   "apa": "Kandpal, U., Mondal, K. K., & Das, D. (2026). SPOG: A GPU Rasterization Pipeline for Artifact-Reduced Photovoltaic Farm Orthomosaics. IEEE Geoscience and Remote Sensing Letters, 23, 2506305. https://doi.org/10.1109/lgrs.2026.3720215",
+   "ieee": "U. Kandpal, K. K. Mondal, and D. Das, “SPOG: A GPU Rasterization Pipeline for Artifact-Reduced Photovoltaic Farm Orthomosaics,” IEEE Geoscience and Remote Sensing Letters, vol. 23, pp. 2506305–2506305, 2026, doi: 10.1109/lgrs.2026.3720215.",
+   "mla": "Kandpal, Udit, et al. “SPOG: A GPU Rasterization Pipeline for Artifact-Reduced Photovoltaic Farm Orthomosaics.” IEEE Geoscience and Remote Sensing Letters, vol. 23, 2026, pp. 2506305. https://doi.org/10.1109/lgrs.2026.3720215.",
+   "chicago": "Kandpal, Udit, Koustav Kumar Mondal, and Debasis Das. 2026. “SPOG: A GPU Rasterization Pipeline for Artifact-Reduced Photovoltaic Farm Orthomosaics.” IEEE Geoscience and Remote Sensing Letters 23: 2506305. https://doi.org/10.1109/lgrs.2026.3720215.",
+   "harvard": "Kandpal, U., Mondal, K.K. and Das, D. (2026) ‘SPOG: A GPU Rasterization Pipeline for Artifact-Reduced Photovoltaic Farm Orthomosaics,’ IEEE Geoscience and Remote Sensing Letters, 23, pp. 2506305–2506305. Available at: https://doi.org/10.1109/lgrs.2026.3720215."
+  }
+ },
+ "nahar2026qiov": {
+  "doi": "10.1016/j.adhoc.2026.104158",
+  "year": 2026,
+  "details": "vol. 185, p. 104158",
+  "bibtex": "@article{nahar2026qiov,\n  title = {qIoV: A quantum-driven approach for environmental monitoring and rapid response systems using internet of vehicles},\n  volume = {185},\n  ISSN = {1570-8705},\n  url = {http://dx.doi.org/10.1016/j.adhoc.2026.104158},\n  DOI = {10.1016/j.adhoc.2026.104158},\n  journal = {Ad Hoc Networks},\n  publisher = {Elsevier BV},\n  author = {Nahar, Ankur and Mondal, Koustav Kumar and Das, Debasis and Buyya, Rajkumar},\n  year = {2026},\n  month = Apr,\n  pages = {104158}\n}",
+  "styles": {
+   "apa": "Nahar, A., Mondal, K. K., Das, D., & Buyya, R. (2026). qIoV: A quantum-driven approach for environmental monitoring and rapid response systems using internet of vehicles. Ad Hoc Networks, 185, 104158. https://doi.org/10.1016/j.adhoc.2026.104158",
+   "ieee": "A. Nahar, K. K. Mondal, D. Das, and R. Buyya, “qIoV: A quantum-driven approach for environmental monitoring and rapid response systems using internet of vehicles,” Ad Hoc Networks, vol. 185, p. 104158, Apr. 2026, doi: 10.1016/j.adhoc.2026.104158.",
+   "mla": "Nahar, Ankur, et al. “qIoV: A Quantum-Driven Approach for Environmental Monitoring and Rapid Response Systems Using Internet of Vehicles.” Ad Hoc Networks, vol. 185, Apr. 2026, p. 104158. https://doi.org/10.1016/j.adhoc.2026.104158.",
+   "chicago": "Nahar, Ankur, Koustav Kumar Mondal, Debasis Das, and Rajkumar Buyya. 2026. “qIoV: A Quantum-Driven Approach for Environmental Monitoring and Rapid Response Systems Using Internet of Vehicles.” Ad Hoc Networks 185 (April): 104158. https://doi.org/10.1016/j.adhoc.2026.104158.",
+   "harvard": "Nahar, A. et al. (2026) ‘qIoV: A quantum-driven approach for environmental monitoring and rapid response systems using internet of vehicles,’ Ad Hoc Networks, 185, p. 104158. Available at: https://doi.org/10.1016/j.adhoc.2026.104158."
+  }
+ },
+ "mondal2025aes": {
+  "doi": "10.1109/tce.2025.3645059",
+  "year": 2026,
+  "details": "vol. 72, no. 1, pp. 971–982",
+  "bibtex": "@article{mondal2025aes,\n  title = {Secure IoT Communications With Optimized AES and Dynamic Threat Modeling on Embedded System},\n  volume = {72},\n  ISSN = {1558-4127},\n  url = {http://dx.doi.org/10.1109/tce.2025.3645059},\n  DOI = {10.1109/tce.2025.3645059},\n  number = {1},\n  journal = {IEEE Transactions on Consumer Electronics},\n  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},\n  author = {Mondal, Koustav Kumar and Sikarwar, Himani and Das, Debasis and Fan, Chun-I},\n  year = {2026},\n  month = Feb,\n  pages = {971–982}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., Sikarwar, H., Das, D., & Fan, C.-I. (2026). Secure IoT Communications With Optimized AES and Dynamic Threat Modeling on Embedded System. IEEE Transactions on Consumer Electronics, 72(1), 971–982. https://doi.org/10.1109/tce.2025.3645059",
+   "ieee": "K. K. Mondal, H. Sikarwar, D. Das, and C.-I. Fan, “Secure IoT Communications With Optimized AES and Dynamic Threat Modeling on Embedded System,” IEEE Transactions on Consumer Electronics, vol. 72, no. 1, pp. 971–982, Feb. 2026, doi: 10.1109/tce.2025.3645059.",
+   "mla": "Mondal, Koustav Kumar, et al. “Secure IoT Communications with Optimized AES and Dynamic Threat Modeling on Embedded System.” IEEE Transactions on Consumer Electronics, vol. 72, no. 1, Feb. 2026, pp. 971–82. https://doi.org/10.1109/tce.2025.3645059.",
+   "chicago": "Mondal, Koustav Kumar, Himani Sikarwar, Debasis Das, and Chun-I. Fan. 2026. “Secure IoT Communications with Optimized AES and Dynamic Threat Modeling on Embedded System.” IEEE Transactions on Consumer Electronics 72 (1): 971–82. https://doi.org/10.1109/tce.2025.3645059.",
+   "harvard": "Mondal, K.K. et al. (2026) ‘Secure IoT Communications With Optimized AES and Dynamic Threat Modeling on Embedded System,’ IEEE Transactions on Consumer Electronics, 72(1), pp. 971–982. Available at: https://doi.org/10.1109/tce.2025.3645059."
+  }
+ },
+ "mondal2025bcpuf": {
+  "doi": "10.1016/j.adhoc.2025.104059",
+  "year": 2026,
+  "details": "vol. 181, p. 104059",
+  "bibtex": "@article{mondal2025bcpuf,\n  title = {A blockchain-integrated PUF framework for secure authentication and communication},\n  volume = {181},\n  ISSN = {1570-8705},\n  url = {http://dx.doi.org/10.1016/j.adhoc.2025.104059},\n  DOI = {10.1016/j.adhoc.2025.104059},\n  journal = {Ad Hoc Networks},\n  publisher = {Elsevier BV},\n  author = {Mondal, Koustav Kumar and Das, Debasis and Khandelwal, Arpit},\n  year = {2026},\n  month = Feb,\n  pages = {104059}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., Das, D., & Khandelwal, A. (2026). A blockchain-integrated PUF framework for secure authentication and communication. Ad Hoc Networks, 181, 104059. https://doi.org/10.1016/j.adhoc.2025.104059",
+   "ieee": "K. K. Mondal, D. Das, and A. Khandelwal, “A blockchain-integrated PUF framework for secure authentication and communication,” Ad Hoc Networks, vol. 181, p. 104059, Feb. 2026, doi: 10.1016/j.adhoc.2025.104059.",
+   "mla": "Mondal, Koustav Kumar, et al. “A Blockchain-Integrated PUF Framework for Secure Authentication and Communication.” Ad Hoc Networks, vol. 181, Feb. 2026, p. 104059. https://doi.org/10.1016/j.adhoc.2025.104059.",
+   "chicago": "Mondal, Koustav Kumar, Debasis Das, and Arpit Khandelwal. 2026. “A Blockchain-Integrated PUF Framework for Secure Authentication and Communication.” Ad Hoc Networks 181 (February): 104059. https://doi.org/10.1016/j.adhoc.2025.104059.",
+   "harvard": "Mondal, K.K., Das, D. and Khandelwal, A. (2026) ‘A blockchain-integrated PUF framework for secure authentication and communication,’ Ad Hoc Networks, 181, p. 104059. Available at: https://doi.org/10.1016/j.adhoc.2025.104059."
+  }
+ },
+ "kumar2025rbcet": {
+  "doi": "10.1109/tce.2025.3542172",
+  "year": 2025,
+  "details": "vol. 71, no. 2, pp. 3040–3051",
+  "bibtex": "@article{kumar2025rbcet,\n  title = {RBCET: A Reputation-Based Blockchain Consensus Mechanism for Fast and Secured Energy Trading in Internet of Electric Vehicles (IoEV)},\n  volume = {71},\n  ISSN = {1558-4127},\n  url = {http://dx.doi.org/10.1109/tce.2025.3542172},\n  DOI = {10.1109/tce.2025.3542172},\n  number = {2},\n  journal = {IEEE Transactions on Consumer Electronics},\n  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},\n  author = {Kumar, Amritesh and Mondal, Koustav Kumar and Vishwakarma, Lokendra and Das, Debasis},\n  year = {2025},\n  month = May,\n  pages = {3040–3051}\n}",
+  "styles": {
+   "apa": "Kumar, A., Mondal, K. K., Vishwakarma, L., & Das, D. (2025). RBCET: A Reputation-Based Blockchain Consensus Mechanism for Fast and Secured Energy Trading in Internet of Electric Vehicles (IoEV). IEEE Transactions on Consumer Electronics, 71(2), 3040–3051. https://doi.org/10.1109/tce.2025.3542172",
+   "ieee": "A. Kumar, K. K. Mondal, L. Vishwakarma, and D. Das, “RBCET: A Reputation-Based Blockchain Consensus Mechanism for Fast and Secured Energy Trading in Internet of Electric Vehicles (IoEV),” IEEE Transactions on Consumer Electronics, vol. 71, no. 2, pp. 3040–3051, May 2025, doi: 10.1109/tce.2025.3542172.",
+   "mla": "Kumar, Amritesh, et al. “RBCET: A Reputation-Based Blockchain Consensus Mechanism for Fast and Secured Energy Trading in Internet of Electric Vehicles (IoEV).” IEEE Transactions on Consumer Electronics, vol. 71, no. 2, May 2025, pp. 3040–51. https://doi.org/10.1109/tce.2025.3542172.",
+   "chicago": "Kumar, Amritesh, Koustav Kumar Mondal, Lokendra Vishwakarma, and Debasis Das. 2025. “RBCET: A Reputation-Based Blockchain Consensus Mechanism for Fast and Secured Energy Trading in Internet of Electric Vehicles (IoEV).” IEEE Transactions on Consumer Electronics 71 (2): 3040–51. https://doi.org/10.1109/tce.2025.3542172.",
+   "harvard": "Kumar, A. et al. (2025) ‘RBCET: A Reputation-Based Blockchain Consensus Mechanism for Fast and Secured Energy Trading in Internet of Electric Vehicles (IoEV),’ IEEE Transactions on Consumer Electronics, 71(2), pp. 3040–3051. Available at: https://doi.org/10.1109/tce.2025.3542172."
+  }
+ },
+ "jain2025ipm": {
+  "doi": "10.1007/s00607-025-01585-x",
+  "year": 2025,
+  "details": "vol. 107, no. 12",
+  "bibtex": "@article{jain2025ipm,\n  title = {Intelligent predictive maintenance: multivariate ML model optimization in an Edge-Fog-Cloud environment},\n  volume = {107},\n  ISSN = {1436-5057},\n  url = {http://dx.doi.org/10.1007/s00607-025-01585-x},\n  DOI = {10.1007/s00607-025-01585-x},\n  number = {12},\n  journal = {Computing},\n  publisher = {Springer Science and Business Media LLC},\n  author = {Jain, Preeti and Mondal, Koustav Kumar and Das, Debasis and Khandelwal, Arpit},\n  year = {2025},\n  month = Nov\n}",
+  "styles": {
+   "apa": "Jain, P., Mondal, K. K., Das, D., & Khandelwal, A. (2025). Intelligent predictive maintenance: multivariate ML model optimization in an Edge-Fog-Cloud environment. Computing, 107(12). https://doi.org/10.1007/s00607-025-01585-x",
+   "ieee": "P. Jain, K. K. Mondal, D. Das, and A. Khandelwal, “Intelligent predictive maintenance: multivariate ML model optimization in an Edge-Fog-Cloud environment,” Computing, vol. 107, no. 12, Nov. 2025, doi: 10.1007/s00607-025-01585-x.",
+   "mla": "Jain, Preeti, et al. “Intelligent Predictive Maintenance: Multivariate ML Model Optimization in an Edge-Fog-Cloud Environment.” Computing, vol. 107, no. 12, Nov. 2025. https://doi.org/10.1007/s00607-025-01585-x.",
+   "chicago": "Jain, Preeti, Koustav Kumar Mondal, Debasis Das, and Arpit Khandelwal. 2025. “Intelligent Predictive Maintenance: Multivariate ML Model Optimization in an Edge-Fog-Cloud Environment.” Computing 107 (12). https://doi.org/10.1007/s00607-025-01585-x.",
+   "harvard": "Jain, P. et al. (2025) ‘Intelligent predictive maintenance: multivariate ML model optimization in an Edge-Fog-Cloud environment,’ Computing, 107(12). Available at: https://doi.org/10.1007/s00607-025-01585-x."
+  }
+ },
+ "nahar2024clouds": {
+  "doi": "10.1109/tmc.2024.3419016",
+  "year": 2024,
+  "details": "vol. 23, no. 12, pp. 12778–12792",
+  "bibtex": "@article{nahar2024clouds,\n  title = {Clouds on the Road: A Software-Defined Fog Computing Framework for Intelligent Resource Management in Vehicular Ad-Hoc Networks},\n  volume = {23},\n  ISSN = {2161-9875},\n  url = {http://dx.doi.org/10.1109/tmc.2024.3419016},\n  DOI = {10.1109/tmc.2024.3419016},\n  number = {12},\n  journal = {IEEE Transactions on Mobile Computing},\n  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},\n  author = {Nahar, Ankur and Mondal, Koustav Kumar and Das, Debasis and Buyya, Rajkumar},\n  year = {2024},\n  month = Dec,\n  pages = {12778–12792}\n}",
+  "styles": {
+   "apa": "Nahar, A., Mondal, K. K., Das, D., & Buyya, R. (2024). Clouds on the Road: A Software-Defined Fog Computing Framework for Intelligent Resource Management in Vehicular Ad-Hoc Networks. IEEE Transactions on Mobile Computing, 23(12), 12778–12792. https://doi.org/10.1109/tmc.2024.3419016",
+   "ieee": "A. Nahar, K. K. Mondal, D. Das, and R. Buyya, “Clouds on the Road: A Software-Defined Fog Computing Framework for Intelligent Resource Management in Vehicular Ad-Hoc Networks,” IEEE Transactions on Mobile Computing, vol. 23, no. 12, pp. 12778–12792, Dec. 2024, doi: 10.1109/tmc.2024.3419016.",
+   "mla": "Nahar, Ankur, et al. “Clouds on the Road: A Software-Defined Fog Computing Framework for Intelligent Resource Management in Vehicular Ad-Hoc Networks.” IEEE Transactions on Mobile Computing, vol. 23, no. 12, Dec. 2024, pp. 12778–92. https://doi.org/10.1109/tmc.2024.3419016.",
+   "chicago": "Nahar, Ankur, Koustav Kumar Mondal, Debasis Das, and Rajkumar Buyya. 2024. “Clouds on the Road: A Software-Defined Fog Computing Framework for Intelligent Resource Management in Vehicular Ad-Hoc Networks.” IEEE Transactions on Mobile Computing 23 (12): 12778–92. https://doi.org/10.1109/tmc.2024.3419016.",
+   "harvard": "Nahar, A. et al. (2024) ‘Clouds on the Road: A Software-Defined Fog Computing Framework for Intelligent Resource Management in Vehicular Ad-Hoc Networks,’ IEEE Transactions on Mobile Computing, 23(12), pp. 12778–12792. Available at: https://doi.org/10.1109/tmc.2024.3419016."
+  }
+ },
+ "sikarwar2024secure": {
+  "doi": "10.1109/tnsm.2024.3462746",
+  "year": 2024,
+  "details": "vol. 21, no. 6, pp. 6974–6988",
+  "bibtex": "@article{sikarwar2024secure,\n  title = {<i>SECURE</i>: Secure and Efficient Protocol Using Randomness and Edge-Computing for Drone-Assisted Internet of Vehicles},\n  volume = {21},\n  ISSN = {2373-7379},\n  url = {http://dx.doi.org/10.1109/tnsm.2024.3462746},\n  DOI = {10.1109/tnsm.2024.3462746},\n  number = {6},\n  journal = {IEEE Transactions on Network and Service Management},\n  publisher = {Institute of Electrical and Electronics Engineers (IEEE)},\n  author = {Sikarwar, Himani and Vasudev, Harsha and Das, Debasis and Conti, Mauro and Kumar Mondal, Koustav},\n  year = {2024},\n  month = Dec,\n  pages = {6974–6988}\n}",
+  "styles": {
+   "apa": "Sikarwar, H., Vasudev, H., Das, D., Conti, M., & Kumar Mondal, K. (2024). <i>SECURE</i>: Secure and Efficient Protocol Using Randomness and Edge-Computing for Drone-Assisted Internet of Vehicles. IEEE Transactions on Network and Service Management, 21(6), 6974–6988. https://doi.org/10.1109/tnsm.2024.3462746",
+   "ieee": "H. Sikarwar, H. Vasudev, D. Das, M. Conti, and K. Kumar Mondal, “<i>SECURE</i>: Secure and Efficient Protocol Using Randomness and Edge-Computing for Drone-Assisted Internet of Vehicles,” IEEE Transactions on Network and Service Management, vol. 21, no. 6, pp. 6974–6988, Dec. 2024, doi: 10.1109/tnsm.2024.3462746.",
+   "mla": "Sikarwar, Himani, et al. “<I>SECURE</I>: Secure and Efficient Protocol Using Randomness and Edge-Computing for Drone-Assisted Internet of Vehicles.” IEEE Transactions on Network and Service Management, vol. 21, no. 6, Dec. 2024, pp. 6974–88. https://doi.org/10.1109/tnsm.2024.3462746.",
+   "chicago": "Sikarwar, Himani, Harsha Vasudev, Debasis Das, Mauro Conti, and Koustav Kumar Mondal. 2024. “<I>SECURE</I>: Secure and Efficient Protocol Using Randomness and Edge-Computing for Drone-Assisted Internet of Vehicles.” IEEE Transactions on Network and Service Management 21 (6): 6974–88. https://doi.org/10.1109/tnsm.2024.3462746.",
+   "harvard": "Sikarwar, H. et al. (2024) ‘<i>SECURE</i>: Secure and Efficient Protocol Using Randomness and Edge-Computing for Drone-Assisted Internet of Vehicles,’ IEEE Transactions on Network and Service Management, 21(6), pp. 6974–6988. Available at: https://doi.org/10.1109/tnsm.2024.3462746."
+  }
+ },
+ "mondal2025pufanalytics": {
+  "doi": "10.23919/apcc64555.2025.11279762",
+  "year": 2025,
+  "details": "pp. 1–6",
+  "bibtex": "@inproceedings{mondal2025pufanalytics,\n  title = {PUFAnalytics: Python Library for Comprehensive Evaluation and Analysis of PUFs},\n  url = {http://dx.doi.org/10.23919/apcc64555.2025.11279762},\n  DOI = {10.23919/apcc64555.2025.11279762},\n  booktitle = {2025 30th Asia-Pacific Conference on Communications (APCC)},\n  publisher = {IEEE},\n  author = {Mondal, Koustav Kumar and Gupta, Ashi and Das, Debasis},\n  year = {2025},\n  month = Nov,\n  pages = {1–6}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., Gupta, A., & Das, D. (2025). PUFAnalytics: Python Library for Comprehensive Evaluation and Analysis of PUFs. 2025 30th Asia-Pacific Conference on Communications (APCC), 1–6. https://doi.org/10.23919/apcc64555.2025.11279762",
+   "ieee": "K. K. Mondal, A. Gupta, and D. Das, “PUFAnalytics: Python Library for Comprehensive Evaluation and Analysis of PUFs,” 2025 30th Asia-Pacific Conference on Communications (APCC), pp. 1–6, Nov. 2025, doi: 10.23919/apcc64555.2025.11279762.",
+   "mla": "Mondal, Koustav Kumar, et al. “PUFAnalytics: Python Library for Comprehensive Evaluation and Analysis of PUFs.” 2025 30th Asia-Pacific Conference on Communications (APCC), Nov. 2025, pp. 1–6. https://doi.org/10.23919/apcc64555.2025.11279762.",
+   "chicago": "Mondal, Koustav Kumar, Ashi Gupta, and Debasis Das. 2025. “PUFAnalytics: Python Library for Comprehensive Evaluation and Analysis of PUFs.” 2025 30th Asia-Pacific Conference on Communications (APCC), November 26, 1–6. https://doi.org/10.23919/apcc64555.2025.11279762.",
+   "harvard": "Mondal, K.K., Gupta, A. and Das, D. (2025) ‘PUFAnalytics: Python Library for Comprehensive Evaluation and Analysis of PUFs,’ 2025 30th Asia-Pacific Conference on Communications (APCC), pp. 1–6. Available at: https://doi.org/10.23919/apcc64555.2025.11279762."
+  }
+ },
+ "mondal2024guardev": {
+  "doi": "10.1007/978-3-031-78383-8_4",
+  "year": 2024,
+  "details": "pp. 47–62",
+  "bibtex": "@inbook{mondal2024guardev,\n  title = {GUARDEV: Guided Unified Adaptive Response for Defending Electric Vehicles},\n  ISBN = {9783031783838},\n  ISSN = {1611-3349},\n  url = {http://dx.doi.org/10.1007/978-3-031-78383-8_4},\n  DOI = {10.1007/978-3-031-78383-8_4},\n  booktitle = {Pattern Recognition},\n  publisher = {Springer Nature Switzerland},\n  author = {Mondal, Koustav Kumar and Das, Debasis},\n  year = {2024},\n  month = Dec,\n  pages = {47–62}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., & Das, D. (2024). GUARDEV: Guided Unified Adaptive Response for Defending Electric Vehicles. Pattern Recognition, 47–62. https://doi.org/10.1007/978-3-031-78383-8_4",
+   "ieee": "K. K. Mondal and D. Das, “GUARDEV: Guided Unified Adaptive Response for Defending Electric Vehicles,” Pattern Recognition, pp. 47–62, Dec. 2024, doi: 10.1007/978-3-031-78383-8_4.",
+   "mla": "Mondal, Koustav Kumar, and Debasis Das. “GUARDEV: Guided Unified Adaptive Response for Defending Electric Vehicles.” Pattern Recognition, Dec. 2024, pp. 47–62. https://doi.org/10.1007/978-3-031-78383-8_4.",
+   "chicago": "Mondal, Koustav Kumar, and Debasis Das. 2024. “GUARDEV: Guided Unified Adaptive Response for Defending Electric Vehicles.” Pattern Recognition, December 2, 47–62. https://doi.org/10.1007/978-3-031-78383-8_4.",
+   "harvard": "Mondal, K.K. and Das, D. (2024) ‘GUARDEV: Guided Unified Adaptive Response for Defending Electric Vehicles,’ Pattern Recognition, pp. 47–62. Available at: https://doi.org/10.1007/978-3-031-78383-8_4."
+  }
+ },
+ "mondal2024piston": {
+  "doi": "10.1109/apcc62576.2024.10768020",
+  "year": 2024,
+  "details": "pp. 149–154",
+  "bibtex": "@inproceedings{mondal2024piston,\n  title = {PISTON: PUF-Integrated Secure, Throughput-Optimized Network Protocol for IoV},\n  url = {http://dx.doi.org/10.1109/apcc62576.2024.10768020},\n  DOI = {10.1109/apcc62576.2024.10768020},\n  booktitle = {2024 IEEE 29th Asia Pacific Conference on Communications (APCC)},\n  publisher = {IEEE},\n  author = {Mondal, Koustav Kumar and Gupta, Ashi and Das, Debasis and Fan, Chun-I},\n  year = {2024},\n  month = Nov,\n  pages = {149–154}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., Gupta, A., Das, D., & Fan, C.-I. (2024). PISTON: PUF-Integrated Secure, Throughput-Optimized Network Protocol for IoV. 2024 IEEE 29th Asia Pacific Conference on Communications (APCC), 149–154. https://doi.org/10.1109/apcc62576.2024.10768020",
+   "ieee": "K. K. Mondal, A. Gupta, D. Das, and C.-I. Fan, “PISTON: PUF-Integrated Secure, Throughput-Optimized Network Protocol for IoV,” 2024 IEEE 29th Asia Pacific Conference on Communications (APCC), pp. 149–154, Nov. 2024, doi: 10.1109/apcc62576.2024.10768020.",
+   "mla": "Mondal, Koustav Kumar, et al. “PISTON: PUF-Integrated Secure, Throughput-Optimized Network Protocol for IoV.” 2024 IEEE 29th Asia Pacific Conference on Communications (APCC), Nov. 2024, pp. 149–54. https://doi.org/10.1109/apcc62576.2024.10768020.",
+   "chicago": "Mondal, Koustav Kumar, Ashi Gupta, Debasis Das, and Chun-I. Fan. 2024. “PISTON: PUF-Integrated Secure, Throughput-Optimized Network Protocol for IoV.” 2024 IEEE 29th Asia Pacific Conference on Communications (APCC), November 5, 149–54. https://doi.org/10.1109/apcc62576.2024.10768020.",
+   "harvard": "Mondal, K.K. et al. (2024) ‘PISTON: PUF-Integrated Secure, Throughput-Optimized Network Protocol for IoV,’ 2024 IEEE 29th Asia Pacific Conference on Communications (APCC), pp. 149–154. Available at: https://doi.org/10.1109/apcc62576.2024.10768020."
+  }
+ },
+ "mondal2023edge": {
+  "doi": "10.1109/apcc60132.2023.10460656",
+  "year": 2023,
+  "details": "pp. 448–453",
+  "bibtex": "@inproceedings{mondal2023edge,\n  title = {Edge-Centric Security Framework for Electric Vehicle Connectivity: A Deep Learning Approach},\n  url = {http://dx.doi.org/10.1109/apcc60132.2023.10460656},\n  DOI = {10.1109/apcc60132.2023.10460656},\n  booktitle = {2023 28th Asia Pacific Conference on Communications (APCC)},\n  publisher = {IEEE},\n  author = {Mondal, Koustav Kumar and Mahendia, Divya and Das, Debasis and Kalra, Sumit},\n  year = {2023},\n  month = Nov,\n  pages = {448–453}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., Mahendia, D., Das, D., & Kalra, S. (2023). Edge-Centric Security Framework for Electric Vehicle Connectivity: A Deep Learning Approach. 2023 28th Asia Pacific Conference on Communications (APCC), 448–453. https://doi.org/10.1109/apcc60132.2023.10460656",
+   "ieee": "K. K. Mondal, D. Mahendia, D. Das, and S. Kalra, “Edge-Centric Security Framework for Electric Vehicle Connectivity: A Deep Learning Approach,” 2023 28th Asia Pacific Conference on Communications (APCC), pp. 448–453, Nov. 2023, doi: 10.1109/apcc60132.2023.10460656.",
+   "mla": "Mondal, Koustav Kumar, et al. “Edge-Centric Security Framework for Electric Vehicle Connectivity: A Deep Learning Approach.” 2023 28th Asia Pacific Conference on Communications (APCC), Nov. 2023, pp. 448–53. https://doi.org/10.1109/apcc60132.2023.10460656.",
+   "chicago": "Mondal, Koustav Kumar, Divya Mahendia, Debasis Das, and Sumit Kalra. 2023. “Edge-Centric Security Framework for Electric Vehicle Connectivity: A Deep Learning Approach.” 2023 28th Asia Pacific Conference on Communications (APCC), November 19, 448–53. https://doi.org/10.1109/apcc60132.2023.10460656.",
+   "harvard": "Mondal, K.K. et al. (2023) ‘Edge-Centric Security Framework for Electric Vehicle Connectivity: A Deep Learning Approach,’ 2023 28th Asia Pacific Conference on Communications (APCC), pp. 448–453. Available at: https://doi.org/10.1109/apcc60132.2023.10460656."
+  }
+ },
+ "mondal2023flamenet": {
+  "doi": "10.1109/iwcmc58020.2023.10182847",
+  "year": 2023,
+  "details": "pp. 539–544",
+  "bibtex": "@inproceedings{mondal2023flamenet,\n  title = {FlameNet: A Real-Time, Lightweight Fire &amp; Smoke Detection Solution for Internet of Vehicles},\n  url = {http://dx.doi.org/10.1109/iwcmc58020.2023.10182847},\n  DOI = {10.1109/iwcmc58020.2023.10182847},\n  booktitle = {2023 International Wireless Communications and Mobile Computing (IWCMC)},\n  publisher = {IEEE},\n  author = {Mondal, Koustav Kumar and Das, Debasis},\n  year = {2023},\n  month = June,\n  pages = {539–544}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., & Das, D. (2023). FlameNet: A Real-Time, Lightweight Fire &amp; Smoke Detection Solution for Internet of Vehicles. 2023 International Wireless Communications and Mobile Computing (IWCMC), 539–544. https://doi.org/10.1109/iwcmc58020.2023.10182847",
+   "ieee": "K. K. Mondal and D. Das, “FlameNet: A Real-Time, Lightweight Fire &amp; Smoke Detection Solution for Internet of Vehicles,” 2023 International Wireless Communications and Mobile Computing (IWCMC), pp. 539–544, Jun. 2023, doi: 10.1109/iwcmc58020.2023.10182847.",
+   "mla": "Mondal, Koustav Kumar, and Debasis Das. “FlameNet: A Real-Time, Lightweight Fire &Amp; Smoke Detection Solution for Internet of Vehicles.” 2023 International Wireless Communications and Mobile Computing (IWCMC), June 2023, pp. 539–44. https://doi.org/10.1109/iwcmc58020.2023.10182847.",
+   "chicago": "Mondal, Koustav Kumar, and Debasis Das. 2023. “FlameNet: A Real-Time, Lightweight Fire &Amp; Smoke Detection Solution for Internet of Vehicles.” 2023 International Wireless Communications and Mobile Computing (IWCMC), June 19, 539–44. https://doi.org/10.1109/iwcmc58020.2023.10182847.",
+   "harvard": "Mondal, K.K. and Das, D. (2023) ‘FlameNet: A Real-Time, Lightweight Fire &amp; Smoke Detection Solution for Internet of Vehicles,’ 2023 International Wireless Communications and Mobile Computing (IWCMC), pp. 539–544. Available at: https://doi.org/10.1109/iwcmc58020.2023.10182847."
+  }
+ },
+ "paramanik2019smartgrid": {
+  "doi": "10.1109/devic.2019.8783610",
+  "year": 2019,
+  "details": null,
+  "bibtex": "@inproceedings{paramanik2019smartgrid,\n  title = {Survey of Smart Grid Network Using Drone &amp; PTZ Camera},\n  url = {http://dx.doi.org/10.1109/devic.2019.8783610},\n  DOI = {10.1109/devic.2019.8783610},\n  booktitle = {2019 Devices for Integrated Circuit (DevIC)},\n  publisher = {IEEE},\n  author = {Paramanik, Sayan and Sarkar, Partha Sarathi and Mondol, Koustav Kumar and Chakraborty, Avijit and Chakraborty, Sajib and Sarker, Krishna},\n  year = {2019},\n  month = Mar\n}",
+  "styles": {
+   "apa": "Paramanik, S., Sarkar, P. S., Mondol, K. K., Chakraborty, A., Chakraborty, S., & Sarker, K. (2019). Survey of Smart Grid Network Using Drone &amp; PTZ Camera. 2019 Devices for Integrated Circuit (DevIC). https://doi.org/10.1109/devic.2019.8783610",
+   "ieee": "S. Paramanik, P. S. Sarkar, K. K. Mondol, A. Chakraborty, S. Chakraborty, and K. Sarker, “Survey of Smart Grid Network Using Drone &amp; PTZ Camera,” 2019 Devices for Integrated Circuit (DevIC), Mar. 2019, doi: 10.1109/devic.2019.8783610.",
+   "mla": "Paramanik, Sayan, et al. “Survey of Smart Grid Network Using Drone &Amp; PTZ Camera.” 2019 Devices for Integrated Circuit (DevIC), Mar. 2019. https://doi.org/10.1109/devic.2019.8783610.",
+   "chicago": "Paramanik, Sayan, Partha Sarathi Sarkar, Koustav Kumar Mondol, Avijit Chakraborty, Sajib Chakraborty, and Krishna Sarker. 2019. “Survey of Smart Grid Network Using Drone &Amp; PTZ Camera.” 2019 Devices for Integrated Circuit (DevIC), ahead of print, March. https://doi.org/10.1109/devic.2019.8783610.",
+   "harvard": "Paramanik, S. et al. (2019) ‘Survey of Smart Grid Network Using Drone &amp; PTZ Camera,’ 2019 Devices for Integrated Circuit (DevIC) [Preprint]. Edited by . Available at: https://doi.org/10.1109/devic.2019.8783610."
+  }
+ },
+ "mondal2025cliff": {
+  "doi": "10.1201/9781003376712-8",
+  "year": 2024,
+  "details": "pp. 153–177",
+  "bibtex": "@inbook{mondal2025cliff,\n  title = {A Comprehensive Security Risk Analysis of Cliff Edge on Cyber-Physical Systems},\n  ISBN = {9781003376712},\n  url = {http://dx.doi.org/10.1201/9781003376712-8},\n  DOI = {10.1201/9781003376712-8},\n  booktitle = {Secure and Smart Cyber-Physical Systems},\n  publisher = {CRC Press},\n  author = {Mondal, Koustav Kumar and Biswas, Asmita and Roy, Deepsubhra Guha},\n  year = {2024},\n  month = June,\n  pages = {153–177}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., Biswas, A., & Roy, D. G. (2024). A Comprehensive Security Risk Analysis of Cliff Edge on Cyber-Physical Systems. Secure and Smart Cyber-Physical Systems, 153–177. https://doi.org/10.1201/9781003376712-8",
+   "ieee": "K. K. Mondal, A. Biswas, and D. G. Roy, “A Comprehensive Security Risk Analysis of Cliff Edge on Cyber-Physical Systems,” Secure and Smart Cyber-Physical Systems, pp. 153–177, Jun. 2024, doi: 10.1201/9781003376712-8.",
+   "mla": "Mondal, Koustav Kumar, et al. “A Comprehensive Security Risk Analysis of Cliff Edge on Cyber-Physical Systems.” Secure and Smart Cyber-Physical Systems, June 2024, pp. 153–77. https://doi.org/10.1201/9781003376712-8.",
+   "chicago": "Mondal, Koustav Kumar, Asmita Biswas, and Deepsubhra Guha Roy. 2024. “A Comprehensive Security Risk Analysis of Cliff Edge on Cyber-Physical Systems.” Secure and Smart Cyber-Physical Systems, June 6, 153–77. https://doi.org/10.1201/9781003376712-8.",
+   "harvard": "Mondal, K.K., Biswas, A. and Roy, D.G. (2024) ‘A Comprehensive Security Risk Analysis of Cliff Edge on Cyber-Physical Systems,’ Secure and Smart Cyber-Physical Systems, pp. 153–177. Available at: https://doi.org/10.1201/9781003376712-8."
+  }
+ },
+ "biswas2023smart": {
+  "doi": "10.1007/978-3-031-31952-5_14",
+  "year": 2023,
+  "details": "pp. 327–346",
+  "bibtex": "@inbook{biswas2023smart,\n  title = {A Study of Smart Evolution on AI-Based Cyber-Physical System Using Blockchain Techniques},\n  ISBN = {9783031319525},\n  ISSN = {2731-5010},\n  url = {http://dx.doi.org/10.1007/978-3-031-31952-5_14},\n  DOI = {10.1007/978-3-031-31952-5_14},\n  booktitle = {AI Models for Blockchain-Based Intelligent Networks in IoT Systems},\n  publisher = {Springer International Publishing},\n  author = {Biswas, Asmita and Mondal, Koustav Kumar and Guha Roy, Deepsubhra},\n  year = {2023},\n  pages = {327–346}\n}",
+  "styles": {
+   "apa": "Biswas, A., Mondal, K. K., & Guha Roy, D. (2023). A Study of Smart Evolution on AI-Based Cyber-Physical System Using Blockchain Techniques. AI Models for Blockchain-Based Intelligent Networks in IoT Systems, 327–346. https://doi.org/10.1007/978-3-031-31952-5_14",
+   "ieee": "A. Biswas, K. K. Mondal, and D. Guha Roy, “A Study of Smart Evolution on AI-Based Cyber-Physical System Using Blockchain Techniques,” AI Models for Blockchain-Based Intelligent Networks in IoT Systems, pp. 327–346, 2023, doi: 10.1007/978-3-031-31952-5_14.",
+   "mla": "Biswas, Asmita, et al. “A Study of Smart Evolution on AI-Based Cyber-Physical System Using Blockchain Techniques.” AI Models for Blockchain-Based Intelligent Networks in IoT Systems, 2023, pp. 327–46. https://doi.org/10.1007/978-3-031-31952-5_14.",
+   "chicago": "Biswas, Asmita, Koustav Kumar Mondal, and Deepsubhra Guha Roy. 2023. “A Study of Smart Evolution on AI-Based Cyber-Physical System Using Blockchain Techniques.” AI Models for Blockchain-Based Intelligent Networks in IoT Systems, 327–46. https://doi.org/10.1007/978-3-031-31952-5_14.",
+   "harvard": "Biswas, A., Mondal, K.K. and Guha Roy, D. (2023) ‘A Study of Smart Evolution on AI-Based Cyber-Physical System Using Blockchain Techniques,’ AI Models for Blockchain-Based Intelligent Networks in IoT Systems, pp. 327–346. Available at: https://doi.org/10.1007/978-3-031-31952-5_14."
+  }
+ },
+ "mondal2022iotsec": {
+  "doi": "10.1007/978-981-16-6186-0_3",
+  "year": 2021,
+  "details": "pp. 49–81",
+  "bibtex": "@inbook{mondal2022iotsec,\n  title = {IoT Data Security with Machine Learning Blckchain: Risks and Countermeasures},\n  ISBN = {9789811661860},\n  ISSN = {1860-4870},\n  url = {http://dx.doi.org/10.1007/978-981-16-6186-0_3},\n  DOI = {10.1007/978-981-16-6186-0_3},\n  booktitle = {Deep Learning for Security and Privacy Preservation in IoT},\n  publisher = {Springer Singapore},\n  author = {Mondal, Koustav Kumar and Guha Roy, Deepsubhra},\n  year = {2021},\n  pages = {49–81}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., & Guha Roy, D. (2021). IoT Data Security with Machine Learning Blckchain: Risks and Countermeasures. Deep Learning for Security and Privacy Preservation in IoT, 49–81. https://doi.org/10.1007/978-981-16-6186-0_3",
+   "ieee": "K. K. Mondal and D. Guha Roy, “IoT Data Security with Machine Learning Blckchain: Risks and Countermeasures,” Deep Learning for Security and Privacy Preservation in IoT, pp. 49–81, 2021, doi: 10.1007/978-981-16-6186-0_3.",
+   "mla": "Mondal, Koustav Kumar, and Deepsubhra Guha Roy. “IoT Data Security with Machine Learning Blckchain: Risks and Countermeasures.” Deep Learning for Security and Privacy Preservation in IoT, 2021, pp. 49–81. https://doi.org/10.1007/978-981-16-6186-0_3.",
+   "chicago": "Mondal, Koustav Kumar, and Deepsubhra Guha Roy. 2021. “IoT Data Security with Machine Learning Blckchain: Risks and Countermeasures.” Deep Learning for Security and Privacy Preservation in IoT, 49–81. https://doi.org/10.1007/978-981-16-6186-0_3.",
+   "harvard": "Mondal, K.K. and Guha Roy, D. (2021) ‘IoT Data Security with Machine Learning Blckchain: Risks and Countermeasures,’ Deep Learning for Security and Privacy Preservation in IoT., pp. 49–81. Available at: https://doi.org/10.1007/978-981-16-6186-0_3."
+  }
+ },
+ "mondal2022quantum": {
+  "doi": "10.1007/978-981-16-9260-4_11",
+  "year": 2022,
+  "details": "pp. 267–288",
+  "bibtex": "@inbook{mondal2022quantum,\n  title = {Quantum Aware Distributed Ledger Technology for Blockchain-Based IoT Network},\n  ISBN = {9789811692604},\n  ISSN = {2367-4520},\n  url = {http://dx.doi.org/10.1007/978-981-16-9260-4_11},\n  DOI = {10.1007/978-981-16-9260-4_11},\n  booktitle = {Blockchain based Internet of Things},\n  publisher = {Springer Singapore},\n  author = {Mondal, Koustav Kumar and Guha Roy, Deepsubhra},\n  year = {2022},\n  pages = {267–288}\n}",
+  "styles": {
+   "apa": "Mondal, K. K., & Guha Roy, D. (2022). Quantum Aware Distributed Ledger Technology for Blockchain-Based IoT Network. Blockchain Based Internet of Things, 267–288. https://doi.org/10.1007/978-981-16-9260-4_11",
+   "ieee": "K. K. Mondal and D. Guha Roy, “Quantum Aware Distributed Ledger Technology for Blockchain-Based IoT Network,” Blockchain based Internet of Things, pp. 267–288, 2022, doi: 10.1007/978-981-16-9260-4_11.",
+   "mla": "Mondal, Koustav Kumar, and Deepsubhra Guha Roy. “Quantum Aware Distributed Ledger Technology for Blockchain-Based IoT Network.” Blockchain Based Internet of Things, 2022, pp. 267–88. https://doi.org/10.1007/978-981-16-9260-4_11.",
+   "chicago": "Mondal, Koustav Kumar, and Deepsubhra Guha Roy. 2022. “Quantum Aware Distributed Ledger Technology for Blockchain-Based IoT Network.” Blockchain Based Internet of Things, 267–88. https://doi.org/10.1007/978-981-16-9260-4_11.",
+   "harvard": "Mondal, K.K. and Guha Roy, D. (2022) ‘Quantum Aware Distributed Ledger Technology for Blockchain-Based IoT Network,’ Blockchain based Internet of Things, pp. 267–288. Available at: https://doi.org/10.1007/978-981-16-9260-4_11."
+  }
+ }
+}

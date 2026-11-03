@@ -1,0 +1,84 @@
+---
+import sim from '../../data/puf-sim.json';
+// Histogram of fractional Hamming distance: same chip read again (intra) vs different chips (inter).
+const W = 760, H = 330, L = 56, R = 16, T = 20, B = 56;
+const pw = W - L - R, ph = H - T - B;
+const bins = sim.hist.intra.length, bw = sim.params.bin;
+const ymax = Math.ceil(Math.max(...sim.hist.intra, ...sim.hist.inter) * 10) / 10;
+const x = (v: number) => L + v * pw;
+const y = (v: number) => T + ph - (v / ymax) * ph;
+const colW = pw / bins;
+const pct = (v: number) => `${(v * 100).toFixed(1)}%`;
+const ticksY = Array.from({ length: 5 }, (_, i) => (ymax / 4) * i);
+const tau = 0.2;
+const peak = (h: number[]) => h.indexOf(Math.max(...h));
+const pi = peak(sim.hist.intra), pe = peak(sim.hist.inter);
+const bar = (i: number, v: number, half: 0 | 1 | null) => {
+  if (v <= 0) return '';
+  const gx = x(i * bw) + 1, gw = colW - 2; // 2px gap between adjacent bars
+  const bx = half === null ? gx : gx + (half * gw) / 2, bwid = half === null ? gw : gw / 2 - 1;
+  const top = y(v), base = y(0), r = Math.min(4, bwid / 2, base - top);
+  return `M${bx},${base} V${top + r} Q${bx},${top} ${bx + r},${top} H${bx + bwid - r} Q${bx + bwid},${top} ${bx + bwid},${top + r} V${base} Z`;
+};
+---
+<figure class="figure viz">
+  <ul class="viz-legend" aria-hidden="true">
+    <li><i style="background: var(--s1)"></i>Same chip, read again</li>
+    <li><i style="background: var(--s2)"></i>Two different chips</li>
+  </ul>
+  <div class="dg-scroll"><svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="hd-title hd-desc">
+    <title id="hd-title">Intra-chip vs inter-chip Hamming distance</title>
+    <desc id="hd-desc">Re-reading the same chip gives responses that differ in {pct(1 - sim.metrics.reliability)} of bits on average, while two different chips differ in {pct(sim.metrics.uniqueness)}. The two distributions do not overlap.</desc>
+    {ticksY.map((t) => (
+      <g>
+        <line class={t === 0 ? 'base' : 'grid'} x1={L} x2={W - R} y1={y(t)} y2={y(t)} />
+        <text x={L - 8} y={y(t) + 4} text-anchor="end">{Math.round(t * 100)}%</text>
+      </g>
+    ))}
+    {[0, 0.25, 0.5, 0.75, 1].map((t) => <text x={x(t)} y={T + ph + 20} text-anchor="middle">{t}</text>)}
+    <text class="axis-title" x={L + pw / 2} y={H - 8} text-anchor="middle">Fraction of response bits that differ (Hamming distance)</text>
+    <text class="axis-title" x={L} y={12}>Share of comparisons</text>
+
+    {sim.hist.intra.map((v, i) => {
+      const both = v > 0 && sim.hist.inter[i] > 0;
+      return (
+        <g>
+          <path d={bar(i, v, both ? 0 : null)} style="fill: var(--s1)" />
+          <path d={bar(i, sim.hist.inter[i], both ? 1 : null)} style="fill: var(--s2)" />
+        </g>
+      );
+    })}
+
+    <line class="ref" x1={x(tau)} x2={x(tau)} y1={T + 8} y2={T + ph} />
+    <text x={x(tau) + 8} y={T + 18} class="direct">Accept below τ = {tau}</text>
+    <text class="direct" x={x((pi + 1) * bw) + 8} y={y(sim.hist.intra[pi]) + 14}>Same chip</text>
+    <text class="direct" x={x((pe + 1) * bw) + 8} y={y(sim.hist.inter[pe]) + 4}>Different chips</text>
+
+    {sim.hist.intra.map((v, i) => (
+      (v > 0 || sim.hist.inter[i] > 0) && (
+        <rect class="hit" tabindex="0" x={x(i * bw)} y={T} width={colW} height={ph}
+          data-tip={`<b>HD ${(i * bw).toFixed(3)}–${((i + 1) * bw).toFixed(3)}</b><br/>Same chip: ${pct(v)}<br/>Different chips: ${pct(sim.hist.inter[i])}`}
+          aria-label={`Hamming distance ${(i * bw).toFixed(3)} to ${((i + 1) * bw).toFixed(3)}: same chip ${pct(v)}, different chips ${pct(sim.hist.inter[i])}`} />
+      )
+    ))}
+  </svg></div>
+  <details class="viz-table">
+    <summary>Show the numbers</summary>
+    <table>
+      <thead><tr><th>Metric</th><th>Simulated</th><th>Ideal</th></tr></thead>
+      <tbody>
+        <tr><td>Uniqueness (mean inter-chip HD)</td><td>{pct(sim.metrics.uniqueness)}</td><td>50%</td></tr>
+        <tr><td>Reliability (1 − mean intra-chip HD)</td><td>{pct(sim.metrics.reliability)}</td><td>100%</td></tr>
+        <tr><td>Uniformity (share of 1-bits)</td><td>{pct(sim.metrics.uniformity)}</td><td>50%</td></tr>
+        <tr><td>Worst intra-chip HD</td><td>{pct(sim.metrics.intraMax)}</td><td>as low as possible</td></tr>
+        <tr><td>Closest inter-chip HD</td><td>{pct(sim.metrics.interMin)}</td><td>as high as possible</td></tr>
+      </tbody>
+    </table>
+  </details>
+  <figcaption><strong>Simulated with {sim.params.chips} chips, {sim.params.stages}-stage arbiter PUFs, {sim.params.bits}-bit responses and {sim.params.reads} noisy reads each.</strong> Because the two humps never overlap, any threshold between them separates "same chip" from "impostor" without error.</figcaption>
+</figure>
+
+<script>
+  import { bindTooltips } from '../../scripts/viz';
+  bindTooltips();
+</script>

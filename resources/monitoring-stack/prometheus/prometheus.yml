@@ -1,0 +1,68 @@
+global:
+  scrape_interval: 15s        # how often to pull metrics
+  evaluation_interval: 15s    # how often to evaluate alert rules
+  external_labels:
+    monitor: lab-monitoring
+
+rule_files:
+  - /etc/prometheus/rules/*.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ["alertmanager:9093"]
+
+scrape_configs:
+  # Prometheus watching itself
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # This server's CPU, memory, disk, network
+  - job_name: node
+    static_configs:
+      - targets: ["node-exporter:9100"]
+        labels: { instance_name: monitoring-server }
+    # Other machines: list them in targets/nodes.yml (reloaded automatically)
+    file_sd_configs:
+      - files: ["/etc/prometheus/targets/nodes.yml"]
+        refresh_interval: 1m
+
+  # Per-container CPU, memory, network, restarts
+  - job_name: cadvisor
+    static_configs:
+      - targets: ["cadvisor:8080"]
+
+  # Is this website up, and how fast does it answer?
+  - job_name: blackbox-http
+    metrics_path: /probe
+    params:
+      module: [http_2xx]
+    static_configs:
+      - targets:
+          - https://prometheus.io
+          - http://grafana:3000/api/health
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+      - source_labels: [__param_target]
+        target_label: instance
+      - target_label: __address__
+        replacement: blackbox:9115
+
+  # Metrics pushed by short batch jobs
+  - job_name: pushgateway
+    honor_labels: true          # keep the job/instance labels the batch job pushed
+    static_configs:
+      - targets: ["pushgateway:9091"]
+
+  # Long-running experiments that expose /metrics (see experiment/train_with_metrics.py)
+  - job_name: experiments
+    scrape_interval: 5s
+    static_configs:
+      - targets: ["host.docker.internal:8000"]
+        labels: { experiment: demo-training }
+
+  - job_name: alertmanager
+    static_configs:
+      - targets: ["alertmanager:9093"]

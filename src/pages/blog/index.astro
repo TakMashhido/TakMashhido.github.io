@@ -1,0 +1,103 @@
+---
+import PageHero from '../../components/PageHero.astro';
+import Base from '../../layouts/Base.astro';
+import PostCard from '../../components/PostCard.astro';
+import Icon from '../../components/Icon.astro';
+import { getPosts, slugifyTag } from '../../scripts/blog';
+
+const posts = await getPosts();
+const tagCounts = new Map<string, number>();
+posts.forEach((p) => p.data.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1)));
+const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
+const cats = ['Research', 'Technical'] as const;
+---
+<Base title="Blog" description="Technical notes and research writing on hardware security, PUFs, blockchain, quantum security and edge systems.">
+  <PageHero title="Blog" art="network">
+    <p class="lede">Research explainers and technical notes from the lab: PUFs, post-quantum security, blockchain consensus and the infrastructure that runs the experiments.</p>
+  </PageHero>
+
+  <section class="wrap tools-wrap">
+    <div class="tools clay">
+      <div class="search">
+        <label class="sr-only" for="q">Search posts</label>
+        <Icon name="search" />
+        <input id="q" class="input" type="search" placeholder="Search posts by title, topic or tag" autocomplete="off" />
+      </div>
+      <div class="chips" role="group" aria-label="Filter by category">
+        <button type="button" class="chip" data-cat="all" aria-pressed="true">All <span class="count">{posts.length}</span></button>
+        {cats.map((c) => (
+          <button type="button" class="chip" data-cat={c} aria-pressed="false">{c} <span class="count">{posts.filter((p) => p.data.category === c).length}</span></button>
+        ))}
+      </div>
+      {tags.length > 0 && (
+        <div class="chips tagrow" role="group" aria-label="Filter by tag">
+          {tags.map(([t, n]) => (
+            <button type="button" class="chip" data-tag={slugifyTag(t)} aria-pressed="false">#{t} <span class="count">{n}</span></button>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+
+  <section class="wrap list-wrap">
+    <p class="status muted" id="status" aria-live="polite">{posts.length} posts</p>
+    <div class="grid-3" id="posts">
+      {posts.map((p) => <PostCard post={p} />)}
+    </div>
+    <div class="empty clay-sm" id="empty" hidden>
+      <p><strong>No posts match those filters.</strong> Try fewer words or clear the tag.</p>
+      <button type="button" class="btn btn-sm" id="reset">Clear filters</button>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .tools-wrap { margin-top: 32px; }
+  .tools { padding: clamp(16px, 3vw, 26px); border-radius: var(--r-xl); display: grid; gap: 16px; }
+  .search { position: relative; }
+  .search :global(svg) { position: absolute; left: 18px; top: 50%; translate: 0 -50%; width: 20px; height: 20px; color: var(--ink-soft); pointer-events: none; }
+  .search .input { padding-left: 50px; border-radius: var(--pill); }
+  .tagrow .chip { box-shadow: none; background: var(--surface-2); }
+  .tagrow .chip[aria-pressed='true'] { box-shadow: var(--clay-pressed); }
+  .list-wrap { margin-top: 30px; }
+  .status { font-weight: 600; font-size: var(--step--1); }
+  .empty { padding: 24px; margin-top: 10px; }
+</style>
+
+<script>
+  const q = document.getElementById('q') as HTMLInputElement;
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('#posts > article'));
+  const catBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-cat]'));
+  const tagBtns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-tag]'));
+  const status = document.getElementById('status')!;
+  const empty = document.getElementById('empty')!;
+  let cat = 'all';
+  let tag = '';
+
+  const params = new URLSearchParams(location.search);
+  if (params.get('q')) q.value = params.get('q')!;
+  if (params.get('tag')) tag = params.get('tag')!;
+
+  function apply() {
+    const terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    let shown = 0;
+    cards.forEach((c) => {
+      const ok =
+        terms.every((t) => (c.dataset.search ?? '').includes(t)) &&
+        (cat === 'all' || c.dataset.category === cat) &&
+        (!tag || (c.dataset.tags ?? '').split(' ').includes(tag));
+      c.hidden = !ok;
+      if (ok) shown++;
+    });
+    catBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.cat === cat)));
+    tagBtns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tag === tag)));
+    status.textContent = shown === cards.length ? `${shown} posts` : `Showing ${shown} of ${cards.length} posts`;
+    empty.hidden = shown !== 0;
+  }
+
+  q.addEventListener('input', apply);
+  catBtns.forEach((b) => b.addEventListener('click', () => { cat = b.dataset.cat!; apply(); }));
+  tagBtns.forEach((b) => b.addEventListener('click', () => { tag = tag === b.dataset.tag ? '' : b.dataset.tag!; apply(); }));
+  document.getElementById('reset')?.addEventListener('click', () => { q.value = ''; cat = 'all'; tag = ''; apply(); q.focus(); });
+  apply();
+</script>

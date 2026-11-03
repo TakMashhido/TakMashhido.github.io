@@ -1,0 +1,21 @@
+---
+// Shows a real source file with its name, a copy button and line-wrapped Shiki highlighting.
+import { Code } from 'astro:components';
+interface Props { code: string; lang: string; file: string; note?: string }
+const { code, lang, file, note } = Astro.props;
+---
+<div class="codefile">
+  <div class="codefile-head">
+    <span class="codefile-name">{file}</span>
+    {note && <span class="codefile-note">{note}</span>}
+  </div>
+  <Code code={code.trimEnd()} lang={lang as any} themes={{ light: 'github-light', dark: 'github-dark' }} />
+</div>
+
+<style>
+  .codefile { margin: 1.6em 0; border-radius: var(--r-md); background: var(--surface-2); box-shadow: var(--clay-pressed); overflow: hidden; }
+  .codefile-head { display: flex; flex-wrap: wrap; gap: 6px 12px; align-items: baseline; padding: 10px 16px; border-bottom: 1px solid color-mix(in srgb, var(--ink) 10%, transparent); font-family: var(--font-ui); }
+  .codefile-name { font-family: var(--font-code); font-size: 0.85rem; font-weight: 700; color: var(--ink); }
+  .codefile-note { font-size: 0.82rem; color: var(--ink-soft); }
+  .codefile :global(pre) { margin: 0; box-shadow: none !important; border-radius: 0 !important; max-height: 560px; }
+</style>

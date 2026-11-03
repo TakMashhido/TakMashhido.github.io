@@ -1,0 +1,109 @@
+---
+import Icon from './Icon.astro';
+import { doiUrl, styleLabels, typeLabels, type CiteStyle, type Publication } from '../data/publications';
+interface Props { pub: Publication; compact?: boolean }
+const { pub, compact = false } = Astro.props;
+const me = /Mondal/;
+const searchText = `${pub.title} ${pub.authors.join(' ')} ${pub.venue} ${pub.year} ${pub.doi ?? ''}`.toLowerCase();
+const styles = Object.keys(styleLabels) as CiteStyle[];
+const tabs = [...styles.map((s) => ({ key: s, label: styleLabels[s], text: pub.styles[s], code: false })), { key: 'bibtex', label: 'BibTeX', text: pub.bibtex, code: true }];
+const scholar = `https://scholar.google.com/scholar?q=${encodeURIComponent(`"${pub.title}"`)}`;
+---
+<article class="pub clay-sm" data-type={pub.type} data-year={pub.year} data-search={searchText}>
+  <div class="meta">
+    <span class={`chip type-${pub.type}`}>{typeLabels[pub.type]}</span>
+    <span class="year">{pub.year}</span>
+  </div>
+  <h3>{pub.doi ? <a class="title-link" href={doiUrl(pub.doi)} rel="noopener">{pub.title}</a> : pub.title}</h3>
+  <p class="authors">
+    {pub.authors.map((a, i) => (
+      <>{me.test(a) ? <strong>{a}</strong> : a}{i < pub.authors.length - 1 ? ', ' : ''}</>
+    ))}
+  </p>
+  <p class="venue"><em>{pub.venue}</em>{pub.details && `, ${pub.details}`}</p>
+  {pub.doi && <p class="doi">DOI: <a href={doiUrl(pub.doi)} rel="noopener">{pub.doi}</a></p>}
+  {!compact && (
+    <div class="links">
+      {pub.doi && <a class="btn btn-sm btn-primary" href={doiUrl(pub.doi)} rel="noopener"><Icon name="link" /> Read the paper</a>}
+      {pub.pdf && <a class="btn btn-sm" href={pub.pdf} download><Icon name="download" /> PDF</a>}
+      {pub.type !== 'patent' && <a class="btn btn-sm" href={scholar} rel="noopener"><Icon name="search" /> Google Scholar</a>}
+      <details class="cite">
+        <summary class="btn btn-sm"><Icon name="quote" /> Cite</summary>
+        <div class="cite-panel">
+          <div class="cite-tabs" role="tablist" aria-label="Citation style">
+            {tabs.map((t, i) => (
+              <button type="button" role="tab" class="chip cite-tab" aria-selected={i === 0 ? 'true' : 'false'} data-tab={t.key}>{t.label}</button>
+            ))}
+          </div>
+          {tabs.map((t, i) => (
+            <div class="cite-body" role="tabpanel" data-panel={t.key} hidden={i !== 0}>
+              {t.code ? <pre><code>{t.text}</code></pre> : <p class="cite-text">{t.text}</p>}
+              <button type="button" class="btn btn-sm copy-cite"><Icon name="copy" /> Copy {t.label}</button>
+            </div>
+          ))}
+          <p class="cite-src">Citation data from Crossref (publisher metadata via doi.org).</p>
+        </div>
+      </details>
+    </div>
+  )}
+</article>
+
+<style>
+  .pub { padding: clamp(18px, 3vw, 26px); border-radius: var(--r-lg); }
+  .meta { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+  .year { font-weight: 700; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .type-journal { background: var(--primary); color: var(--primary-ink); }
+  .type-conference { background: var(--mint); color: var(--mint-ink); }
+  .type-chapter { background: var(--butter); color: var(--butter-ink); }
+  .type-patent { background: var(--rose); color: #4a0f1d; }
+  h3 { margin-bottom: 8px; font-size: var(--step-1); }
+  .title-link { color: var(--ink); font-weight: inherit; }
+  .title-link:hover { color: var(--primary); }
+  .authors, .venue, .doi { margin: 0 0 4px; color: var(--ink-soft); font-size: var(--step--1); }
+  .authors strong { color: var(--ink); }
+  .doi { font-family: var(--font-code); font-size: 0.8rem; word-break: break-all; }
+  .doi a { font-weight: 500; }
+  .links { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; align-items: flex-start; }
+  .cite[open] { flex-basis: 100%; }
+  .cite summary { list-style: none; }
+  .cite summary::-webkit-details-marker { display: none; }
+  .cite[open] summary { box-shadow: var(--clay-pressed); }
+  .cite-panel { margin-top: 12px; padding: 16px; border-radius: var(--r-md); background: var(--surface-2); box-shadow: var(--clay-pressed); display: grid; gap: 12px; }
+  .cite-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+  .cite-tab { cursor: pointer; min-height: 34px; }
+  .cite-tab[aria-selected='true'] { background: var(--primary); color: var(--primary-ink); box-shadow: var(--clay-primary); }
+  .cite-body { display: grid; gap: 10px; justify-items: start; }
+  .cite-body[hidden] { display: none; }
+  .cite-text { margin: 0; font-family: var(--font-read); font-size: 0.95rem; line-height: 1.6; color: var(--ink); background: var(--surface); padding: 12px 14px; border-radius: var(--r-sm); width: 100%; user-select: all; }
+  .cite-body pre { width: 100%; margin: 0; padding: 12px 14px; overflow-x: auto; border-radius: var(--r-sm); background: var(--surface); font: 0.8rem/1.55 var(--font-code); }
+  .cite-src { margin: 0; font-size: 12px; color: var(--ink-soft); }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('.cite-panel').forEach((panel) => {
+    if (panel.dataset.bound) return;
+    panel.dataset.bound = '1';
+    const tabs = Array.from(panel.querySelectorAll<HTMLButtonElement>('.cite-tab'));
+    const select = (key: string) => {
+      tabs.forEach((t) => t.setAttribute('aria-selected', String(t.dataset.tab === key)));
+      panel.querySelectorAll<HTMLElement>('.cite-body').forEach((b) => (b.hidden = b.dataset.panel !== key));
+    };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => select(t.dataset.tab!));
+      t.addEventListener('keydown', (e) => {
+        const d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+        if (d) { const n = tabs[(i + d + tabs.length) % tabs.length]; n.focus(); select(n.dataset.tab!); }
+      });
+    });
+    panel.querySelectorAll<HTMLButtonElement>('.copy-cite').forEach((btn) => {
+      btn.addEventListener('click', async () => {
+        const body = btn.closest('.cite-body');
+        const text = body?.querySelector('code, .cite-text')?.textContent ?? '';
+        const original = btn.innerHTML;
+        try { await navigator.clipboard.writeText(text.trim()); btn.textContent = 'Copied'; }
+        catch { btn.textContent = 'Select the text above to copy'; }
+        setTimeout(() => (btn.innerHTML = original), 1800);
+      });
+    });
+  });
+</script>

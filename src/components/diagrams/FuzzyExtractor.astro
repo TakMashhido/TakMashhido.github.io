@@ -1,0 +1,34 @@
+---
+// Fuzzy extractor (Gen / Rep): turn a noisy response into a stable key. viewBox 1000×380.
+import DgBox from './DgBox.astro';
+import DgLabel from './DgLabel.astro';
+import DgMarkers from './DgMarkers.astro';
+const W = 220, H = 72, Y1 = 60, Y2 = 250;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 380" role="img" aria-labelledby="fe-title fe-desc">
+      <title id="fe-title">Fuzzy extractor: from a noisy response to a stable key</title>
+      <desc id="fe-desc">At enrolment, Gen turns the response R into a key K and public helper data W. Later, Rep combines a noisy response R′ with W to recover the same key K.</desc>
+      <DgMarkers id="fe" />
+      <text class="eyebrow" x="40" y={Y1 - 24}>ENROLMENT (Gen)</text>
+      <text class="eyebrow" x="40" y={Y2 - 24}>EVERY BOOT (Rep)</text>
+
+      <line class="ln" x1="260" x2="389" y1={Y1 + H / 2} y2={Y1 + H / 2} marker-end="url(#fe-arrow)" />
+      <line class="ln" x1="610" x2="739" y1={Y1 + H / 2} y2={Y1 + H / 2} marker-end="url(#fe-arrow)" />
+      <line class="ln" x1="260" x2="389" y1={Y2 + H / 2} y2={Y2 + H / 2} marker-end="url(#fe-arrow)" />
+      <line class="acc" x1="610" x2="739" y1={Y2 + H / 2} y2={Y2 + H / 2} marker-end="url(#fe-acc)" />
+      <line class="ln dash" x1="500" x2="500" y1={Y1 + H} y2={Y2 - 1} marker-end="url(#fe-arrow)" />
+      <DgLabel x={504} y={Y1 + H + 64} text="HELPER DATA W" anchor="start" />
+
+      <DgBox x={40} y={Y1} w={W} h={H} name="Response R" sub="from the PUF" />
+      <DgBox x={390} y={Y1} w={W} h={H} name="Gen" sub="encode with ECC" kind="box2" />
+      <DgBox x={740} y={Y1} w={W} h={H} name="Key K" sub="used, never stored" />
+      <DgBox x={40} y={Y2} w={W} h={H} name="Noisy response R′" sub="a few bits flipped" />
+      <DgBox x={390} y={Y2} w={W} h={H} name="Rep" sub="decode, correct errors" kind="box2" />
+      <DgBox x={740} y={Y2} w={W} h={H} name="Same key K" sub="bit-exact" kind="focal" />
+    </svg>
+  </div>
+  <figcaption><strong>Helper data can be public.</strong> W tells the decoder how to fix errors but, by design, leaks too little about R to recover K without the physical chip.</figcaption>
+</figure>

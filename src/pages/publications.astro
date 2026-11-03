@@ -1,0 +1,113 @@
+---
+import PageHero from '../components/PageHero.astro';
+import Base from '../layouts/Base.astro';
+import PubItem from '../components/PubItem.astro';
+import PubsByYear from '../components/charts/PubsByYear.astro';
+import Icon from '../components/Icon.astro';
+import { publications, typeLabels, type PubType } from '../data/publications';
+
+const order: PubType[] = ['journal', 'conference', 'chapter', 'patent'];
+const count = (t: PubType) => publications.filter((p) => p.type === t).length;
+const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a);
+const plural: Record<PubType, string> = { journal: 'Journal articles', conference: 'Conference papers', chapter: 'Book chapters', patent: 'Patents' };
+---
+<Base title="Publications" description="Journal articles, conference papers, book chapters and patents by Koustav Kumar Mondal, with PDFs and BibTeX.">
+  <PageHero title="Publications" art="paper">
+    <p class="lede">
+      {count('journal')} journal articles, {count('conference')} conference papers, {count('chapter')} book chapters and {count('patent')} patent application.
+      Download a paper or copy its BibTeX.
+    </p>
+  </PageHero>
+
+  <section class="wrap pubs-top">
+    <PubsByYear />
+    <div class="exports">
+      <a class="btn btn-primary" href="/publications.bib" download="koustav-mondal-publications.bib"><Icon name="download" /> Download all as BibTeX</a>
+      <a class="btn" href="https://scholar.google.com/citations?user=foRcVNQAAAAJ&hl=en" rel="noopener">Google Scholar profile</a>
+      <a class="btn" href="https://orcid.org/0000-0003-1679-1030" rel="noopener">ORCID</a>
+    </div>
+  </section>
+
+  <section class="wrap filters-wrap">
+    <div class="filters clay">
+      <div class="search">
+        <label class="sr-only" for="pq">Search publications</label>
+        <Icon name="search" />
+        <input id="pq" class="input" type="search" placeholder="Search by title, co-author or venue" autocomplete="off" />
+      </div>
+      <div class="chips" role="group" aria-label="Filter by type">
+        <button type="button" class="chip" data-type="all" aria-pressed="true">All <span class="count">{publications.length}</span></button>
+        {order.map((t) => (
+          <button type="button" class="chip" data-type={t} aria-pressed="false">{plural[t]} <span class="count">{count(t)}</span></button>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap list">
+    <p class="status muted" id="pstatus" aria-live="polite"></p>
+    {years.map((y) => (
+      <div class="year-group" data-year-group={y}>
+        <h2 class="year">{y}</h2>
+        <div class="items">
+          {publications
+            .filter((p) => p.year === y)
+            .sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type))
+            .map((p) => <div id={p.id} class="anchor"><PubItem pub={p} /></div>)}
+        </div>
+      </div>
+    ))}
+    <div class="empty clay-sm" id="pempty" hidden>
+      <p><strong>No publications match.</strong> Check the spelling or show all types.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .pubs-top { margin-top: 32px; }
+  .exports { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+  .filters-wrap { margin-top: 32px; }
+  .filters { padding: clamp(16px, 3vw, 26px); border-radius: var(--r-xl); display: grid; gap: 16px; }
+  .search { position: relative; }
+  .search :global(svg) { position: absolute; left: 18px; top: 50%; translate: 0 -50%; width: 20px; height: 20px; color: var(--ink-soft); pointer-events: none; }
+  .search .input { padding-left: 50px; border-radius: var(--pill); }
+  .list { margin-top: 30px; }
+  .status { font-weight: 600; font-size: var(--step--1); }
+  .year-group { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 24px; margin-top: 34px; }
+  .year { position: sticky; top: 110px; align-self: start; font-size: var(--step-3); color: var(--primary); margin: 0; }
+  .items { display: grid; gap: 22px; }
+  .anchor { scroll-margin-top: 110px; border-radius: var(--r-lg); }
+  .anchor:target { outline: 4px solid var(--butter); outline-offset: 6px; }
+  .empty { padding: 24px; margin-top: 20px; }
+  @media (max-width: 720px) {
+    .year-group { grid-template-columns: 1fr; gap: 12px; }
+    .year { position: static; font-size: var(--step-2); }
+  }
+</style>
+
+<script>
+  const q = document.getElementById('pq') as HTMLInputElement;
+  const items = Array.from(document.querySelectorAll<HTMLElement>('.pub'));
+  const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-year-group]'));
+  const btns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-type]'));
+  const status = document.getElementById('pstatus')!;
+  const empty = document.getElementById('pempty')!;
+  let type = 'all';
+
+  function apply() {
+    const terms = q.value.toLowerCase().split(/\s+/).filter(Boolean);
+    let shown = 0;
+    items.forEach((el) => {
+      const ok = (type === 'all' || el.dataset.type === type) && terms.every((t) => (el.dataset.search ?? '').includes(t));
+      (el.parentElement as HTMLElement).hidden = !ok;
+      if (ok) shown++;
+    });
+    groups.forEach((g) => (g.hidden = !g.querySelector('.anchor:not([hidden])')));
+    btns.forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.type === type)));
+    status.textContent = shown === items.length ? `${shown} publications` : `Showing ${shown} of ${items.length}`;
+    empty.hidden = shown !== 0;
+  }
+  q.addEventListener('input', apply);
+  btns.forEach((b) => b.addEventListener('click', () => { type = b.dataset.type!; apply(); }));
+  apply();
+</script>

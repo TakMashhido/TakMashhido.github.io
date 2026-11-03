@@ -1,0 +1,173 @@
+---
+title: How a PUF works, from silicon variation to a login protocol
+description: Physical unclonable functions turn manufacturing randomness into a fingerprint no one can copy. Here is how they are built, measured, made reliable and attacked, with simulations you can run.
+date: 2026-11-03
+category: Research
+tags: [PUF, Hardware security, Authentication, Machine learning]
+art: chip
+---
+import ArbiterPuf from '../../components/diagrams/ArbiterPuf.astro';
+import SramPuf from '../../components/diagrams/SramPuf.astro';
+import EnrollAuthFlow from '../../components/diagrams/EnrollAuthFlow.astro';
+import FuzzyExtractor from '../../components/diagrams/FuzzyExtractor.astro';
+import PufAuthSequence from '../../components/diagrams/PufAuthSequence.astro';
+import HdHistogram from '../../components/charts/HdHistogram.astro';
+import AttackChart from '../../components/charts/AttackChart.astro';
+import CodeFile from '../../components/CodeFile.astro';
+import pufDemo from '../../../resources/puf_demo.py?raw';
+
+Every connected device has to answer one question before anything else: *are you really who you say you are?* The usual answer is a secret key stored in flash or fuses. That works until someone opens the package. Stored keys can be read with a probe station, a laser, a power trace or a firmware bug, and once a key is copied, a cheap clone is indistinguishable from the real device.
+
+A **physical unclonable function (PUF)** removes the stored key. Instead of remembering a secret, the chip *re-measures* one from its own physical structure every time it needs it. Nobody, not even the manufacturer, can choose that secret or build a second chip with the same one.
+
+This post walks through how that works, from the transistor level to a complete authentication protocol, and ends with the attacks that make PUF design hard.
+
+## The idea in one sentence
+
+A PUF is a circuit that maps a **challenge** $c$ to a **response** $r$, where the mapping depends on tiny, uncontrollable manufacturing differences:
+
+$$
+r = f_{\text{chip}}(c)
+$$
+
+Two chips built from the same layout file implement two different functions $f_A$ and $f_B$. A pair $(c, r)$ is called a **challenge–response pair (CRP)**.
+
+PUFs come in two families:
+
+| Family | Challenges | Typical use | Examples |
+|---|---|---|---|
+| **Weak PUF** | Few or one | Generate one device key on chip | SRAM PUF, butterfly PUF |
+| **Strong PUF** | Exponentially many | Challenge–response authentication | Arbiter PUF, XOR arbiter PUF |
+
+## Where the randomness comes from
+
+No two transistors are identical. During fabrication, the number and position of dopant atoms in a channel, the roughness of etched line edges and the thickness of the gate oxide all vary at the atomic scale. The result is that every transistor has a slightly different threshold voltage and every wire a slightly different delay.
+
+Chip designers normally fight this variation. A PUF designer *amplifies* it, by building circuits where two nominally identical parts compete and the winner is decided only by variation.
+
+## Design 1: the arbiter PUF
+
+The arbiter PUF is the classic strong PUF. A single rising edge is sent down two paths through a chain of $n$ switch stages. Each stage either passes the two signals straight through or swaps them, depending on one challenge bit. At the end, an arbiter (a latch) records which signal arrived first.
+
+<ArbiterPuf />
+
+Because the delay differences add up stage by stage, the arbiter PUF has a neat mathematical description called the **additive delay model**. The final delay difference is a weighted sum:
+
+$$
+\Delta(c) = \mathbf{w}^\top \boldsymbol{\phi}(c), \qquad \phi_i(c) = \prod_{j=i}^{n} (1 - 2c_j), \qquad r = \begin{cases} 1 & \Delta(c) > 0 \\ 0 & \text{otherwise} \end{cases}
+$$
+
+The weight vector $\mathbf{w}$ holds the chip's physical delay differences. It is different on every chip and never leaves the silicon. The feature vector $\boldsymbol{\phi}(c)$ is a fixed transformation of the challenge, the same for every chip. Keep this linear form in mind; it comes back when we discuss attacks.
+
+## Design 2: memory-based PUFs
+
+Some PUFs need no special circuit at all. An SRAM cell is two cross-coupled inverters. When power is applied, both start at zero and race; the stronger inverter wins and the cell settles to 0 or 1. Most cells have a strong preference set by transistor mismatch, so the power-up pattern of a memory block is a fingerprint.
+
+<SramPuf />
+
+SRAM PUFs are popular because almost every microcontroller already has SRAM, so a fingerprint can be read in firmware before the memory is initialised. Their limitation is that they are weak PUFs: one block gives one fingerprint, so they are used to *derive a key*, not to answer millions of challenges.
+
+Other common designs:
+
+| Design | What competes | Strengths | Watch out for |
+|---|---|---|---|
+| Arbiter PUF | Two delay paths | Huge challenge space, tiny area | Easy to model with machine learning |
+| XOR arbiter PUF | k arbiter chains, outputs XOR-ed | Much harder to model | Noise grows with k |
+| Ring-oscillator PUF | Frequencies of two ring oscillators | Simple on FPGAs | Temperature drift, more power |
+| SRAM PUF | Two inverters in each cell | No extra hardware | Ageing, needs power cycle |
+| Butterfly PUF | Cross-coupled latches | SRAM-like on FPGAs | Layout must be symmetric |
+
+## How good is a PUF? Four numbers
+
+A PUF is only useful if it is *different across chips* and *stable within a chip*. Both are measured with the fractional Hamming distance $\mathrm{HD}(R_1, R_2)$: the share of response bits that differ.
+
+**Uniqueness** averages the distance between every pair of $k$ chips answering the same challenges. Ideal: 50%, so every bit is a coin flip between chips.
+
+$$
+U = \frac{2}{k(k-1)} \sum_{i=1}^{k-1}\sum_{j=i+1}^{k} \mathrm{HD}(R_i, R_j)
+$$
+
+**Reliability** measures how much a chip disagrees with its own reference response $R_i$ over $T$ repeated reads $R_{i,t}$, at different temperatures and voltages. Ideal: 100%.
+
+$$
+\text{Rel}_i = 1 - \frac{1}{T}\sum_{t=1}^{T} \mathrm{HD}(R_i, R_{i,t})
+$$
+
+**Uniformity** is the share of ones in a response; ideal 50%, otherwise an attacker can guess. **Bit-aliasing** checks that a given bit position is not biased the same way on every chip.
+
+The best picture of a PUF's quality is the two Hamming-distance distributions side by side. Below is a simulation of 40 chips with 64-stage arbiter PUFs (the script is in this site's repository, `tools/puf-sim.mjs`). Hover over the bars to see exact values.
+
+<HdHistogram />
+
+The gap between the two humps is what makes authentication possible. A verifier picks a threshold $\tau$ inside the gap: a distance below $\tau$ means "same chip, a little noise"; above it means "a different chip".
+
+## Using a PUF to log in
+
+The simplest protocol has two phases. **Enrolment** happens once, in a trusted place such as the factory: the verifier applies many random challenges and stores the responses. **Authentication** happens in the field, every time the device connects.
+
+<EnrollAuthFlow />
+
+Two rules make this safe. First, the verifier never reuses a challenge, so a recorded CRP is useless to an eavesdropper. Second, the comparison uses a threshold instead of exact equality, because PUF responses are noisy.
+
+In a large deployment, such as thousands of vehicles roaming between roadside units, one central verifier becomes a bottleneck and a single point of failure. In my research we anchor the enrolled data on a blockchain ledger instead, storing only hashes of expected responses, so any edge verifier can check a device without a central database ([read the paper](/publications/#mondal2025bcpuf)).
+
+<PufAuthSequence />
+
+## Turning a noisy response into a key
+
+Authentication tolerates a few flipped bits, but cryptography does not: a key that differs by one bit is a different key. Weak PUFs therefore use a **fuzzy extractor**, built from an error-correcting code.
+
+<FuzzyExtractor />
+
+At enrolment, the **Gen** procedure picks a random codeword, XORs it with the response and publishes the result as **helper data** $W$. Later, **Rep** XORs the noisy response $R'$ with $W$, which gives the codeword plus the few bit errors, decodes it to remove those errors, and recovers the exact key. Practical designs add a few tricks before the code:
+
+- **Majority voting:** read the PUF several times and keep the most common value of each bit.
+- **Dark-bit masking:** at enrolment, find the unstable bits and simply never use them.
+- **Concatenated codes:** a repetition code inside a BCH or Reed–Muller code handles high error rates with less helper data.
+
+## How PUFs get attacked
+
+**Modelling attacks** are the biggest threat to strong PUFs. Remember the additive delay model: the response is the sign of a *linear* function of $\boldsymbol{\phi}(c)$. That means an attacker who eavesdrops on enough CRPs can train a linear classifier, such as logistic regression, and predict the PUF's answer to any new challenge. The chip is then cloned in software.
+
+The chart below shows that attack in simulation. A plain 64-stage arbiter PUF falls after a few hundred CRPs. XOR-ing four independent chains makes the function non-linear in $\boldsymbol{\phi}$, and the same attack stays at the level of a coin flip.
+
+<AttackChart />
+
+XOR is not the end of the story: with enough CRPs, specialised logistic-regression variants and neural networks do break XOR arbiter PUFs with more chains, and noise and power side channels leak information too. Defences therefore combine several layers:
+
+- **Never expose raw CRPs.** Hash or encrypt responses inside the device, and limit how many challenges can be asked.
+- **Use non-linear designs** such as XOR, feed-forward or interpose PUFs, sized against current attacks.
+- **Bind the PUF to a protocol** that uses each CRP once and refreshes enrolment data securely.
+- **Measure, don't assume.** Evaluate uniqueness, reliability and attack resistance on real hardware across temperature and voltage. We built [PUFAnalytics](/publications/#mondal2025pufanalytics), a Python library, for exactly this kind of evaluation.
+
+## Try it yourself
+
+This self-contained script builds two simulated arbiter PUFs, measures their Hamming distances and then clones one with logistic regression. It needs only NumPy.
+
+<CodeFile code={pufDemo} lang="python" file="puf_demo.py" note="pip install numpy, then python puf_demo.py" />
+
+A run on my machine prints:
+
+```text
+same chip, two reads : 0.031
+chip A vs chip B     : 0.531
+clone accuracy       : 0.974
+```
+
+Try changing `noise`, or replace `ArbiterPUF` with an XOR of four instances and watch the clone accuracy fall to about 50%.
+
+## Summary
+
+- A PUF derives a secret from manufacturing variation, so there is no stored key to steal.
+- Strong PUFs answer many challenges and suit authentication; weak PUFs derive one key.
+- Quality is judged by uniqueness (about 50%), reliability (close to 100%) and uniformity (about 50%).
+- Noise is handled by thresholds for authentication and fuzzy extractors for keys.
+- Linear designs such as the plain arbiter PUF can be cloned with machine learning, so real systems need non-linear designs and protocols that never reveal raw CRPs.
+
+## Further reading
+
+- B. Gassend, D. Clarke, M. van Dijk and S. Devadas, "Silicon physical random functions," *ACM CCS*, 2002.
+- G. E. Suh and S. Devadas, "Physical unclonable functions for device authentication and secret key generation," *DAC*, 2007.
+- J. Guajardo, S. Kumar, G.-J. Schrijen and P. Tuyls, "FPGA intrinsic PUFs and their use for IP protection," *CHES*, 2007.
+- Y. Dodis, L. Reyzin and A. Smith, "Fuzzy extractors: how to generate strong keys from biometrics and other noisy data," *EUROCRYPT*, 2004.
+- U. Rührmair, F. Sehnke, J. Sölter, G. Dror, S. Devadas and J. Schmidhuber, "Modeling attacks on physical unclonable functions," *ACM CCS*, 2010.

@@ -1,0 +1,45 @@
+---
+// Process: enrolment once, authentication many times. viewBox 1000×470.
+import DgBox from './DgBox.astro';
+import DgLabel from './DgLabel.astro';
+import DgMarkers from './DgMarkers.astro';
+const W = 190, H = 72;
+const X = [40, 276, 512, 748];
+const Y1 = 64, Y2 = 250;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 470" role="img" aria-labelledby="enr-title enr-desc">
+      <title id="enr-title">PUF enrolment and authentication</title>
+      <desc id="enr-desc">Once, in a trusted place, many challenges are applied and the challenge-response pairs are stored. Later, the verifier sends an unused challenge, compares the chip's answer with the stored response, accepts if the Hamming distance is under a threshold, and otherwise rejects.</desc>
+      <DgMarkers id="enr" />
+
+      <text class="eyebrow" x={X[0]} y={Y1 - 24}>ENROLMENT, ONCE, IN A TRUSTED PLACE</text>
+      <text class="eyebrow" x={X[0]} y={Y2 - 24}>AUTHENTICATION, EVERY LOGIN</text>
+
+      <!-- connectors first -->
+      <line class="ln" x1={X[0] + W} x2={X[1] - 1} y1={Y1 + H / 2} y2={Y1 + H / 2} marker-end="url(#enr-arrow)" />
+      <line class="ln" x1={X[1] + W} x2={X[2] - 1} y1={Y1 + H / 2} y2={Y1 + H / 2} marker-end="url(#enr-arrow)" />
+      <line class="ln" x1={X[0] + W} x2={X[1] - 1} y1={Y2 + H / 2} y2={Y2 + H / 2} marker-end="url(#enr-arrow)" />
+      <line class="ln" x1={X[1] + W} x2={X[2] - 1} y1={Y2 + H / 2} y2={Y2 + H / 2} marker-end="url(#enr-arrow)" />
+      <line class="acc" x1={X[2] + W} x2={X[3] - 1} y1={Y2 + H / 2} y2={Y2 + H / 2} marker-end="url(#enr-acc)" />
+      <line class="ln dash" x1={X[2] + W / 2} x2={X[2] + W / 2} y1={Y1 + H} y2={Y2 - 1} marker-end="url(#enr-arrow)" />
+      <line class="ln" x1={X[2] + W / 2} x2={X[2] + W / 2} y1={Y2 + H} y2={383} marker-end="url(#enr-arrow)" />
+
+      <DgLabel x={X[2] + W / 2 + 4} y={Y1 + H + 62} text="STORED R" anchor="start" />
+      <DgLabel x={X[2] + W / 2 + 4} y={Y2 + H + 36} text="HD > τ" anchor="start" />
+
+      <DgBox x={X[0]} y={Y1} w={W} h={H} name="Manufacture chip" sub="variation is baked in" />
+      <DgBox x={X[1]} y={Y1} w={W} h={H} name="Apply challenges" sub="thousands of random C" />
+      <DgBox x={X[2]} y={Y1} w={W} h={H} name="Store CRPs" sub="(C, R) in secure DB" kind="box2" />
+
+      <DgBox x={X[0]} y={Y2} w={W} h={H} name="Pick unused C" sub="never reuse a pair" />
+      <DgBox x={X[1]} y={Y2} w={W} h={H} name="Chip answers R′" sub="noisy re-read" />
+      <DgBox x={X[2]} y={Y2} w={W} h={H} name="Compare" sub="HD(R, R′) ≤ τ ?" kind="focal" />
+      <DgBox x={X[3]} y={Y2} w={W} h={H} name="Accept" sub="retire this CRP" />
+      <DgBox x={X[2]} y={384} w={W} h={56} name="Reject" />
+    </svg>
+  </div>
+  <figcaption><strong>Why each pair is used only once.</strong> An eavesdropper who records a challenge and its response learns nothing useful for the next login, because that challenge is never asked again.</figcaption>
+</figure>

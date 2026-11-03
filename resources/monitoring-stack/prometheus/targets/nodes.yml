@@ -1,0 +1,7 @@
+# Add one entry per machine running node-exporter on port 9100.
+# Prometheus re-reads this file every minute; no restart needed.
+# - targets: ["192.168.1.21:9100"]
+#   labels: { instance_name: jetson-01, role: edge }
+# - targets: ["192.168.1.22:9100"]
+#   labels: { instance_name: rpi5-01, role: edge }
+[]

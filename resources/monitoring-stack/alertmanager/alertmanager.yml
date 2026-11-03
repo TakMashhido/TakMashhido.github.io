@@ -1,0 +1,31 @@
+route:
+  receiver: default
+  group_by: [alertname, instance]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - matchers: [severity="critical"]
+      receiver: default
+      repeat_interval: 1h
+
+receivers:
+  - name: default
+    # Uncomment ONE of these and fill in your details.
+    # email_configs:
+    #   - to: you@example.com
+    #     from: alerts@example.com
+    #     smarthost: smtp.gmail.com:587
+    #     auth_username: you@example.com
+    #     auth_password: your-app-password
+    # telegram_configs:
+    #   - bot_token: "123456:ABC..."
+    #     chat_id: 123456789
+    # slack_configs:
+    #   - api_url: https://hooks.slack.com/services/XXX/YYY/ZZZ
+    #     channel: "#alerts"
+
+inhibit_rules:
+  - source_matchers: [severity="critical"]
+    target_matchers: [severity="warning"]
+    equal: [instance]
