@@ -25,7 +25,7 @@ When you run experiments on a lab cluster, the questions are always the same. Is
 
 This guide builds one server that answers all of them. Everything runs in Docker, every configuration file is shown in full, and the whole stack was started and tested before publishing: all eight scrape targets came up healthy and a deliberately failing job fired its alert.
 
-**Download everything:** [monitoring-stack.zip](/downloads/monitoring-stack.zip) contains every file in this post, ready to run.
+**Get the code:** every file in this post is in the GitHub repository [TakMashhido/docker-monitoring-stack](https://github.com/TakMashhido/docker-monitoring-stack), ready to clone and run.
 
 ## What you will build
 
@@ -68,6 +68,15 @@ monitoring-stack/
 │   └── dashboards/            # dashboard JSON files go here
 └── experiment/                # examples for your own jobs
 ```
+
+The quickest way is to clone the [repository](https://github.com/TakMashhido/docker-monitoring-stack), which already has this layout:
+
+```bash
+git clone https://github.com/TakMashhido/docker-monitoring-stack.git
+cd docker-monitoring-stack
+```
+
+To build it by hand while following along, create the folders instead:
 
 ```bash
 mkdir -p monitoring-stack/{prometheus/{rules,targets},alertmanager,blackbox,grafana/{provisioning/{datasources,dashboards},dashboards},experiment}
@@ -316,4 +325,4 @@ docker run --rm -v monitoring_grafana-data:/data -v "$PWD":/backup alpine \
 - **Logs:** Grafana Loki stores logs next to your metrics, so you can jump from a spike on a chart to the log lines from that minute.
 - **Long-term storage:** if you need years of history across many machines, look at Thanos or Grafana Mimir.
 
-The complete, tested stack is in [monitoring-stack.zip](/downloads/monitoring-stack.zip). Unzip it, set the password in `.env`, and run `docker compose up -d`.
+The complete, tested stack is on GitHub at [TakMashhido/docker-monitoring-stack](https://github.com/TakMashhido/docker-monitoring-stack). Clone it, copy `.env.example` to `.env`, set the password, and run `docker compose up -d`. Issues and pull requests are welcome.

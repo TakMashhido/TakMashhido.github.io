@@ -60,8 +60,8 @@ Tags, search (Ctrl K), reading time, table of contents, related posts and RSS (`
 
 - `tools/puf-sim.mjs`: arbiter-PUF simulation that generates `src/data/puf-sim.json` (run `node tools/puf-sim.mjs`).
 - `resources/puf_demo.py`: the Python example in the PUF post.
-- `resources/monitoring-stack/`: the tested Docker monitoring stack. After editing it, rebuild the download:
-  `cd resources && rm ../public/downloads/monitoring-stack.zip && zip -r ../public/downloads/monitoring-stack.zip monitoring-stack`
+- `resources/monitoring-stack/`: the files shown in the monitoring post (imported as code listings). The public copy lives at
+  https://github.com/TakMashhido/docker-monitoring-stack; keep the two in sync when you change either.
 
 ## Adding a new publication
 

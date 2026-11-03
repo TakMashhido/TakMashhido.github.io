@@ -9,7 +9,7 @@ export async function GET() {
     ...posts.map((p) => ({ t: p.data.title, u: `/blog/${p.id}/`, k: 'Post', d: `${p.data.description} ${p.data.tags.join(' ')}` })),
     ...publications.map((p) => ({ t: p.title, u: `/publications/#${p.id}`, k: typeLabels[p.type], d: `${p.venue} ${p.year} ${p.authors.join(' ')}` })),
     { t: 'All publications as BibTeX', u: '/publications.bib', k: 'File', d: 'bibtex citations export' },
-    { t: 'Monitoring stack (zip)', u: '/downloads/monitoring-stack.zip', k: 'File', d: 'prometheus grafana docker compose download' },
+    { t: 'Monitoring stack (GitHub)', u: 'https://github.com/TakMashhido/docker-monitoring-stack', k: 'Code', d: 'prometheus grafana docker compose repository' },
   ];
   return new Response(JSON.stringify(items), { headers: { 'Content-Type': 'application/json' } });
 }
