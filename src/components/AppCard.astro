@@ -1,0 +1,55 @@
+---
+import ClayArt from './ClayArt.astro';
+import Icon from './Icon.astro';
+import { hostOf, type App } from '../scripts/apps';
+interface Props { app: App }
+const { app } = Astro.props;
+const { title, summary, url, category, status, tags, stack, art, screenshot, screenshotAlt } = app.data;
+const search = `${title} ${summary} ${tags.join(' ')} ${stack.join(' ')} ${category}`.toLowerCase();
+const tone = category === 'Research' ? 'research' : 'side';
+---
+<article class="app clay" data-search={search} data-category={category}>
+  <div class={`window win-${tone}`}>
+    <div class="win-bar" aria-hidden="true"><span></span><span></span><span></span><em>{hostOf(url)}</em></div>
+    <div class="win-body">
+      {screenshot ? <img src={screenshot} alt={screenshotAlt ?? ''} loading="lazy" decoding="async" /> : <div class="win-art"><ClayArt name={art} /></div>}
+    </div>
+  </div>
+  <div class="top">
+    <span class={`chip ${tone === 'research' ? 'tag-mint' : 'tag-butter'}`}>{category}</span>
+    {status !== 'Live' && <span class="chip">{status}</span>}
+  </div>
+  <h3><a href={`/apps/${app.id}/`}>{title}</a></h3>
+  <p class="muted summary">{summary}</p>
+  {stack.length > 0 && <ul class="stack">{stack.map((s) => <li>{s}</li>)}</ul>}
+  <div class="actions">
+    <a class="btn btn-sm btn-primary" href={url} target="_blank" rel="noopener">Open app <Icon name="external" /></a>
+    <a class="btn btn-sm" href={`/apps/${app.id}/`}>About this app</a>
+  </div>
+</article>
+
+<style>
+  .app { position: relative; padding: clamp(18px, 3vw, 26px); border-radius: var(--r-lg) var(--r-lg) var(--r-sm) var(--r-lg); display: flex; flex-direction: column; }
+  .window { margin: -4px -4px 18px; border-radius: calc(var(--r-lg) - 8px); overflow: hidden; box-shadow: var(--clay-pressed); }
+  .win-research { background: color-mix(in srgb, var(--mint) 26%, var(--surface-2)); }
+  .win-side { background: color-mix(in srgb, var(--butter) 26%, var(--surface-2)); }
+  .win-bar { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: color-mix(in srgb, var(--ink) 6%, transparent); }
+  .win-bar span { width: 9px; height: 9px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 22%, transparent); }
+  .win-bar em { margin-left: 8px; font-style: normal; font-size: 12px; font-weight: 650; color: var(--ink-soft);
+    background: var(--surface); padding: 2px 10px; border-radius: var(--pill); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+  .win-body { aspect-ratio: 16 / 8; display: grid; place-items: center; }
+  .win-body img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .win-art { width: 40%; max-width: 150px; }
+  .top { display: flex; gap: 8px; margin-bottom: 12px; }
+  h3 { font-size: var(--step-1); margin-bottom: 6px; }
+  h3 a { color: var(--ink); }
+  h3 a::after { content: ''; position: absolute; inset: 0; border-radius: inherit; }
+  h3 a:focus-visible { outline: none; }
+  .app:has(h3 a:focus-visible) { outline: 3px solid var(--focus); outline-offset: 4px; }
+  .app:hover h3 a { color: var(--primary); }
+  .summary { margin-bottom: 14px; }
+  .stack { list-style: none; margin: 0 0 16px; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack li { font-size: 12px; font-weight: 650; padding: 3px 10px; border-radius: var(--pill); background: var(--surface-2); color: var(--ink-soft); }
+  .actions { margin-top: auto; display: flex; flex-wrap: wrap; gap: 10px; position: relative; z-index: 1; }
+  .actions :global(svg) { width: 16px; height: 16px; }
+</style>

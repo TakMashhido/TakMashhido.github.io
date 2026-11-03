@@ -1,0 +1,120 @@
+---
+import { render } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import Icon from '../../components/Icon.astro';
+import ClayArt from '../../components/ClayArt.astro';
+import { getApps, hostOf, isExternal, type App } from '../../scripts/apps';
+import { getPosts, formatDate } from '../../scripts/blog';
+import { publications } from '../../data/publications';
+
+export async function getStaticPaths() {
+  const apps = await getApps();
+  return apps.map((app) => ({ params: { slug: app.id }, props: { app, others: apps.filter((a) => a.id !== app.id).slice(0, 3) } }));
+}
+
+interface Props { app: App; others: App[] }
+const { app, others } = Astro.props;
+const { Content } = await render(app);
+const { title, summary, url, category, status, date, tags, stack, repo, paper, post, art, screenshot, screenshotAlt } = app.data;
+const pub = paper ? publications.find((p) => p.id === paper) : undefined;
+const blogPost = post ? (await getPosts()).find((p) => p.id === post) : undefined;
+const tone = category === 'Research' ? 'research' : 'side';
+---
+<Base title={title} description={summary}>
+  <article class="wrap app-page">
+    <a class="back" href="/apps/"><Icon name="arrowLeft" /> All apps</a>
+
+    <header class="head">
+      <div class="head-text">
+        <div class="chips">
+          <span class={`chip ${tone === 'research' ? 'tag-mint' : 'tag-butter'}`}>{category}</span>
+          {status !== 'Live' && <span class="chip">{status}</span>}
+        </div>
+        <h1>{title}</h1>
+        <p class="lede">{summary}</p>
+        <div class="cta">
+          <a class="btn btn-primary btn-lg" href={url} target="_blank" rel="noopener"><Icon name="play" /> Open app</a>
+          {repo && <a class="btn" href={repo} rel="noopener"><Icon name="code" /> Source code</a>}
+        </div>
+        <p class="opens muted">Opens in a new tab{isExternal(url) ? ` on ${hostOf(url)}` : ''}.</p>
+      </div>
+      <div class={`shot win-${tone}`}>
+        <div class="win-bar" aria-hidden="true"><span></span><span></span><span></span><em>{hostOf(url)}</em></div>
+        <div class="shot-body">
+          {screenshot ? <img src={screenshot} alt={screenshotAlt ?? `${title} screenshot`} /> : <div class="shot-art"><ClayArt name={art} /></div>}
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <div class="body clay prose">
+        <Content />
+      </div>
+      <aside class="facts clay-sm" aria-label="App details">
+        <dl>
+          <dt>Status</dt><dd>{status}</dd>
+          <dt>Released</dt><dd><time datetime={date.toISOString()}>{formatDate(date)}</time></dd>
+          {stack.length > 0 && <><dt>Built with</dt><dd><ul class="stack">{stack.map((s) => <li>{s}</li>)}</ul></dd></>}
+          {pub && <><dt>Related paper</dt><dd><a href={`/publications/#${pub.id}`}>{pub.title}</a></dd></>}
+          {blogPost && <><dt>Read more</dt><dd><a href={`/blog/${blogPost.id}/`}>{blogPost.data.title}</a></dd></>}
+          {tags.length > 0 && <><dt>Topics</dt><dd>{tags.join(', ')}</dd></>}
+        </dl>
+      </aside>
+    </div>
+
+    {others.length > 0 && (
+      <nav class="more" aria-label="More apps">
+        <h2>More apps</h2>
+        <ul>
+          {others.map((o) => (
+            <li><a class="clay-sm" href={`/apps/${o.id}/`}><span class="mini"><ClayArt name={o.data.art} /></span><span><strong>{o.data.title}</strong><span class="muted">{o.data.category}</span></span></a></li>
+          ))}
+        </ul>
+      </nav>
+    )}
+  </article>
+</Base>
+
+<style>
+  .app-page { padding-top: clamp(24px, 4vw, 44px); }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; margin-bottom: 20px; }
+  .back :global(svg) { width: 18px; height: 18px; }
+  .head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr); gap: clamp(24px, 5vw, 56px); align-items: center; }
+  .head h1 { margin: 12px 0 10px; }
+  .cta { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 22px; }
+  .cta :global(svg) { width: 18px; height: 18px; }
+  .opens { font-size: 13px; margin-top: 10px; }
+  .shot { border-radius: var(--r-lg); overflow: hidden; box-shadow: var(--clay); }
+  .win-research { background: color-mix(in srgb, var(--mint) 26%, var(--surface-2)); }
+  .win-side { background: color-mix(in srgb, var(--butter) 26%, var(--surface-2)); }
+  .win-bar { display: flex; align-items: center; gap: 6px; padding: 10px 14px; background: color-mix(in srgb, var(--ink) 6%, transparent); }
+  .win-bar span { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in srgb, var(--ink) 22%, transparent); }
+  .win-bar em { margin-left: 8px; font-style: normal; font-size: 12px; font-weight: 650; color: var(--ink-soft); background: var(--surface); padding: 2px 10px; border-radius: var(--pill); }
+  .shot-body { aspect-ratio: 16 / 10; display: grid; place-items: center; }
+  .shot-body img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+  .shot-art { width: 42%; max-width: 200px; }
+
+  .layout { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 28px; margin-top: clamp(32px, 5vw, 56px); align-items: start; }
+  .body { padding: clamp(22px, 4vw, 40px); }
+  .body > :global(:first-child) { margin-top: 0; }
+  .facts { padding: 20px 22px; position: sticky; top: 96px; }
+  .facts dl { margin: 0; display: grid; gap: 4px; }
+  .facts dt { font-size: 13px; font-weight: 700; color: var(--ink-soft); margin-top: 12px; }
+  .facts dt:first-child { margin-top: 0; }
+  .facts dd { margin: 0; font-weight: 600; }
+  .stack { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+  .stack li { font-size: 12px; font-weight: 650; padding: 3px 10px; border-radius: var(--pill); background: var(--surface-2); }
+
+  .more { margin-top: clamp(36px, 6vw, 64px); }
+  .more ul { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+  .more a { display: flex; align-items: center; gap: 14px; padding: 12px 16px; border-radius: var(--r-md); color: var(--ink); }
+  .more a:hover strong { color: var(--primary); }
+  .more .mini { width: 46px; flex: none; }
+  .more a > span:last-child { display: grid; }
+  .more .muted { font-size: 13px; }
+
+  @media (max-width: 900px) {
+    .head, .layout { grid-template-columns: 1fr; }
+    .facts { position: static; }
+  }
+</style>

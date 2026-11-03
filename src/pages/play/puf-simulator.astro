@@ -1,0 +1,22 @@
+---
+import Base from '../../layouts/Base.astro';
+import PufDemo from '../../components/PufDemo.astro';
+import Icon from '../../components/Icon.astro';
+---
+<Base title="PUF simulator" description="Interactive arbiter PUF simulator: set a challenge and compare the responses of two chips built from the same design.">
+  <section class="wrap play">
+    <div class="play-head">
+      <a class="back" href="/apps/puf-simulator/"><Icon name="arrowLeft" /> About this app</a>
+      <h1>PUF simulator</h1>
+    </div>
+    <PufDemo />
+  </section>
+</Base>
+
+<style>
+  .play { padding-top: clamp(20px, 4vw, 40px); }
+  .play-head { margin-bottom: 20px; }
+  .play-head h1 { margin: 10px 0 0; font-size: var(--step-3); }
+  .back { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; }
+  .back :global(svg) { width: 18px; height: 18px; }
+</style>

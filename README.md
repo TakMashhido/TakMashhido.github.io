@@ -56,6 +56,16 @@ import script from '../../../resources/my_script.py?raw';
 Diagrams live in `src/components/diagrams/`, charts in `src/components/charts/`.
 Tags, search (Ctrl K), reading time, table of contents, related posts and RSS (`/rss.xml`) are automatic.
 
+## Add an app
+
+The Apps page (`/apps/`) lists things visitors can open and try. Each app is one Markdown file in `src/content/apps/`:
+
+1. Copy `src/content/apps/_template.md` to `src/content/apps/my-app.md` (files starting with `_` are ignored).
+2. Fill in the front matter: `title`, `summary`, `url` (where **Open app** goes, in a new tab), `category` (`Research` or `Side project`), `status`, `date`, and optionally `stack`, `repo`, `paper`, `post`, `art` or `screenshot`.
+3. Write the intro below the front matter: what it does, how to use it, how it works.
+
+That creates the card on `/apps/` and the intro page at `/apps/my-app/`. Apps hosted on this site itself (like the PUF simulator) live in `src/pages/play/`.
+
 ## Reproducible material behind the posts
 
 - `tools/puf-sim.mjs`: arbiter-PUF simulation that generates `src/data/puf-sim.json` (run `node tools/puf-sim.mjs`).

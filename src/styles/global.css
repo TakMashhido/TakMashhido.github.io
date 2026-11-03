@@ -149,6 +149,7 @@ p { margin: 0 0 1em; text-wrap: pretty; }
 .btn:active { transform: translateY(1px); box-shadow: var(--clay-pressed); }
 .btn-primary { --b-bg: var(--primary); --b-ink: var(--primary-ink); --b-shadow: var(--clay-primary); }
 .btn-sm { min-height: 40px; padding: 0.5em 1em; font-size: var(--step--1); }
+.btn-lg { min-height: 56px; padding: 0.8em 1.6em; font-size: var(--step-1); }
 .btn svg { width: 1.1em; height: 1.1em; flex: none; }
 .btn[disabled] { opacity: 0.55; cursor: not-allowed; transform: none; }
 

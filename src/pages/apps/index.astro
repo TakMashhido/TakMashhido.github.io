@@ -1,0 +1,54 @@
+---
+import Base from '../../layouts/Base.astro';
+import PageHero from '../../components/PageHero.astro';
+import AppCard from '../../components/AppCard.astro';
+import { getApps } from '../../scripts/apps';
+
+const apps = await getApps();
+const cats = ['Research', 'Side project'] as const;
+const count = (c: string) => apps.filter((a) => a.data.category === c).length;
+---
+<Base title="Apps" description="Apps built by Koustav Kumar Mondal, from research demos to weekend projects. Open any of them and try it.">
+  <PageHero title="Apps" art="code">
+    <p class="lede">Things I've built, from research demos to weekend projects. Open any of them and try it, or read what it does first.</p>
+  </PageHero>
+
+  {apps.length > 0 ? (
+    <section class="wrap list-wrap">
+      {cats.every((c) => count(c) > 0) && (
+        <div class="chips filters" role="group" aria-label="Filter apps">
+          <button type="button" class="chip" data-cat="all" aria-pressed="true">All <span class="count">{apps.length}</span></button>
+          {cats.map((c) => <button type="button" class="chip" data-cat={c} aria-pressed="false">{c}s <span class="count">{count(c)}</span></button>)}
+        </div>
+      )}
+      <div class="app-grid" id="apps">
+        {apps.map((a) => <AppCard app={a} />)}
+      </div>
+    </section>
+  ) : (
+    <section class="wrap list-wrap">
+      <div class="empty clay">
+        <h2>First apps on the way</h2>
+        <p class="muted">Research demos and side projects will appear here as they go live. Meanwhile, the <a href="/blog/">blog</a> has working code you can run today.</p>
+      </div>
+    </section>
+  )}
+</Base>
+
+<style>
+  .list-wrap { margin-top: 32px; }
+  .filters { margin-bottom: 24px; }
+  .app-grid { display: grid; gap: clamp(20px, 3vw, 30px); grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr)); }
+  .empty { padding: clamp(22px, 4vw, 36px); max-width: 640px; }
+  .empty h2 { margin-top: 0; }
+</style>
+
+<script>
+  const btns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-cat]'));
+  const cards = Array.from(document.querySelectorAll<HTMLElement>('#apps > article'));
+  btns.forEach((b) => b.addEventListener('click', () => {
+    const cat = b.dataset.cat!;
+    btns.forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    cards.forEach((c) => (c.hidden = cat !== 'all' && c.dataset.category !== cat));
+  }));
+</script>

@@ -32,5 +32,6 @@ export const nav = [
   { label: 'Research', href: '/research/' },
   { label: 'Publications', href: '/publications/' },
   { label: 'Blog', href: '/blog/' },
+  { label: 'Apps', href: '/apps/' },
   { label: 'Contact', href: '/contact/' },
 ];
