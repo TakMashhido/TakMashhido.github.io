@@ -74,11 +74,13 @@ Tags, search (Ctrl K), reading time, table of contents, related posts and RSS (`
 
 - `web3formsKey` in `src/data/site.ts` (free key from https://web3forms.com)
 
-## Deploy (GitHub Pages, free) on koustav.isroot.in
+## Deployment
 
-1. Create a GitHub repo and push this folder to the `main` branch.
-2. Repo → Settings → Pages → Source: **GitHub Actions**. The workflow in `.github/workflows/deploy.yml` builds and publishes on every push.
-3. At your DNS provider for isroot.in (nameservers ns1/ns2.nevercode.in), add:
-   `CNAME  koustav  →  <your-github-username>.github.io`
-4. Repo → Settings → Pages → Custom domain: `koustav.isroot.in`, then tick **Enforce HTTPS** once the certificate is issued.
-   (`public/CNAME` already contains the domain.)
+Live at **https://koustav.isroot.in**, served by GitHub Pages.
+
+- Every push to `main` runs `.github/workflows/deploy.yml`, which builds the site and publishes it (about a minute).
+- DNS: isroot.in delegates `koustav.isroot.in` to deSEC (`ns1.desec.io`, `ns2.desec.org`). The deSEC zone holds:
+  - `A` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+  - `AAAA` → `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
+  - `CAA` → `0 issue "letsencrypt.org"` (needed: the parent zone's nameservers time out on CAA queries, which blocks certificate issuance)
+- HTTPS: Let's Encrypt certificate issued and renewed by GitHub; *Enforce HTTPS* is on. `public/CNAME` holds the domain.
