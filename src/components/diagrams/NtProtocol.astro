@@ -1,0 +1,95 @@
+---
+// Sequence: NebulaTransfer's file protocol over the data channel. viewBox 1000×800.
+const S = 300, R = 700;
+type Kind = 'call' | 'return' | 'headline';
+const msgs: { y: number; from: number; to: number; label: string; kind: Kind; note?: string; noteSide?: 'left' | 'right' }[] = [
+  { y: 150, from: S, to: R, label: 'OFFER', kind: 'call', note: 'name, size, type, chunk count', noteSide: 'right' },
+  { y: 200, from: R, to: S, label: 'ANSWER + PIN', kind: 'return', note: 'user typed the 6 digits', noteSide: 'right' },
+  { y: 282, from: S, to: R, label: 'PIN-WRONG', kind: 'call', note: 'attempts left', noteSide: 'right' },
+  { y: 330, from: R, to: S, label: 'ANSWER + PIN', kind: 'return' },
+  { y: 410, from: S, to: R, label: 'START', kind: 'call' },
+  { y: 494, from: S, to: R, label: 'CHUNK i', kind: 'call', note: '256 KB slice of the file', noteSide: 'left' },
+  { y: 586, from: R, to: S, label: 'ACK i', kind: 'return', note: 'frees one window slot', noteSide: 'left' },
+  { y: 666, from: S, to: R, label: 'DONE', kind: 'call', note: 'every chunk acked', noteSide: 'left' },
+  { y: 714, from: R, to: S, label: 'DONE-ACK', kind: 'headline', note: 'all parts present', noteSide: 'right' },
+];
+const selfs = [
+  { x: S, y: 206, label: 'CHECK PIN' },
+  { x: R, y: 518, label: 'PUT IN INDEXEDDB' },
+];
+const frames = [
+  { y: 236, h: 118, op: 'LOOP', guard: '[wrong PIN, at most 3 tries]' },
+  { y: 444, h: 168, op: 'LOOP', guard: '[until every chunk is acked · at most 8 in flight]' },
+];
+const lw = (s: string) => Math.ceil(s.length * 7.4 + 16);
+const cls = (k: Kind) => (k === 'headline' ? 'acc' : k === 'call' ? 'ln' : 'ln dash');
+const mk = (k: Kind) => (k === 'headline' ? 'url(#ntp-acc)' : 'url(#ntp-arrow)');
+const selfPath = (x: number, y: number) =>
+  `M${x},${y} H${x + 48} Q${x + 56},${y} ${x + 56},${y + 8} V${y + 16} Q${x + 56},${y + 24} ${x + 48},${y + 24} H${x + 2}`;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 800" role="img" aria-labelledby="ntp-title ntp-desc">
+      <title id="ntp-title">NebulaTransfer transfer protocol</title>
+      <desc id="ntp-desc">The sender offers a file; the receiver answers with the PIN it was told. If the PIN is wrong the sender says so and the receiver may try again, up to three times. After start, the sender streams 256 KB chunks; the receiver stores each one in IndexedDB and acknowledges it, and at most eight chunks are unacknowledged at once. When every chunk is acknowledged the sender sends done and the receiver confirms with done-ack.</desc>
+      <defs>
+        <marker id="ntp-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path class="mk" d="M0,0 L10,4 L0,8 Z" /></marker>
+        <marker id="ntp-acc" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path class="mk-acc" d="M0,0 L10,4 L0,8 Z" /></marker>
+      </defs>
+
+      <!-- Loop frames (drawn first, under everything) -->
+      {frames.map((f) => (
+        <g>
+          <rect class="frame" x="40" y={f.y} width="920" height={f.h} rx="4" />
+          <rect class="frame-tab" x="40" y={f.y} width="56" height="20" />
+          <text class="eyebrow" x="50" y={f.y + 14}>{f.op}</text>
+          <text class="sub" x="106" y={f.y + 14}>{f.guard}</text>
+        </g>
+      ))}
+
+      <line class="life" x1={S} x2={S} y1="96" y2="740" />
+      <line class="life" x1={R} x2={R} y1="96" y2="740" />
+
+      {msgs.map((m) => <line class={cls(m.kind)} x1={m.from} x2={m.to > m.from ? m.to - 1 : m.to + 1} y1={m.y} y2={m.y} marker-end={mk(m.kind)} />)}
+      {selfs.map((s) => <path class="ln" d={selfPath(s.x, s.y)} marker-end="url(#ntp-arrow)" />)}
+
+      {msgs.map((m) => {
+        const w = lw(m.label);
+        return (
+          <g>
+            <rect class="mask" x={500 - w / 2} y={m.y - 26} width={w} height="16" />
+            <text class={`lbl${m.kind === 'headline' ? ' focal-text' : ''}`} x="500" y={m.y - 14} text-anchor="middle">{m.label}</text>
+            {m.note && <text class="sub" x={m.noteSide === 'left' ? S - 16 : R + 16} y={m.y + 4} text-anchor={m.noteSide === 'left' ? 'end' : 'start'}>{m.note}</text>}
+          </g>
+        );
+      })}
+      {selfs.map((s) => (
+        <g>
+          <rect class="mask" x={s.x + 66} y={s.y + 2} width={lw(s.label)} height="16" />
+          <text class="lbl" x={s.x + 74} y={s.y + 14}>{s.label}</text>
+        </g>
+      ))}
+
+      {[{ x: S, name: 'Sender', sub: 'owns the PIN' }, { x: R, name: 'Receiver', sub: 'types the PIN' }].map((a) => (
+        <g>
+          <rect class="box" x={a.x - 100} y="32" width="200" height="64" rx="8" />
+          <text class="name" x={a.x} y="60" text-anchor="middle">{a.name}</text>
+          <text class="sub" x={a.x} y="80" text-anchor="middle">{a.sub}</text>
+        </g>
+      ))}
+
+      <g transform="translate(250 776)">
+        <line class="ln" x1="0" x2="36" y1="0" y2="0" marker-end="url(#ntp-arrow)" /><text class="sub" x="46" y="4">message</text>
+        <line class="ln dash" x1="150" x2="186" y1="0" y2="0" marker-end="url(#ntp-arrow)" /><text class="sub" x="196" y="4">reply</text>
+        <line class="acc" x1="290" x2="326" y1="0" y2="0" marker-end="url(#ntp-acc)" /><text class="sub" x="336" y="4">transfer complete</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption><strong>Ten message types, one JSON-like object each.</strong> Either side can also send <code>cancel</code> at any point, and a dropped connection fails every transfer on it. The PIN travels only from receiver to sender: the sender never reveals it, it just checks what the receiver typed.</figcaption>
+</figure>
+
+<style>
+  .dg :global(.frame) { fill: color-mix(in srgb, var(--ink) 3%, transparent); stroke: color-mix(in srgb, var(--ink) 22%, transparent); stroke-width: 1; }
+  .dg :global(.frame-tab) { fill: var(--surface); stroke: color-mix(in srgb, var(--ink) 22%, transparent); stroke-width: 1; }
+</style>

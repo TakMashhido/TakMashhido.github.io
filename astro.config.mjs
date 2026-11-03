@@ -14,6 +14,15 @@ export default defineConfig({
     shikiConfig: {
       themes: { light: 'github-light', dark: 'github-dark' },
       wrap: false,
+      // ```ts title="src/file.ts"  ->  <pre data-title="src/file.ts">, shown as a file-name bar above the code.
+      transformers: [
+        {
+          pre(node) {
+            const m = /title="([^"]+)"/.exec(this.options.meta?.__raw ?? '');
+            if (m) node.properties['data-title'] = m[1];
+          },
+        },
+      ],
     },
   },
 });

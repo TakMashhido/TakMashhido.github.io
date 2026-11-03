@@ -1,0 +1,78 @@
+---
+// Upper bound on throughput set by the send window: window bytes per round trip.
+const W = 760, H = 340, L = 60, R = 120, T = 28, B = 56;
+const pw = W - L - R, ph = H - T - B;
+const rtts = [5, 10, 20, 40, 80, 120, 160, 200];
+const series = [
+  { chunks: 2, name: '2 chunks (512 KB)', short: '2 chunks', color: 'var(--s2)' },
+  { chunks: 8, name: '8 chunks (2 MB), NebulaTransfer', short: '8 chunks', color: 'var(--s1)' },
+  { chunks: 32, name: '32 chunks (8 MB)', short: '32 chunks', color: 'var(--s3)' },
+];
+const MB = 1024 * 1024, CHUNK = 256 * 1024;
+const ceil = (chunks: number, rtt: number) => (chunks * CHUNK) / MB / (rtt / 1000);
+const ylo = 1, yhi = 2000;
+const x = (ms: number) => L + (ms / 200) * pw;
+const y = (v: number) => T + ph - ((Math.log10(v) - Math.log10(ylo)) / (Math.log10(yhi) - Math.log10(ylo))) * ph;
+const path = (c: number) => rtts.map((r, i) => `${i ? 'L' : 'M'}${x(r)},${y(ceil(c, r))}`).join(' ');
+const fmt = (v: number) => (v >= 100 ? Math.round(v).toString() : v >= 10 ? v.toFixed(0) : v.toFixed(1));
+const link = 100 / 8 / 1.048576; // 100 Mbit/s in MB/s
+const refs = [
+  { ms: 5, text: 'same Wi-Fi' },
+  { ms: 40, text: 'same country' },
+  { ms: 150, text: 'other continent' },
+];
+const edges = rtts.map((r, i) => [i === 0 ? x(r) - 14 : (x(rtts[i - 1]) + x(r)) / 2, i === rtts.length - 1 ? x(r) + 14 : (x(r) + x(rtts[i + 1])) / 2]);
+---
+<figure class="figure viz">
+  <ul class="viz-legend" aria-hidden="true">
+    {series.map((s) => <li><i style={`background: ${s.color}`}></i>{s.name}</li>)}
+  </ul>
+  <div class="dg-scroll"><svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="wc-title wc-desc">
+    <title id="wc-title">Throughput ceiling set by the send window</title>
+    <desc id="wc-desc">With eight 256 KB chunks in flight, the ceiling is 400 MB/s at 5 ms round trip, 50 MB/s at 40 ms and about 13 MB/s at 150 ms, still above a 100 Mbit/s link. A two-chunk window would fall below that link at around 40 ms.</desc>
+    {[1, 10, 100, 1000].map((t) => (
+      <g>
+        <line class={t === 1 ? 'base' : 'grid'} x1={L} x2={L + pw} y1={y(t)} y2={y(t)} />
+        <text x={L - 8} y={y(t) + 4} text-anchor="end">{t}</text>
+      </g>
+    ))}
+    {[0, 50, 100, 150, 200].map((t) => <text x={x(t)} y={T + ph + 20} text-anchor="middle">{t}</text>)}
+    <text class="axis-title" x={L + pw / 2} y={H - 8} text-anchor="middle">Round-trip time between the two browsers (ms)</text>
+    <text class="axis-title" x={L} y={14}>Maximum speed, MB/s (log scale)</text>
+
+    {refs.map((r) => (
+      <g>
+        <line class="ref" x1={x(r.ms)} x2={x(r.ms)} y1={T} y2={T + ph} />
+        <text x={x(r.ms) + 5} y={T + ph - 8}>{r.text}</text>
+      </g>
+    ))}
+    <line class="ref" x1={L} x2={L + pw} y1={y(link)} y2={y(link)} />
+    <text x={x(48)} y={y(link) - 6}>100 Mbit/s link</text>
+
+    {series.map((s) => <path d={path(s.chunks)} fill="none" style={`stroke: ${s.color}`} stroke-width={s.chunks === 8 ? 2.6 : 2} stroke-linejoin="round" />)}
+    {series.map((s) => rtts.map((r) => <circle cx={x(r)} cy={y(ceil(s.chunks, r))} r="4.5" style={`fill: ${s.color}; stroke: var(--surface)`} stroke-width="2" />))}
+    {series.map((s) => <text class="direct" x={x(200) + 12} y={y(ceil(s.chunks, 200)) + 4}>{s.short}</text>)}
+
+    {rtts.map((r, i) => (
+      <g>
+        <rect class="hit" tabindex="0" x={edges[i][0]} y={T} width={edges[i][1] - edges[i][0]} height={ph}
+          data-tip={`<b>${r} ms round trip</b><br/>${series.map((s) => `${s.short}: ${fmt(ceil(s.chunks, r))} MB/s`).join('<br/>')}`}
+          aria-label={`${r} ms: ${series.map((s) => `${s.short} ${fmt(ceil(s.chunks, r))} MB/s`).join(', ')}`} />
+        <line class="hl" x1={x(r)} x2={x(r)} y1={T} y2={T + ph} />
+      </g>
+    ))}
+  </svg></div>
+  <details class="viz-table">
+    <summary>Show the numbers</summary>
+    <table>
+      <thead><tr><th>Round trip</th>{series.map((s) => <th>{s.short}</th>)}</tr></thead>
+      <tbody>{rtts.map((r) => <tr><td>{r} ms</td>{series.map((s) => <td>{fmt(ceil(s.chunks, r))} MB/s</td>)}</tr>)}</tbody>
+    </table>
+  </details>
+  <figcaption><strong>Window ÷ round-trip time is the speed limit.</strong> This is an upper bound from the protocol alone; the real speed is the lower of this and what the network and the receiver's disk can do. With 8 chunks, the window stays above a 100 Mbit/s connection up to about 170 ms round trip, which covers most of the world.</figcaption>
+</figure>
+
+<script>
+  import { bindTooltips } from '../../scripts/viz';
+  bindTooltips();
+</script>

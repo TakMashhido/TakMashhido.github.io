@@ -190,7 +190,7 @@ textarea.input { min-height: 170px; resize: vertical; }
 .timeline .when { font-weight: 700; color: var(--primary); font-size: var(--step--1); }
 
 /* ---------- Prose ---------- */
-.prose { font-family: var(--font-read); font-size: clamp(1.05rem, 1rem + 0.25vw, 1.15rem); line-height: 1.75; }
+.prose { font-family: var(--font-read); font-size: clamp(1.05rem, 1rem + 0.25vw, 1.15rem); line-height: 1.75; overflow-wrap: break-word; }
 /* Text keeps a readable measure; figures, code and tables may use the full card width. */
 .prose > :where(p, ul, ol, h2, h3, h4, blockquote) { max-width: 70ch; }
 .prose .figure { margin: 2em 0; font-family: var(--font-ui); line-height: 1.55; }

@@ -141,6 +141,9 @@ const { title, description, date, updated, category, tags, demo } = post.data;
   .rel:hover .rel-title { color: var(--primary); }
   .prose :global(.code-wrap) { position: relative; }
   .prose :global(.code-wrap > pre) { margin-top: 0; }
+  .prose :global(.code-title) { font: 600 12.5px/1.3 var(--font-code); color: var(--ink-soft); background: var(--surface-2); padding: 10px 16px; border-radius: var(--r-md) var(--r-md) 0 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding-right: 96px; }
+  .prose :global(.code-wrap.has-title > pre) { border-top-left-radius: 0; border-top-right-radius: 0; }
+  .prose :global(.code-wrap.has-title .copy-code) { top: 3px; }
   .prose :global(.copy-code) { position: absolute; top: 8px; right: 8px; z-index: 1; min-height: 32px; padding: 4px 12px; font-size: 13px; opacity: 0; transition: opacity .15s; }
   .prose :global(.code-wrap:hover .copy-code), .prose :global(.copy-code:focus-visible) { opacity: 1; }
   @media (hover: none) { .prose :global(.copy-code) { opacity: 1; } }
@@ -201,6 +204,13 @@ const { title, description, date, updated, category, tags, demo } = post.data;
     const wrap = document.createElement('div');
     wrap.className = 'code-wrap';
     pre.parentNode?.insertBefore(wrap, pre);
+    if (pre.dataset.title) {
+      const bar = document.createElement('div');
+      bar.className = 'code-title';
+      bar.textContent = pre.dataset.title;
+      wrap.classList.add('has-title');
+      wrap.appendChild(bar);
+    }
     wrap.appendChild(pre);
     wrap.appendChild(b);
   });

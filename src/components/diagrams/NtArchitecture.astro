@@ -1,0 +1,57 @@
+---
+// NebulaTransfer architecture: who talks to whom. viewBox 1000×560.
+import DgBox from './DgBox.astro';
+import DgLabel from './DgLabel.astro';
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 560" role="img" aria-labelledby="nta-title nta-desc">
+      <title id="nta-title">NebulaTransfer architecture</title>
+      <desc id="nta-desc">The sender and receiver browsers exchange connection details through the PeerJS signalling server and learn their public addresses from a STUN server. File chunks then travel directly between the two browsers over an encrypted WebRTC data channel, and the receiver acknowledges each chunk. The sender reads the file from disk lazily and the receiver writes chunks into IndexedDB.</desc>
+      <defs>
+        <marker id="nta-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto-start-reverse"><path class="mk" d="M0,0 L10,4 L0,8 Z" /></marker>
+        <marker id="nta-acc" markerUnits="userSpaceOnUse" markerWidth="12" markerHeight="10" refX="11" refY="5" orient="auto"><path class="mk-acc" d="M0,0 L12,5 L0,10 Z" /></marker>
+      </defs>
+
+      <!-- Signalling (control traffic) -->
+      <path class="ln dash" d="M180,179 V84 Q180,76 188,76 H379" marker-start="url(#nta-arrow)" marker-end="url(#nta-arrow)" />
+      <path class="ln dash" d="M621,76 H812 Q820,76 820,84 V179" marker-start="url(#nta-arrow)" marker-end="url(#nta-arrow)" />
+      <!-- STUN / TURN -->
+      <path class="ln dash" d="M260,301 V448 Q260,456 268,456 H379" marker-start="url(#nta-arrow)" marker-end="url(#nta-arrow)" />
+      <path class="ln dash" d="M740,301 V448 Q740,456 732,456 H621" marker-start="url(#nta-arrow)" marker-end="url(#nta-arrow)" />
+      <!-- Local disk and storage -->
+      <line class="ln" x1="140" x2="140" y1="419" y2="302" marker-end="url(#nta-arrow)" />
+      <line class="ln" x1="860" x2="860" y1="301" y2="418" marker-end="url(#nta-arrow)" />
+      <!-- The file itself: direct, encrypted -->
+      <line class="acc" x1="301" x2="697" y1="226" y2="226" stroke-width="3" marker-end="url(#nta-acc)" />
+      <line class="ln dash" x1="699" x2="303" y1="266" y2="266" marker-end="url(#nta-arrow)" />
+
+      <DgLabel x={284} y={64} text="SDP + ICE" />
+      <DgLabel x={716} y={64} text="SDP + ICE" />
+      <DgLabel x={268} y={384} text="ADDRESS" anchor="start" />
+      <DgLabel x={692} y={384} text="ADDRESS" />
+      <DgLabel x={148} y={366} text="READ" anchor="start" />
+      <DgLabel x={868} y={366} text="WRITE" anchor="start" />
+      <g>
+        <rect class="mask" x="402" y="200" width="196" height="16" />
+        <text class="lbl focal-text" x="500" y="212" text-anchor="middle">FILE CHUNKS · DTLS</text>
+      </g>
+      <DgLabel x={500} y={292} text="ACK PER CHUNK" />
+
+      <DgBox x={380} y={40} w={240} h={72} name="PeerJS server" sub="WebSocket · 0.peerjs.com" eyebrow="INTRODUCTIONS ONLY" kind="box2" />
+      <DgBox x={60} y={180} w={240} h={120} name="Sender browser" sub="File.slice() → 256 KB" />
+      <DgBox x={700} y={180} w={240} h={120} name="Receiver browser" sub="chunk → IndexedDB → ack" />
+      <DgBox x={60} y={420} w={160} h={72} name="Your file" sub="read lazily" />
+      <DgBox x={380} y={420} w={240} h={72} name="STUN / TURN" sub="public address · relay fallback" kind="box2" />
+      <DgBox x={780} y={420} w={160} h={72} name="IndexedDB" sub="one Blob per chunk" />
+
+      <!-- Legend -->
+      <g transform="translate(220 536)">
+        <line class="acc" x1="0" x2="40" y1="0" y2="0" stroke-width="3" marker-end="url(#nta-acc)" /><text class="sub" x="52" y="4">file data, browser to browser</text>
+        <line class="ln dash" x1="300" x2="340" y1="0" y2="0" marker-end="url(#nta-arrow)" /><text class="sub" x="352" y="4">control messages, no file data</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption><strong>The servers introduce; the browsers transfer.</strong> PeerJS relays a few kilobytes of connection details and STUN tells each browser its public address. The file itself only crosses the encrypted data channel. If the network blocks a direct path, the same encrypted stream is relayed by a TURN server, which forwards packets it cannot read.</figcaption>
+</figure>

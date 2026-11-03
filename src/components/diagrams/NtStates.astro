@@ -1,0 +1,62 @@
+---
+// Lifecycle of one transfer, as the sender sees it. viewBox 1100×440.
+import DgBox from './DgBox.astro';
+import DgLabel from './DgLabel.astro';
+const Y = 108, H = 64, MID = Y + H / 2;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1100 440" role="img" aria-labelledby="ntst-title ntst-desc">
+      <title id="ntst-title">Transfer states</title>
+      <desc id="ntst-desc">A transfer starts queued, becomes offered when its turn comes, and transferring once the receiver accepts with the right PIN. It ends as done after the done-ack, as declined if the receiver says no, as cancelled if either person cancels, or as failed after three wrong PINs, a storage error or a lost connection.</desc>
+      <defs>
+        <marker id="ntst-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path class="mk" d="M0,0 L10,4 L0,8 Z" /></marker>
+        <marker id="ntst-acc" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path class="mk-acc" d="M0,0 L10,4 L0,8 Z" /></marker>
+      </defs>
+
+      <!-- Transitions -->
+      <line class="ln" x1="38" x2="69" y1={MID} y2={MID} marker-end="url(#ntst-arrow)" />
+      <line class="ln" x1="221" x2="359" y1={MID} y2={MID} marker-end="url(#ntst-arrow)" />
+      <line class="ln" x1="511" x2="649" y1={MID} y2={MID} marker-end="url(#ntst-arrow)" />
+      <line class="acc" x1="821" x2="909" y1={MID} y2={MID} marker-end="url(#ntst-acc)" />
+      <path class="ln" d={`M410,${Y - 1} V72 Q410,64 418,64 H452 Q460,64 460,72 V${Y - 2}`} marker-end="url(#ntst-arrow)" />
+      <line class="ln" x1="435" x2="435" y1={Y + H + 1} y2="299" marker-end="url(#ntst-arrow)" />
+      <line class="ln" x1="700" x2="700" y1={Y + H + 1} y2="299" marker-end="url(#ntst-arrow)" />
+      <path class="ln" d={`M780,${Y + H + 1} V228 Q780,236 788,236 H892 Q900,236 900,244 V299`} marker-end="url(#ntst-arrow)" />
+      <line class="ln" x1="1060" x2="1081" y1={MID} y2={MID} />
+
+      <DgLabel x={290} y={MID - 10} text="YOUR TURN" />
+      <DgLabel x={580} y={MID - 10} text="PIN OK / START" />
+      <g>
+        <rect class="mask" x="822" y={MID - 22} width="86" height="16" />
+        <text class="lbl focal-text" x="865" y={MID - 10} text-anchor="middle">DONE-ACK</text>
+      </g>
+      <DgLabel x={435} y={52} text="WRONG PIN [< 3]" />
+      <DgLabel x={443} y={244} text="NO" anchor="start" />
+      <DgLabel x={708} y={244} text="CANCEL" anchor="start" />
+      <DgLabel x={840} y={226} text="ERROR" />
+
+      <circle cx="32" cy={MID} r="6" class="dot" />
+      <DgBox x={70} y={Y} w={150} h={H} name="Queued" sub="waiting its turn" />
+      <DgBox x={360} y={Y} w={150} h={H} name="Offered" sub="waiting for accept" />
+      <DgBox x={650} y={Y} w={170} h={H} name="Transferring" sub="chunks and acks" />
+      <DgBox x={910} y={Y} w={150} h={H} name="Done" sub="final" kind="focal" />
+      <circle cx="1088" cy={MID} r="8" class="ring" />
+      <circle cx="1088" cy={MID} r="5" class="dot" />
+
+      <DgBox x={360} y={300} w={150} h={H} name="Declined" sub="final" kind="box2" />
+      <DgBox x={625} y={300} w={150} h={H} name="Cancelled" sub="final" kind="box2" />
+      <DgBox x={825} y={300} w={150} h={H} name="Failed" sub="final" kind="box2" />
+
+      <text class="sub" x="900" y="392" text-anchor="middle">ERROR: storage full or missing parts</text>
+      <text class="sub" x="550" y="424" text-anchor="middle">Offered → Failed after 3 wrong PINs · any active state → Failed if the connection drops · either side may cancel</text>
+    </svg>
+  </div>
+  <figcaption><strong>Every transfer ends in exactly one of four final states.</strong> Failures carry a reason the app shows to both people, and a failed or cancelled receive deletes its stored chunks straight away.</figcaption>
+</figure>
+
+<style>
+  .dg :global(.dot) { fill: var(--ink); }
+  .dg :global(.ring) { fill: none; stroke: var(--ink); stroke-width: 1.5; }
+</style>

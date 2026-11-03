@@ -1,0 +1,64 @@
+---
+// The sender's sliding window: at most 8 chunks sent but not yet acknowledged. viewBox 1000×380.
+const N = 17, X0 = 190, P = 46, CW = 40, CH = 52;
+const cx = (i: number) => X0 + i * P + CW / 2;
+const rows = [
+  { y: 104, title: 'Now', sub: 'acked = 7, next = 15', acked: 7 },
+  { y: 270, title: 'After ACK 7', sub: 'window slides by one', acked: 8 },
+];
+const state = (i: number, acked: number) => (i < acked ? 'acked' : i < acked + 8 ? 'flight' : 'wait');
+const winX = (acked: number) => X0 + acked * P - 7;
+const winW = 8 * P + 8;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 380" role="img" aria-labelledby="ntw-title ntw-desc">
+      <title id="ntw-title">Sliding window of eight chunks</title>
+      <desc id="ntw-desc">A file split into numbered chunks. Chunks 0 to 6 are acknowledged, chunks 7 to 14 are in flight, which is the maximum of eight, and the rest wait. When the acknowledgement for chunk 7 arrives the window slides by one and chunk 15 is read from disk and sent.</desc>
+      <defs>
+        <marker id="ntw-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path class="mk" d="M0,0 L10,4 L0,8 Z" /></marker>
+      </defs>
+
+      <text class="sub" x={cx(3)} y="84" text-anchor="middle">acknowledged, stored</text>
+      <text class="sub" x={cx(15.5)} y="84" text-anchor="middle">waiting on disk</text>
+
+      <line class="ln" x1={cx(7)} x2={cx(7)} y1="172" y2="252" marker-end="url(#ntw-arrow)" />
+      <line class="ln" x1={cx(15)} x2={cx(15)} y1="172" y2="252" marker-end="url(#ntw-arrow)" />
+      <rect class="mask" x={cx(7) + 8} y="200" width="66" height="16" />
+      <text class="lbl" x={cx(7) + 14} y="212">ACK 7</text>
+      <rect class="mask" x={cx(15) - 82} y="200" width="74" height="16" />
+      <text class="lbl" x={cx(15) - 14} y="212" text-anchor="end">SEND 15</text>
+
+      {rows.map((r) => (
+        <g>
+          <text class="name" x="24" y={r.y + 24}>{r.title}</text>
+          <text class="sub" x="24" y={r.y + 44}>{r.sub}</text>
+          <rect class="acc win" x={winX(r.acked)} y={r.y - 8} width={winW} height={CH + 16} rx="10" />
+          {Array.from({ length: N }, (_, i) => {
+            const s = state(i, r.acked);
+            return (
+              <g>
+                <rect class={s === 'acked' ? 'box2 cell-done' : s === 'flight' ? 'box' : 'box dash cell-wait'} x={X0 + i * P} y={r.y} width={CW} height={CH} rx="6" />
+                <text class={s === 'wait' ? 'sub' : 'lbl cell-n'} x={cx(i)} y={r.y + 31} text-anchor="middle">{i}</text>
+              </g>
+            );
+          })}
+        </g>
+      ))}
+      <rect class="mask" x={winX(7) + winW / 2 - 118} y="84" width="236" height="16" />
+      <text class="lbl focal-text" x={winX(7) + winW / 2} y="96" text-anchor="middle">IN FLIGHT · 8 × 256 KB = 2 MB</text>
+
+      <text class="sub" x={cx(7)} y="350" text-anchor="middle">just acked</text>
+      <text class="sub" x={cx(15)} y="350" text-anchor="middle">just sent</text>
+    </svg>
+  </div>
+  <figcaption><strong>Every ack lets exactly one more chunk go.</strong> The sender never has more than 2 MB unacknowledged, so a slow receiver (one waiting on its disk) automatically slows the sender down instead of piling data up in memory.</figcaption>
+</figure>
+
+<style>
+  .dg :global(.win) { fill: color-mix(in srgb, var(--primary) 7%, transparent); }
+  .dg :global(.cell-done) { fill: color-mix(in srgb, var(--mint) 45%, var(--surface)); }
+  .dg :global(.cell-wait) { fill: none; }
+  .dg :global(.cell-n) { fill: var(--ink); }
+</style>

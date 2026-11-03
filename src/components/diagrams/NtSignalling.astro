@@ -1,0 +1,91 @@
+---
+// Sequence: how two browsers find each other through PeerJS before any file moves. viewBox 1000×680.
+const A = { s: 170, p: 500, r: 830 };
+type Kind = 'call' | 'return' | 'headline';
+const msgs: { y: number; from: number; to: number; label: string; kind: Kind }[] = [
+  { y: 150, from: A.s, to: A.p, label: 'REGISTER ID', kind: 'call' },
+  { y: 150, from: A.r, to: A.p, label: 'REGISTER ID', kind: 'call' },
+  { y: 300, from: A.s, to: A.p, label: 'OFFER · SDP', kind: 'call' },
+  { y: 345, from: A.p, to: A.r, label: 'OFFER · SDP', kind: 'call' },
+  { y: 390, from: A.r, to: A.p, label: 'ANSWER · SDP', kind: 'return' },
+  { y: 435, from: A.p, to: A.s, label: 'ANSWER · SDP', kind: 'return' },
+  { y: 480, from: A.s, to: A.p, label: 'CANDIDATES', kind: 'call' },
+  { y: 480, from: A.r, to: A.p, label: 'CANDIDATES', kind: 'call' },
+  { y: 566, from: A.s, to: A.r, label: 'DTLS HANDSHAKE', kind: 'return' },
+  { y: 616, from: A.s, to: A.r, label: 'CHANNEL OPEN', kind: 'headline' },
+];
+const self = { x: A.s, y: 196, label: 'CONNECT(ID)' };
+const phases = [
+  { x: 24, y: 126, text: '1 · GO ONLINE' },
+  { x: 24, y: 260, text: '2 · TRADE DESCRIPTIONS VIA THE SERVER' },
+  { x: 24, y: 526, text: '3 · DIRECT, NO SERVER' },
+];
+const lw = (s: string) => Math.ceil(s.length * 7.4 + 16);
+const actors = [
+  { x: A.s, name: 'Sender browser', sub: 'knows the receiver ID' },
+  { x: A.p, name: 'PeerJS server', sub: 'WebSocket relay' },
+  { x: A.r, name: 'Receiver browser', sub: 'waiting, online' },
+];
+const cls = (k: Kind) => (k === 'headline' ? 'acc' : k === 'call' ? 'ln' : 'ln dash');
+const mk = (k: Kind) => (k === 'headline' ? 'url(#nts-acc)' : 'url(#nts-arrow)');
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 680" role="img" aria-labelledby="nts-title nts-desc">
+      <title id="nts-title">Signalling: how two browsers find each other</title>
+      <desc id="nts-desc">Both browsers register their IDs with the PeerJS server. The sender creates a session description offer, which the server forwards to the receiver; the receiver's answer comes back the same way, followed by network address candidates from both sides. The browsers then run a DTLS handshake directly with each other and the encrypted data channel opens.</desc>
+      <defs>
+        <marker id="nts-arrow" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path class="mk" d="M0,0 L10,4 L0,8 Z" /></marker>
+        <marker id="nts-acc" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path class="mk-acc" d="M0,0 L10,4 L0,8 Z" /></marker>
+        <marker id="nts-start" markerUnits="userSpaceOnUse" markerWidth="10" markerHeight="8" refX="1" refY="4" orient="auto"><path class="mk" d="M10,0 L0,4 L10,8 Z" /></marker>
+      </defs>
+
+      {actors.map((a) => <line class="life" x1={a.x} x2={a.x} y1="96" y2="636" />)}
+
+      <!-- Phase bands -->
+      <line class="rule" x1="24" x2="976" y1="240" y2="240" />
+      <line class="rule" x1="24" x2="976" y1="506" y2="506" />
+      {phases.map((ph) => (
+        <g>
+          <rect class="mask" x={ph.x - 6} y={ph.y - 13} width={Math.ceil(ph.text.length * 8.2 + 12)} height="18" />
+          <text class="eyebrow" x={ph.x} y={ph.y}>{ph.text}</text>
+        </g>
+      ))}
+
+      {msgs.map((m) => (
+        <line class={cls(m.kind)} x1={m.from} x2={m.to > m.from ? m.to - 1 : m.to + 1} y1={m.y} y2={m.y}
+          marker-end={mk(m.kind)} marker-start={m.label === 'DTLS HANDSHAKE' ? 'url(#nts-start)' : undefined} />
+      ))}
+      <path class="ln" d={`M${self.x},${self.y} H${self.x + 48} Q${self.x + 56},${self.y} ${self.x + 56},${self.y + 8} V${self.y + 16} Q${self.x + 56},${self.y + 24} ${self.x + 48},${self.y + 24} H${self.x + 2}`} marker-end="url(#nts-arrow)" />
+
+      {msgs.map((m) => {
+        const cx = m.label === 'DTLS HANDSHAKE' || m.label === 'CHANNEL OPEN' ? 335 : (m.from + m.to) / 2, w = lw(m.label);
+        return (
+          <g>
+            <rect class="mask" x={cx - w / 2} y={m.y - 26} width={w} height="16" />
+            <text class={`lbl${m.kind === 'headline' ? ' focal-text' : ''}`} x={cx} y={m.y - 14} text-anchor="middle">{m.label}</text>
+          </g>
+        );
+      })}
+      <rect class="mask" x={self.x + 66} y={self.y + 2} width={lw(self.label)} height="16" />
+      <text class="lbl" x={self.x + 74} y={self.y + 14}>{self.label}</text>
+
+      {actors.map((a) => (
+        <g>
+          <rect class="box" x={a.x - 110} y="32" width="220" height="64" rx="8" />
+          <text class="name" x={a.x} y="60" text-anchor="middle">{a.name}</text>
+          <text class="sub" x={a.x} y="80" text-anchor="middle">{a.sub}</text>
+        </g>
+      ))}
+
+      <g transform="translate(110 664)">
+        <line class="ln" x1="0" x2="36" y1="0" y2="0" marker-end="url(#nts-arrow)" /><text class="sub" x="46" y="4">request</text>
+        <line class="ln dash" x1="160" x2="196" y1="0" y2="0" marker-end="url(#nts-arrow)" /><text class="sub" x="206" y="4">reply</text>
+        <line class="acc" x1="310" x2="346" y1="0" y2="0" marker-end="url(#nts-acc)" /><text class="sub" x="356" y="4">encrypted channel ready</text>
+        <text class="sub" x="560" y="4">SDP = session description</text>
+      </g>
+    </svg>
+  </div>
+  <figcaption><strong>A handful of small messages through the server, then it steps aside.</strong> The offer and answer describe each side's capabilities and include a fingerprint of its encryption certificate. The candidates are addresses the other side might reach it on; the browsers try them in pairs until one works, then authenticate each other with DTLS against those fingerprints.</figcaption>
+</figure>
