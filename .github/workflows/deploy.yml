@@ -17,6 +17,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.indexnow.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -26,6 +28,10 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - run: npm ci
       - run: npm run build
+      # Compare the new build with the live site (before it is replaced) for IndexNow.
+      - id: indexnow
+        continue-on-error: true
+        run: echo "changed=$(node tools/indexnow.mjs diff | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist
@@ -38,3 +44,15 @@ jobs:
     steps:
       - id: deployment
         uses: actions/deploy-pages@v4
+  indexnow:
+    # Tell Bing and the other IndexNow engines which pages changed, once the new version is live.
+    needs: [build, deploy]
+    if: needs.build.outputs.changed != ''
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node tools/indexnow.mjs submit ${{ needs.build.outputs.changed }}

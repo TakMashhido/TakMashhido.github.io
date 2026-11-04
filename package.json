@@ -10,6 +10,7 @@
     "prebuild": "npm run papers --silent || echo 'Paper matching skipped (is uv installed?)'",
     "build": "astro build",
     "preview": "astro preview",
+    "indexnow": "node tools/indexnow.mjs",
     "astro": "astro"
   },
   "dependencies": {
