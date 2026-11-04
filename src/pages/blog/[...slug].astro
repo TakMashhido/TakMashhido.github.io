@@ -113,7 +113,7 @@ const { title, description, date, updated, category, tags, demo } = post.data;
   .layout { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; margin-top: 28px; align-items: start; }
   .layout:not(:has(.toc-wrap)) { grid-template-columns: minmax(0, 1fr); }
   .toc-wrap { position: sticky; top: 110px; }
-  .toc { padding: 18px 20px; }
+  .toc { padding: 18px 20px; max-height: calc(100vh - 130px); max-height: calc(100dvh - 130px); overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; scrollbar-color: color-mix(in srgb, var(--ink) 25%, transparent) transparent; }
   .toc summary { font-weight: 750; cursor: pointer; }
   .toc ol { list-style: none; margin: 12px 0 0; padding: 0; display: grid; gap: 6px; }
   .toc a { color: var(--ink-soft); text-decoration: none; font-size: var(--step--1); font-weight: 600; display: block; padding: 3px 0; }
@@ -155,7 +155,7 @@ const { title, description, date, updated, category, tags, demo } = post.data;
   @media (max-width: 1200px) {
     .layout { grid-template-columns: minmax(0, 1fr); }
     .toc-wrap { position: static; }
-    .toc { max-width: 560px; }
+    .toc { max-width: 560px; max-height: none; overflow: visible; }
   }
   @media (max-width: 560px) {
     .pager { grid-template-columns: 1fr; }
@@ -174,7 +174,14 @@ const { title, description, date, updated, category, tags, demo } = post.data;
   if ('IntersectionObserver' in window && targets.length) {
     const io = new IntersectionObserver((entries) => {
       entries.forEach((e) => {
-        if (e.isIntersecting) links.forEach((a) => a.classList.toggle('active', a.hash === `#${e.target.id}`));
+        if (!e.isIntersecting) return;
+        links.forEach((a) => a.classList.toggle('active', a.hash === `#${e.target.id}`));
+        // Keep the active entry visible inside the menu's own scroll area (without moving the page).
+        const cur = links.find((a) => a.hash === `#${e.target.id}`);
+        if (toc && cur && toc.scrollHeight > toc.clientHeight) {
+          const t = toc.getBoundingClientRect(), c = cur.getBoundingClientRect();
+          if (c.top < t.top + 40 || c.bottom > t.bottom - 40) toc.scrollTo({ top: toc.scrollTop + (c.top - t.top) - t.height / 3, behavior: 'smooth' });
+        }
       });
     }, { rootMargin: '-20% 0px -70% 0px' });
     targets.forEach((t) => io.observe(t));
