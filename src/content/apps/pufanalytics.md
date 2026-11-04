@@ -1,6 +1,6 @@
 ---
 title: PUFAnalytics
-summary: Evaluate PUFs in your browser. Get quality metrics with confidence intervals, identification error rates, NIST tests, attack curves and key sizing, with the same numbers as the Python package.
+summary: Evaluate PUFs in your browser. Quality metrics with confidence intervals, identification error rates, NIST tests, attack curves and key-generation sizing.
 url: https://koustav.isroot.in/PUFAnalytics/
 category: Research
 status: Live

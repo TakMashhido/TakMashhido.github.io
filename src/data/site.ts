@@ -2,7 +2,7 @@
 export const site = {
   name: 'Koustav Kumar Mondal',
   shortName: 'Koustav',
-  title: 'Koustav Kumar Mondal — Hardware security & trustworthy IoT',
+  title: 'Koustav Kumar Mondal | Hardware Security & PUF Researcher',
   headline: 'I build trust into hardware, so connected vehicles, IoT devices and quantum-era networks can prove who they are.',
   role: 'Visiting Researcher, qCLOUDS Lab, School of Computing and Information Systems, The University of Melbourne',
   status: 'Now at the qCLOUDS Lab, University of Melbourne',
@@ -12,7 +12,7 @@ export const site = {
   uni: { name: 'The University of Melbourne', url: 'https://www.unimelb.edu.au/' },
   location: 'Melbourne, Australia',
   description:
-    'Koustav Kumar Mondal researches PUF-based authentication, post-quantum security, blockchain consensus and fault-tolerant distributed quantum computing. Visiting Researcher at the qCLOUDS Lab, University of Melbourne.',
+    'Koustav Kumar Mondal, hardware security researcher at the University of Melbourne and IIT Jodhpur: PUF authentication, post-quantum security, quantum computing.',
   email: 'erkoustavkumar@gmail.com',
   // Contact form: get a free access key at https://web3forms.com (DEMO value below)
   web3formsKey: 'YOUR_WEB3FORMS_ACCESS_KEY',

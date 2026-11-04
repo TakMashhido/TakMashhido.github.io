@@ -45,7 +45,7 @@ const target = 1e-6;
 
     {lengths.map((n, i) => (
       <g>
-        <rect class="hit" tabindex="0" x={edges[i][0]} y={T} width={edges[i][1] - edges[i][0]} height={ph}
+        <rect class="hit" role="img" tabindex="0" x={edges[i][0]} y={T} width={edges[i][1] - edges[i][0]} height={ph}
           data-tip={`<b>${n}-bit responses</b><br/>${series.map((s) => `${s.ber} BER: ${sci(s.err[i])}`).join('<br/>')}`}
           aria-label={`${n} bits: ${series.map((s) => `${s.ber} bit error rate ${plain(s.err[i])}`).join(', ')}`} />
         <line class="hl" x1={x(n)} x2={x(n)} y1={T} y2={T + ph} />

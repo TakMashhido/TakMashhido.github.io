@@ -1,9 +1,10 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { PERSON_ID, abs } from '../../scripts/seo';
 import PufDemo from '../../components/PufDemo.astro';
 import Icon from '../../components/Icon.astro';
 ---
-<Base title="PUF simulator" description="Interactive arbiter PUF simulator: set a challenge and compare the responses of two chips built from the same design.">
+<Base title="PUF simulator" description="Interactive arbiter PUF simulator: set a challenge and compare the responses of two chips built from the same design." crumbs={[{ name: 'Apps', path: '/apps/' }, { name: 'PUF simulator', path: '/play/puf-simulator/' }]}>
   <section class="wrap play">
     <div class="play-head">
       <a class="back" href="/apps/puf-simulator/"><Icon name="arrowLeft" /> About this app</a>

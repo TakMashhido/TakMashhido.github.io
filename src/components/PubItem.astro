@@ -9,7 +9,7 @@ const styles = Object.keys(styleLabels) as CiteStyle[];
 const tabs = [...styles.map((s) => ({ key: s, label: styleLabels[s], text: pub.styles[s], code: false })), { key: 'bibtex', label: 'BibTeX', text: pub.bibtex, code: true }];
 const scholar = `https://scholar.google.com/scholar?q=${encodeURIComponent(`"${pub.title}"`)}`;
 ---
-<article class="pub clay-sm" data-type={pub.type} data-year={pub.year} data-search={searchText}>
+<article id={compact ? undefined : pub.id} class="pub clay-sm" data-type={pub.type} data-year={pub.year} data-search={searchText}>
   <div class="meta">
     <span class={`chip type-${pub.type}`}>{typeLabels[pub.type]}</span>
     <span class="year">{pub.year}</span>

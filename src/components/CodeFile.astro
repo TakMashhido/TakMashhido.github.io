@@ -9,7 +9,7 @@ const { code, lang, file, note } = Astro.props;
     <span class="codefile-name">{file}</span>
     {note && <span class="codefile-note">{note}</span>}
   </div>
-  <Code code={code.trimEnd()} lang={lang as any} themes={{ light: 'github-light', dark: 'github-dark' }} />
+  <Code code={code.trimEnd()} lang={lang as any} themes={{ light: 'github-light-high-contrast', dark: 'github-dark-high-contrast' }} />
 </div>
 
 <style>

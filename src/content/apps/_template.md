@@ -13,7 +13,7 @@ stack: [Python, FastAPI]           # what it's built with
 # paper: mondal2025pufanalytics    # publication id from src/data/publications.ts
 # post: how-a-puf-works            # related blog post slug
 art: code                          # chip, chain, qubit, vehicle, cluster, network, gauge, paper, mail, cap, shield, code
-# screenshot: /images/apps/my-app.webp   # optional; put the image in public/images/apps/
+# screenshot: /images/apps/my-app.webp   # optional; 1280×720 (16:9) in public/images/apps/, then run: node tools/make-og.mjs
 # screenshotAlt: The main screen of my app
 featured: false                    # true pins it to the top
 draft: false                       # true hides it on the live site

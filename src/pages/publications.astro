@@ -5,13 +5,35 @@ import PubItem from '../components/PubItem.astro';
 import PubsByYear from '../components/charts/PubsByYear.astro';
 import Icon from '../components/Icon.astro';
 import { publications, typeLabels, type PubType } from '../data/publications';
+import { PERSON_ID, abs } from '../scripts/seo';
 
 const order: PubType[] = ['journal', 'conference', 'chapter', 'patent'];
 const count = (t: PubType) => publications.filter((p) => p.type === t).length;
 const years = [...new Set(publications.map((p) => p.year))].sort((a, b) => b - a);
 const plural: Record<PubType, string> = { journal: 'Journal articles', conference: 'Conference papers', chapter: 'Book chapters', patent: 'Patents' };
+const pubType: Record<PubType, string> = { journal: 'ScholarlyArticle', conference: 'ScholarlyArticle', chapter: 'Chapter', patent: 'CreativeWork' };
+const works = publications.map((p) => ({
+  '@type': pubType[p.type],
+  '@id': abs(`/publications/#${p.id}`),
+  name: p.title,
+  headline: p.title,
+  author: p.authors.map((a) => (/Mondal/.test(a) && /^K\. ?K\./.test(a) ? { '@id': PERSON_ID } : { '@type': 'Person', name: a })),
+  datePublished: String(p.year),
+  ...(p.type === 'patent' ? { genre: 'Patent application', description: p.details ? `${p.venue}. ${p.details}` : p.venue } : { isPartOf: { '@type': p.type === 'chapter' ? 'Book' : 'Periodical', name: p.venue } }),
+  ...(p.doi ? { sameAs: `https://doi.org/${p.doi}`, identifier: { '@type': 'PropertyValue', propertyID: 'DOI', value: p.doi } } : {}),
+  ...(p.pdf ? { encoding: { '@type': 'MediaObject', contentUrl: abs(p.pdf), encodingFormat: 'application/pdf' } } : {}),
+}));
+const collection = {
+  '@type': 'CollectionPage',
+  '@id': abs('/publications/#page'),
+  url: abs('/publications/'),
+  name: 'Publications of Koustav Kumar Mondal',
+  about: { '@id': PERSON_ID },
+  mainEntity: { '@type': 'ItemList', numberOfItems: works.length, itemListElement: works.map((w, i) => ({ '@type': 'ListItem', position: i + 1, item: w })) },
+};
 ---
-<Base title="Publications" description="Journal articles, conference papers, book chapters and patents by Koustav Kumar Mondal, with PDFs and BibTeX.">
+<Base title="Publications" description="Journal articles, conference papers, book chapters and patents by Koustav Kumar Mondal, with PDFs and BibTeX."
+  crumbs={[{ name: 'Publications', path: '/publications/' }]} schema={[collection]}>
   <PageHero title="Publications" art="paper">
     <p class="lede">
       {count('journal')} journal articles, {count('conference')} conference papers, {count('chapter')} book chapters and {count('patent')} patent application.
@@ -89,7 +111,7 @@ const plural: Record<PubType, string> = { journal: 'Journal articles', conferenc
   const q = document.getElementById('pq') as HTMLInputElement;
   const items = Array.from(document.querySelectorAll<HTMLElement>('.pub'));
   const groups = Array.from(document.querySelectorAll<HTMLElement>('[data-year-group]'));
-  const btns = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-type]'));
+  const btns = Array.from(document.querySelectorAll<HTMLButtonElement>('button[data-type]'));
   const status = document.getElementById('pstatus')!;
   const empty = document.getElementById('pempty')!;
   let type = 'all';

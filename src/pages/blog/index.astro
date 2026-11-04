@@ -1,5 +1,6 @@
 ---
 import PageHero from '../../components/PageHero.astro';
+import { PERSON_ID, abs } from '../../scripts/seo';
 import Base from '../../layouts/Base.astro';
 import PostCard from '../../components/PostCard.astro';
 import Icon from '../../components/Icon.astro';
@@ -11,7 +12,7 @@ posts.forEach((p) => p.data.tags.forEach((t) => tagCounts.set(t, (tagCounts.get(
 const tags = [...tagCounts.entries()].sort((a, b) => b[1] - a[1]);
 const cats = ['Research', 'Technical'] as const;
 ---
-<Base title="Blog" description="Technical notes and research writing on hardware security, PUFs, blockchain, quantum security and edge systems.">
+<Base title="Blog" description="Technical notes and research writing on hardware security, PUFs, blockchain, quantum security and edge systems." crumbs={[{ name: 'Blog', path: '/blog/' }]} schema={[{ '@type': 'Blog', '@id': abs('/blog/#blog'), url: abs('/blog/'), name: 'Koustav Kumar Mondal, blog', author: { '@id': PERSON_ID }, publisher: { '@id': PERSON_ID } }]}>
   <PageHero title="Blog" art="network">
     <p class="lede">Research explainers and technical notes from the lab: PUFs, post-quantum security, blockchain consensus and the infrastructure that runs the experiments.</p>
   </PageHero>
@@ -41,6 +42,7 @@ const cats = ['Research', 'Technical'] as const;
 
   <section class="wrap list-wrap">
     <p class="status muted" id="status" aria-live="polite">{posts.length} posts</p>
+    <h2 class="sr-only">All posts</h2>
     <div class="grid-3" id="posts">
       {posts.map((p) => <PostCard post={p} />)}
     </div>

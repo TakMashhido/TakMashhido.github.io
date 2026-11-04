@@ -7,6 +7,8 @@ const blog = defineCollection({
   schema: z.object({
     title: z.string(),
     description: z.string(),
+    // Optional shorter text for search results (aim for 150-160 characters); defaults to description.
+    seoDescription: z.string().optional(),
     date: z.coerce.date(),
     updated: z.coerce.date().optional(),
     category: z.enum(['Technical', 'Research']),

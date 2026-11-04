@@ -10,6 +10,7 @@ import headshot from '../assets/headshot.jpg';
 import { site } from '../data/site';
 import { publications } from '../data/publications';
 import { getPosts } from '../scripts/blog';
+import { PERSON_ID, WEBSITE_ID, SITE_URL } from '../scripts/seo';
 
 const posts = (await getPosts()).slice(0, 3);
 const selected = ['mondal2025aes', 'mondal2025bcpuf', 'mondal2026rpoe', 'nahar2024clouds'].map((id) => publications.find((p) => p.id === id)!);
@@ -20,8 +21,9 @@ const themes = [
   { id: 'quantum', title: 'Quantum-era security', text: 'Fault-tolerant distributed quantum computing, post-quantum cryptography and quantum-aware distributed ledgers.', tone: 'butter', art: 'network' },
   { id: 'vehicles', title: 'Vehicles, edge and robots', text: 'Fog computing for VANETs, collaborative autonomous driving and LoRa localization where GPS fails.', tone: 'plain', art: 'vehicle' },
 ];
+const profile = { '@type': 'ProfilePage', '@id': `${SITE_URL}/#profile`, url: `${SITE_URL}/`, name: site.title, isPartOf: { '@id': WEBSITE_ID }, about: { '@id': PERSON_ID }, mainEntity: { '@id': PERSON_ID }, inLanguage: 'en' };
 ---
-<Base>
+<Base type="profile" schema={[profile]}>
   <section class="hero wrap">
     <div class="hero-text">
       <p class="status"><span class="dot" aria-hidden="true"></span>{site.status}</p>

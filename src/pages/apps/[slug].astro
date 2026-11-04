@@ -6,6 +6,7 @@ import ClayArt from '../../components/ClayArt.astro';
 import { getApps, hostOf, isExternal, type App } from '../../scripts/apps';
 import { getPosts, formatDate } from '../../scripts/blog';
 import { publications } from '../../data/publications';
+import { PERSON_ID, abs } from '../../scripts/seo';
 
 export async function getStaticPaths() {
   const apps = await getApps();
@@ -19,8 +20,31 @@ const { title, summary, url, category, status, date, tags, stack, repo, paper, p
 const pub = paper ? publications.find((p) => p.id === paper) : undefined;
 const blogPost = post ? (await getPosts()).find((p) => p.id === post) : undefined;
 const tone = category === 'Research' ? 'research' : 'side';
+const pageUrl = abs(`/apps/${app.id}/`);
+const appUrl = isExternal(url) ? url : abs(url);
+const software = {
+  '@type': 'WebApplication',
+  '@id': `${pageUrl}#app`,
+  name: title,
+  description: summary,
+  url: appUrl,
+  mainEntityOfPage: pageUrl,
+  applicationCategory: category === 'Research' ? 'EducationalApplication' : 'UtilitiesApplication',
+  operatingSystem: 'Any (runs in a web browser)',
+  browserRequirements: 'Requires JavaScript and a modern web browser',
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  isAccessibleForFree: true,
+  author: { '@id': PERSON_ID },
+  creator: { '@id': PERSON_ID },
+  datePublished: date.toISOString(),
+  keywords: [...tags, ...stack].join(', '),
+  ...(screenshot ? { screenshot: abs(screenshot), image: abs(screenshot) } : {}),
+  ...(repo ? { sameAs: [repo] } : {}),
+  ...(pub?.doi ? { citation: `https://doi.org/${pub.doi}` } : {}),
+};
 ---
-<Base title={title} description={summary}>
+<Base title={title} description={summary} image={screenshot} imageAlt={screenshotAlt}
+  crumbs={[{ name: 'Apps', path: '/apps/' }, { name: title, path: `/apps/${app.id}/` }]} schema={[software]}>
   <article class="wrap app-page">
     <a class="back" href="/apps/"><Icon name="arrowLeft" /> All apps</a>
 
@@ -41,7 +65,7 @@ const tone = category === 'Research' ? 'research' : 'side';
       <div class={`shot win-${tone}`}>
         <div class="win-bar" aria-hidden="true"><span></span><span></span><span></span><em>{hostOf(url)}</em></div>
         <div class="shot-body">
-          {screenshot ? <img src={screenshot} alt={screenshotAlt ?? `${title} screenshot`} /> : <div class="shot-art"><ClayArt name={art} /></div>}
+          {screenshot ? <img src={screenshot} alt={screenshotAlt ?? `${title} screenshot`} width="1280" height="720" /> : <div class="shot-art"><ClayArt name={art} /></div>}
         </div>
       </div>
     </header>

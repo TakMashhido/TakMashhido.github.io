@@ -47,12 +47,13 @@ const total = api.modules.reduce((n, m) => n + m.items.length, 0);
   .api-mod-title { color: var(--ink-soft); font-size: var(--step--1); }
   .api-count { margin-left: auto; font-size: var(--step--1); font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
   .api-links { display: flex; gap: 16px; margin: 0 0 8px; font-size: var(--step--1); font-weight: 650; }
+  .api-links a { display: inline-block; padding: 6px 2px; min-height: 24px; }
   .table-scroll { overflow-x: auto; margin-bottom: 14px; }
   .api table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
   .api th { text-align: left; color: var(--ink-soft); font-weight: 650; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--surface-2); }
   .api td { vertical-align: top; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--surface-2); }
   .api-name { min-width: 15rem; max-width: 22rem; }
-  .api-name a { text-decoration: none; }
+  .api-name a { text-decoration: none; display: inline-block; padding: 2px 0; min-height: 24px; }
   .api-name code { font-weight: 650; white-space: normal; overflow-wrap: anywhere; }
   .api-sig { font-weight: 400; color: var(--ink-soft); }
   @media (max-width: 640px) {

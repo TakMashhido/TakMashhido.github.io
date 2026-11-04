@@ -1,5 +1,6 @@
 ---
 import Base from '../../../layouts/Base.astro';
+import { PERSON_ID, abs } from '../../../scripts/seo';
 import PostCard from '../../../components/PostCard.astro';
 import Icon from '../../../components/Icon.astro';
 import { getPosts, slugifyTag, type Post } from '../../../scripts/blog';
@@ -18,7 +19,7 @@ export async function getStaticPaths() {
 }
 const { name, posts } = Astro.props;
 ---
-<Base title={`Posts tagged ${name}`} description={`Blog posts about ${name}.`}>
+<Base title={`Posts tagged ${name}`} description={`Blog posts about ${name}.`} crumbs={[{ name: 'Blog', path: '/blog/' }, { name: `Tag: ${name}`, path: Astro.url.pathname }]} noindex>
   <section class="page-hero wrap">
     <a class="back" href="/blog/"><Icon name="arrowLeft" /> All posts</a>
     <h1>#{name}</h1>

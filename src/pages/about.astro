@@ -1,5 +1,6 @@
 ---
 import { Picture } from 'astro:assets';
+import { PERSON_ID, abs } from '../scripts/seo';
 import Base from '../layouts/Base.astro';
 import Icon from '../components/Icon.astro';
 import headshot from '../assets/headshot.jpg';
@@ -7,7 +8,7 @@ import ClayArt from '../components/ClayArt.astro';
 import { site } from '../data/site';
 import { bio, education, experience, skills, domains, awards, service } from '../data/cv';
 ---
-<Base title="About" description="Background, education, research experience, skills and service of Koustav Kumar Mondal.">
+<Base title="About" description="Koustav Kumar Mondal: Ph.D. researcher at IIT Jodhpur and Visiting Researcher at the University of Melbourne. Education, research experience, skills and awards." crumbs={[{ name: 'About', path: '/about/' }]} schema={[{ '@type': 'AboutPage', '@id': abs('/about/#page'), url: abs('/about/'), name: 'About Koustav Kumar Mondal', about: { '@id': PERSON_ID }, mainEntity: { '@id': PERSON_ID } }]}>
   <section class="page-hero wrap intro">
     <div>
       <h1>About me</h1>

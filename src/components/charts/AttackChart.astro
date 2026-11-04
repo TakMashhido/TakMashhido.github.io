@@ -47,7 +47,7 @@ const colEdges = xs.map((n, i) => {
 
     {sim.attack.map((a, i) => (
       <g>
-        <rect class="hit" tabindex="0" x={colEdges[i][0]} y={T} width={colEdges[i][1] - colEdges[i][0]} height={ph}
+        <rect class="hit" role="img" tabindex="0" x={colEdges[i][0]} y={T} width={colEdges[i][1] - colEdges[i][0]} height={ph}
           data-tip={`<b>${a.crps.toLocaleString('en')} CRPs</b><br/>Arbiter: ${pct(a.arbiter)}<br/>4-XOR: ${pct(a.xor4)}`}
           aria-label={`${a.crps} CRPs: arbiter ${pct(a.arbiter)}, 4-XOR ${pct(a.xor4)}`} />
         <line class="hl" x1={x(a.crps)} x2={x(a.crps)} y1={T} y2={T + ph} />

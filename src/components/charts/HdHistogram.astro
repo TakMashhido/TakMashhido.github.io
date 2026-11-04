@@ -56,7 +56,7 @@ const bar = (i: number, v: number, half: 0 | 1 | null) => {
 
     {sim.hist.intra.map((v, i) => (
       (v > 0 || sim.hist.inter[i] > 0) && (
-        <rect class="hit" tabindex="0" x={x(i * bw)} y={T} width={colW} height={ph}
+        <rect class="hit" role="img" tabindex="0" x={x(i * bw)} y={T} width={colW} height={ph}
           data-tip={`<b>HD ${(i * bw).toFixed(3)}–${((i + 1) * bw).toFixed(3)}</b><br/>Same chip: ${pct(v)}<br/>Different chips: ${pct(sim.hist.inter[i])}`}
           aria-label={`Hamming distance ${(i * bw).toFixed(3)} to ${((i + 1) * bw).toFixed(3)}: same chip ${pct(v)}, different chips ${pct(sim.hist.inter[i])}`} />
       )

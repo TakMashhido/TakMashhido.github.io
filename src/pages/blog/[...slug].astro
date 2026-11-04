@@ -5,6 +5,11 @@ import Base from '../../layouts/Base.astro';
 import Icon from '../../components/Icon.astro';
 import ClayArt from '../../components/ClayArt.astro';
 import { artFor, formatDate, getPosts, readingTime, slugifyTag, type Post } from '../../scripts/blog';
+import { PERSON_ID, WEBSITE_ID, abs } from '../../scripts/seo';
+import katexMain from 'katex/dist/fonts/KaTeX_Main-Regular.woff2?url';
+import katexMath from 'katex/dist/fonts/KaTeX_Math-Italic.woff2?url';
+import katexSize1 from 'katex/dist/fonts/KaTeX_Size1-Regular.woff2?url';
+import katexSize2 from 'katex/dist/fonts/KaTeX_Size2-Regular.woff2?url';
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -26,9 +31,33 @@ const url = new URL(`/blog/${post.id}/`, Astro.site).toString();
 const enc = encodeURIComponent;
 const { Content, headings } = await render(post);
 const toc = headings.filter((h) => h.depth === 2 || h.depth === 3);
-const { title, description, date, updated, category, tags, demo } = post.data;
+const { title, description, seoDescription, date, updated, category, tags, demo, cover, coverAlt } = post.data;
+const words = (post.body ?? '').split(/\s+/).filter(Boolean).length;
+// Posts with maths preload the main KaTeX fonts so formulas don't reflow the page when they load.
+const prose = (post.body ?? '').replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '').replace(/\{[^{}\n]*\}/g, '');
+const hasMath = /\$\$|(^|[^\\$\w])\$[^$\s][^$\n]*[^\s\\]\$(?!\w)/m.test(prose);
+const article = {
+  '@type': 'BlogPosting',
+  '@id': `${url}#article`,
+  headline: title,
+  description,
+  url,
+  mainEntityOfPage: url,
+  datePublished: date.toISOString(),
+  dateModified: (updated ?? date).toISOString(),
+  author: { '@id': PERSON_ID },
+  publisher: { '@id': PERSON_ID },
+  isPartOf: { '@id': WEBSITE_ID },
+  image: abs(cover ?? '/og.png'),
+  articleSection: category,
+  keywords: tags.join(', '),
+  wordCount: words,
+  inLanguage: 'en',
+};
 ---
-<Base title={title} description={description} type="article">
+<Base title={title} description={seoDescription ?? description} type="article" image={cover} imageAlt={coverAlt} published={date} modified={updated} tags={tags}
+  crumbs={[{ name: 'Blog', path: '/blog/' }, { name: title, path: `/blog/${post.id}/` }]} schema={[article]}>
+  {hasMath && [katexMain, katexMath, katexSize1, katexSize2].map((f) => <link slot="head" rel="preload" href={f} as="font" type="font/woff2" crossorigin />)}
   <div class="progress" aria-hidden="true"><span id="progress-bar"></span></div>
   <article class="wrap post">
     <header class="post-head">
@@ -49,7 +78,7 @@ const { title, description, date, updated, category, tags, demo } = post.data;
     <div class="layout">
       {toc.length > 1 && (
         <aside class="toc-wrap">
-          <details class="toc clay-sm" open>
+          <details class="toc clay-sm">
             <summary>On this page</summary>
             <ol>
               {toc.map((h) => <li class={`d${h.depth}`}><a href={`#${h.slug}`}>{h.text}</a></li>)}
@@ -164,9 +193,9 @@ const { title, description, date, updated, category, tags, demo } = post.data;
 </style>
 
 <script>
-  // Close the TOC by default on small screens.
+  // The TOC is rendered closed (no layout shift on phones); on wide screens it sits in the sidebar, open.
   const toc = document.querySelector<HTMLDetailsElement>('.toc');
-  if (toc && matchMedia('(max-width: 1200px)').matches) toc.open = false;
+  if (toc && !matchMedia('(max-width: 1200px)').matches) toc.open = true;
 
   // Highlight the section currently in view.
   const links = Array.from(document.querySelectorAll<HTMLAnchorElement>('.toc a'));

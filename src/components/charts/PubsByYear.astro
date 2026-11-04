@@ -38,7 +38,7 @@ const slot = pw / years.length, bwid = Math.min(56, slot * 0.55);
           })}
           <text x={cx} y={y(totals[i]) - 8} text-anchor="middle" class="direct">{totals[i]}</text>
           <text x={cx} y={T + ph + 20} text-anchor="middle">{d.yr}</text>
-          <rect class="hit" tabindex="0" x={L + slot * i} y={T} width={slot} height={ph}
+          <rect class="hit" role="img" tabindex="0" x={L + slot * i} y={T} width={slot} height={ph}
             data-tip={`<b>${d.yr}</b>: ${totals[i]} total<br/>` + types.filter((t) => d[t]).map((t) => `${typeLabels[t]}: ${d[t]}`).join('<br/>')}
             aria-label={`${d.yr}: ` + types.map((t) => `${d[t]} ${typeLabels[t].toLowerCase()}`).join(', ')} />
         </g>

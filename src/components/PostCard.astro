@@ -10,7 +10,7 @@ const search = `${title} ${description} ${tags.join(' ')} ${category}`.toLowerCa
 ---
 <article class="card clay" data-search={search} data-tags={tags.map(slugifyTag).join(' ')} data-category={category}>
   <div class={`cover cover-${category.toLowerCase()}`}>
-    {cover ? <img src={cover} alt={coverAlt ?? ''} loading="lazy" decoding="async" /> : <div class="cover-art"><ClayArt name={art} /></div>}
+    {cover ? <img src={cover} alt={coverAlt ?? ''} width="1280" height="720" loading="lazy" decoding="async" /> : <div class="cover-art"><ClayArt name={art} /></div>}
   </div>
   <div class="top">
     <span class={`chip ${category === 'Research' ? 'tag-mint' : 'tag-butter'}`}>{category}</span>

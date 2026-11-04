@@ -1,5 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
+import { PERSON_ID, abs } from '../../scripts/seo';
 import PageHero from '../../components/PageHero.astro';
 import AppCard from '../../components/AppCard.astro';
 import { getApps } from '../../scripts/apps';
@@ -8,7 +9,7 @@ const apps = await getApps();
 const cats = ['Research', 'Side project'] as const;
 const count = (c: string) => apps.filter((a) => a.data.category === c).length;
 ---
-<Base title="Apps" description="Apps built by Koustav Kumar Mondal, from research demos to weekend projects. Open any of them and try it.">
+<Base title="Apps" description="Apps built by Koustav Kumar Mondal, from research demos to weekend projects. Open any of them and try it." crumbs={[{ name: 'Apps', path: '/apps/' }]} schema={[{ '@type': 'CollectionPage', '@id': abs('/apps/#page'), url: abs('/apps/'), name: 'Apps by Koustav Kumar Mondal', author: { '@id': PERSON_ID } }]}>
   <PageHero title="Apps" art="code">
     <p class="lede">Things I've built, from research demos to weekend projects. Open any of them and try it, or read what it does first.</p>
   </PageHero>
@@ -21,6 +22,7 @@ const count = (c: string) => apps.filter((a) => a.data.category === c).length;
           {cats.map((c) => <button type="button" class="chip" data-cat={c} aria-pressed="false">{c === 'Research' ? 'Research' : `${c}s`} <span class="count">{count(c)}</span></button>)}
         </div>
       )}
+      <h2 class="sr-only">All apps</h2>
       <div class="app-grid" id="apps">
         {apps.map((a) => <AppCard app={a} />)}
       </div>

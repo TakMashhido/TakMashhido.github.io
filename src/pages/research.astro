@@ -1,5 +1,6 @@
 ---
 import PageHero from '../components/PageHero.astro';
+import { PERSON_ID, abs } from '../scripts/seo';
 import Base from '../layouts/Base.astro';
 import { projects } from '../data/cv';
 import { publications } from '../data/publications';
@@ -18,7 +19,7 @@ const themes = [
 const related = (keys: string[]) =>
   publications.filter((p) => keys.some((k) => p.title.includes(k))).slice(0, 4);
 ---
-<Base title="Research" description="Research themes, funded projects and lab infrastructure built by Koustav Kumar Mondal.">
+<Base title="Research" description="Research by Koustav Kumar Mondal on PUF hardware security, blockchain consensus, post-quantum and distributed quantum computing, and vehicular edge systems." crumbs={[{ name: 'Research', path: '/research/' }]} schema={[{ '@type': 'WebPage', '@id': abs('/research/#page'), url: abs('/research/'), name: 'Research of Koustav Kumar Mondal', about: { '@id': PERSON_ID } }]}>
   <PageHero title="Research" art="shield">
     <p class="lede">My thesis builds a trust architecture that runs from hardware to consensus. These are the threads it pulls together, and the projects and testbeds behind them.</p>
   </PageHero>

@@ -12,7 +12,7 @@ const tone = category === 'Research' ? 'research' : 'side';
   <div class={`window win-${tone}`}>
     <div class="win-bar" aria-hidden="true"><span></span><span></span><span></span><em>{hostOf(url)}</em></div>
     <div class="win-body">
-      {screenshot ? <img src={screenshot} alt={screenshotAlt ?? ''} loading="lazy" decoding="async" /> : <div class="win-art"><ClayArt name={art} /></div>}
+      {screenshot ? <img src={screenshot} alt={screenshotAlt ?? ''} width="1280" height="720" loading="lazy" decoding="async" /> : <div class="win-art"><ClayArt name={art} /></div>}
     </div>
   </div>
   <div class="top">

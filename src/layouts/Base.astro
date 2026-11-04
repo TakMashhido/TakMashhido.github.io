@@ -3,18 +3,44 @@ import '../styles/global.css';
 import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import SiteTools from '../components/SiteTools.astro';
-import { site } from '../data/site';
+import { site, socials } from '../data/site';
+import { graph, breadcrumbs, type Crumb } from '../scripts/seo';
+import { existsSync } from 'node:fs';
+// Preload the two text fonts so the first paint already uses them (avoids a layout shift on swap).
+import fontUi from '@fontsource-variable/bricolage-grotesque/files/bricolage-grotesque-latin-wght-normal.woff2?url';
+import fontBody from '@fontsource-variable/literata/files/literata-latin-wght-normal.woff2?url';
 
 interface Props {
   title?: string;
   description?: string;
   image?: string;
-  type?: 'website' | 'article';
+  imageAlt?: string;
+  type?: 'website' | 'article' | 'profile';
+  /** Article dates and tags (blog posts). */
+  published?: Date;
+  modified?: Date;
+  tags?: string[];
+  /** Keep the page out of search results (links are still followed). */
+  noindex?: boolean;
+  /** Breadcrumb trail after Home, e.g. [{ name: 'Blog', path: '/blog/' }, { name: title, path }]. */
+  crumbs?: Crumb[];
+  /** Extra schema.org nodes for this page. */
+  schema?: object[];
 }
-const { title, description = site.description, image = '/og.png', type = 'website' } = Astro.props;
+const {
+  title, description = site.description, image = '/og.png', imageAlt, type = 'website',
+  published, modified, tags = [], noindex = false, crumbs, schema = [],
+} = Astro.props;
 const fullTitle = title ? `${title} | ${site.name}` : site.title;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const ogImage = new URL(image, Astro.site);
+// WebP covers get a 1200×630 JPEG copy for link previews (tools/make-og.mjs).
+const jpegCard = image.startsWith('/images/') && image.endsWith('.webp') ? `/og${image.slice(7, -5)}.jpg` : null;
+const card = jpegCard && existsSync(`public${jpegCard}`) ? jpegCard : image;
+const ogImage = new URL(card, Astro.site);
+const isDefaultImage = image === '/og.png';
+const knownSize = isDefaultImage || card !== image;
+const alt = imageAlt ?? (isDefaultImage ? `${site.name}, hardware security researcher` : title ?? site.name);
+const nodes = [...schema, ...(crumbs?.length ? [breadcrumbs(crumbs)] : [])];
 ---
 <!doctype html>
 <html lang="en">
@@ -23,18 +49,39 @@ const ogImage = new URL(image, Astro.site);
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
+    <meta name="author" content={site.name} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
     <link rel="canonical" href={canonical} />
+    <link rel="preload" href={fontUi} as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href={fontBody} as="font" type="font/woff2" crossorigin />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="alternate" type="application/rss+xml" title={`${site.name} — Blog`} href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title={`${site.name}, blog`} href="/rss.xml" />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    {socials.filter((s) => !s.demo).map((s) => <link rel="me" href={s.href} />)}
     <meta name="theme-color" content="#e6eaf5" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#1a2036" media="(prefers-color-scheme: dark)" />
+
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:type" content={type} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={alt} />
+    {knownSize && <><meta property="og:image:width" content="1200" /><meta property="og:image:height" content="630" /></>}
+    {type === 'profile' && <><meta property="profile:first_name" content="Koustav Kumar" /><meta property="profile:last_name" content="Mondal" /></>}
+    {type === 'article' && published && <meta property="article:published_time" content={published.toISOString()} />}
+    {type === 'article' && <meta property="article:modified_time" content={(modified ?? published ?? new Date()).toISOString()} />}
+    {type === 'article' && <meta property="article:author" content={new URL('/about/', Astro.site).href} />}
+    {type === 'article' && tags.map((t) => <meta property="article:tag" content={t} />)}
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={alt} />
+
+    <script type="application/ld+json" set:html={graph(nodes)} />
     <script is:inline>
       (function () {
         try {

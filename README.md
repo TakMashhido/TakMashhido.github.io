@@ -80,6 +80,16 @@ That creates the card on `/apps/` and the intro page at `/apps/my-app/`. Apps ho
 3. Optional: drop the PDF into `public/papers/` with any file name. `tools/match_papers.py` (run with uv, automatically before
    `npm run dev` and `npm run build`, or by hand with `npm run papers`) finds the paper by its DOI or title and adds a download button.
 
+## Search engines (SEO)
+
+The site handles SEO itself; when you add content, only these steps matter:
+
+- **Every page** gets a canonical URL, Open Graph/Twitter cards and one schema.org JSON-LD graph (your `Person`, the `WebSite`, breadcrumbs and a page-specific node: `BlogPosting`, `WebApplication`, `ScholarlyArticle` list, ...). It lives in `src/layouts/Base.astro` and `src/scripts/seo.ts`. To change how search engines describe you (job title, affiliations, profiles, research topics), edit `person` in `src/scripts/seo.ts` and `socials` in `src/data/site.ts`.
+- **Blog posts:** keep `title` under about 60 characters if you can. If `description` is longer than 160 characters, add a `seoDescription:` (150 to 160 characters) for search results.
+- **Covers and app screenshots** should be 1280×720 WebP. After adding one, run `node tools/make-og.mjs`; it writes the 1200×630 JPEG copy used for link previews (LinkedIn does not show WebP).
+- **Sitemap:** `sitemap-index.xml` is built automatically, with last-modified dates from `date`/`updated`. Tag pages and the 404 page are `noindex`. The PUFAnalytics and NebulaTransfer apps are listed too.
+- **`/llms.txt`** is generated from the site data, so AI assistants and AI search get an accurate summary of you, your posts, apps and papers.
+
 ## Still placeholder (DEMO)
 
 - `web3formsKey` in `src/data/site.ts` (free key from https://web3forms.com)

@@ -55,7 +55,7 @@ const edges = rtts.map((r, i) => [i === 0 ? x(r) - 14 : (x(rtts[i - 1]) + x(r)) 
 
     {rtts.map((r, i) => (
       <g>
-        <rect class="hit" tabindex="0" x={edges[i][0]} y={T} width={edges[i][1] - edges[i][0]} height={ph}
+        <rect class="hit" role="img" tabindex="0" x={edges[i][0]} y={T} width={edges[i][1] - edges[i][0]} height={ph}
           data-tip={`<b>${r} ms round trip</b><br/>${series.map((s) => `${s.short}: ${fmt(ceil(s.chunks, r))} MB/s`).join('<br/>')}`}
           aria-label={`${r} ms: ${series.map((s) => `${s.short} ${fmt(ceil(s.chunks, r))} MB/s`).join(', ')}`} />
         <line class="hl" x1={x(r)} x2={x(r)} y1={T} y2={T + ph} />
