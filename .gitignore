@@ -8,3 +8,10 @@ CV.pdf
 Polished Professional Headshot.png
 
 .env
+
+# local knowledge graph (graphify)
+graphify-out/
+.graphifyignore
+.gitattributes
+CLAUDE.md
+.claude/
