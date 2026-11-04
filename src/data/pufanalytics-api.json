@@ -1,0 +1,720 @@
+{
+ "sha": "653715d3de77f70d0ed32438cc4e325e657da509",
+ "modules": [
+  {
+   "module": "report",
+   "title": "One-call analysis and reports",
+   "docs": "index",
+   "items": [
+    {
+     "name": "analyze",
+     "sig": "data, reference='first', bootstrap=1000, seed=12345, alpha=0.05, …",
+     "line": 78,
+     "doc": "Run the complete PUFAnalytics evaluation."
+    },
+    {
+     "name": "to_json",
+     "sig": "result, path=None, indent=2",
+     "line": 238,
+     "doc": "Serialise an `analyze` result (NaN/inf -> null)."
+    },
+    {
+     "name": "headline_rows",
+     "sig": "r",
+     "line": 258,
+     "doc": "Rows (metric, value, ideal, CI) shared by Markdown and LaTeX output."
+    },
+    {
+     "name": "to_markdown",
+     "sig": "result, path=None",
+     "line": 290,
+     "doc": "Render an `analyze` result as a Markdown report."
+    },
+    {
+     "name": "to_latex",
+     "sig": "result, path=None, caption=None, label='tab:puf-metrics'",
+     "line": 320,
+     "doc": "Render the headline metrics as a LaTeX `table` (booktabs)."
+    }
+   ]
+  },
+  {
+   "module": "dataset",
+   "title": "Loading and shaping data",
+   "docs": "formats",
+   "items": [
+    {
+     "name": "parse_response",
+     "sig": "token, fmt='auto'",
+     "line": 32,
+     "doc": "Convert a textual response into a `uint8` bit vector."
+    },
+    {
+     "name": "parse_text",
+     "sig": "text, fmt='auto'",
+     "line": 74,
+     "doc": "Parse a textual data set."
+    },
+    {
+     "name": "PUFDataset",
+     "sig": "responses, device_ids=None, conditions=None, challenges=None, …",
+     "line": 148,
+     "doc": "Container for PUF response measurements."
+    },
+    {
+     "name": "PUFDataset.n_devices",
+     "sig": null,
+     "line": 220,
+     "doc": "Number of devices (property)."
+    },
+    {
+     "name": "PUFDataset.n_bits",
+     "sig": null,
+     "line": 224,
+     "doc": "Response length in bits (property)."
+    },
+    {
+     "name": "PUFDataset.n_measurements",
+     "sig": null,
+     "line": 228,
+     "doc": "Read-outs per device, as a list (property)."
+    },
+    {
+     "name": "PUFDataset.has_repeats",
+     "sig": null,
+     "line": 232,
+     "doc": "True when any device was measured more than once (property)."
+    },
+    {
+     "name": "PUFDataset.condition_labels",
+     "sig": null,
+     "line": 236,
+     "doc": "Operating-condition labels in first-seen order (property)."
+    },
+    {
+     "name": "PUFDataset.reference",
+     "sig": "method='first'",
+     "line": 257,
+     "doc": "Enrolled reference response of every device, shape (devices, bits)."
+    },
+    {
+     "name": "PUFDataset.to_array",
+     "sig": "",
+     "line": 270,
+     "doc": "Return a `(devices, measurements, bits)` array (rectangular data only)."
+    },
+    {
+     "name": "PUFDataset.subset",
+     "sig": "devices=None, bits=None",
+     "line": 277,
+     "doc": "Return a new data set restricted to the given device / bit indices."
+    },
+    {
+     "name": "PUFDataset.from_bitstrings",
+     "sig": "responses, **kw",
+     "line": 292,
+     "doc": "One response string per device."
+    },
+    {
+     "name": "PUFDataset.from_text",
+     "sig": "text, fmt='auto', name=None",
+     "line": 297,
+     "doc": "Build a data set from CSV/TXT text (see parse_text)."
+    },
+    {
+     "name": "PUFDataset.from_file",
+     "sig": "path, fmt='auto'",
+     "line": 304,
+     "doc": "Load a `.csv`/`.txt` (see `parse_text`), `.npy` or `.json` file."
+    },
+    {
+     "name": "PUFDataset.to_csv",
+     "sig": "path=None, fmt='bin'",
+     "line": 316,
+     "doc": "Write the long `device,measurement,condition,response` format."
+    },
+    {
+     "name": "PUFDataset.to_dict",
+     "sig": "",
+     "line": 334,
+     "doc": "Plain dict for JSON export; the web app imports it."
+    },
+    {
+     "name": "PUFDataset.from_dict",
+     "sig": "obj",
+     "line": 345,
+     "doc": "Rebuild a data set from to_dict() output."
+    }
+   ]
+  },
+  {
+   "module": "quality",
+   "title": "Quality metrics",
+   "docs": "metrics",
+   "items": [
+    {
+     "name": "as_dataset",
+     "sig": "data",
+     "line": 44,
+     "doc": "Coerce supported inputs into a `PUFDataset`."
+    },
+    {
+     "name": "uniformity",
+     "sig": "data, reference='first'",
+     "line": 62,
+     "doc": "Uniformity (fraction of 1s, %) of each device's reference response. Ideal 50 %."
+    },
+    {
+     "name": "bit_aliasing",
+     "sig": "data, reference='first'",
+     "line": 68,
+     "doc": "Bit-aliasing (%) per bit position across devices. Ideal 50 %."
+    },
+    {
+     "name": "inter_hd_matrix",
+     "sig": "data, reference='first'",
+     "line": 75,
+     "doc": "Symmetric `devices x devices` matrix of inter-device Hamming distances."
+    },
+    {
+     "name": "inter_hd",
+     "sig": "data, reference='first'",
+     "line": 84,
+     "doc": "All pairwise inter-device Hamming distances (integer), upper triangle."
+    },
+    {
+     "name": "uniqueness",
+     "sig": "data, reference='first'",
+     "line": 91,
+     "doc": "Uniqueness: mean pairwise inter-device fHD in %. Ideal 50 %."
+    },
+    {
+     "name": "intra_hd",
+     "sig": "data, reference='first'",
+     "line": 100,
+     "doc": "Intra-device Hamming distances between the reference and every re-measurement."
+    },
+    {
+     "name": "reliability",
+     "sig": "data, reference='first'",
+     "line": 120,
+     "doc": "Reliability (%) per device: `100 - mean intra fHD * 100`. Ideal 100 %."
+    },
+    {
+     "name": "steadiness",
+     "sig": "data",
+     "line": 132,
+     "doc": "Steadiness (%) per device (Maiti et al.): `100 (1 + mean_l log2 max(p_l, 1-p_l))`."
+    },
+    {
+     "name": "bit_flip_rate",
+     "sig": "data, reference='first'",
+     "line": 149,
+     "doc": "Per-bit error rate: probability that bit `l` differs from the reference."
+    },
+    {
+     "name": "stable_bit_ratio",
+     "sig": "data",
+     "line": 169,
+     "doc": "Fraction of (device, bit) cells that never changed over all measurements."
+    },
+    {
+     "name": "condition_ber",
+     "sig": "data",
+     "line": 182,
+     "doc": "Mean bit error rate w.r.t. the enrolment read-out, per operating condition."
+    },
+    {
+     "name": "hamming_weights",
+     "sig": "data, reference='first'",
+     "line": 199,
+     "doc": "Hamming weight of every device's reference response."
+    },
+    {
+     "name": "bit_correlation_matrix",
+     "sig": "data, reference='first', max_bits=256",
+     "line": 206,
+     "doc": "Pearson (phi) correlation between bit positions across devices."
+    },
+    {
+     "name": "autocorrelation",
+     "sig": "data, reference='first', max_lag=32",
+     "line": 221,
+     "doc": "Mean normalised autocorrelation of the reference responses (±1 mapping)."
+    },
+    {
+     "name": "bit_entropy",
+     "sig": "data, reference='first'",
+     "line": 238,
+     "doc": "Shannon entropy (bits) of every bit position across the device population."
+    },
+    {
+     "name": "bit_min_entropy",
+     "sig": "data, reference='first'",
+     "line": 247,
+     "doc": "Min-entropy (bits) of every bit position across the device population."
+    },
+    {
+     "name": "tmv_ber",
+     "sig": "data, votes=(1, 3, 5, 7, 9, 11, 13, 15)",
+     "line": 254,
+     "doc": "Bit error rate after temporal majority voting (TMV) over `m` read-outs."
+    }
+   ]
+  },
+  {
+   "module": "stats",
+   "title": "Statistics and identification",
+   "docs": "identification",
+   "items": [
+    {
+     "name": "igam",
+     "sig": "a, x",
+     "line": 76,
+     "doc": "Regularised lower incomplete gamma function P(a, x)."
+    },
+    {
+     "name": "igamc",
+     "sig": "a, x",
+     "line": 85,
+     "doc": "Regularised upper incomplete gamma function Q(a, x) = 1 - P(a, x)."
+    },
+    {
+     "name": "normal_cdf",
+     "sig": "x",
+     "line": 98,
+     "doc": "Standard normal cumulative distribution function."
+    },
+    {
+     "name": "binom_logpmf",
+     "sig": "k, n, p",
+     "line": 106,
+     "doc": "Natural log of the binomial probability mass function."
+    },
+    {
+     "name": "binom_pmf_vector",
+     "sig": "n, p",
+     "line": 123,
+     "doc": "Return the binomial pmf for k = 0..n as a NumPy array."
+    },
+    {
+     "name": "binom_cdf",
+     "sig": "k, n, p",
+     "line": 136,
+     "doc": "P(X <= k) for X ~ Binomial(n, p), accurate deep into the tails."
+    },
+    {
+     "name": "binom_sf",
+     "sig": "k, n, p",
+     "line": 150,
+     "doc": "P(X > k) for X ~ Binomial(n, p), accurate deep into the tails."
+    },
+    {
+     "name": "decidability",
+     "sig": "intra, inter",
+     "line": 166,
+     "doc": "Decidability index d' (Daugman) between intra- and inter-distance sets."
+    },
+    {
+     "name": "histogram_counts",
+     "sig": "hd_values, n_bits",
+     "line": 182,
+     "doc": "Histogram of integer Hamming distances on the support 0..n_bits."
+    },
+    {
+     "name": "far_frr_curve",
+     "sig": "intra_hd, inter_hd, n_bits",
+     "line": 188,
+     "doc": "Empirical FAR / FRR as a function of the HD acceptance threshold."
+    },
+    {
+     "name": "equal_error_rate",
+     "sig": "far, frr",
+     "line": 212,
+     "doc": "Equal error rate and the threshold index where it is attained."
+    },
+    {
+     "name": "binomial_fit",
+     "sig": "hd_values, n_bits",
+     "line": 226,
+     "doc": "Fit a binomial model `Binomial(n_bits, p)` to Hamming distances."
+    },
+    {
+     "name": "binomial_far_frr",
+     "sig": "n_bits, p_intra, p_inter",
+     "line": 255,
+     "doc": "FAR / FRR under the independent-bit binomial model."
+    },
+    {
+     "name": "percentile_ci",
+     "sig": "samples, alpha=0.05",
+     "line": 284,
+     "doc": "Two-sided percentile confidence interval of bootstrap replicates."
+    },
+    {
+     "name": "bootstrap_indices",
+     "sig": "n, n_resamples, seed=0",
+     "line": 295,
+     "doc": "Generate bootstrap index sets with the portable RNG (reproducible)."
+    },
+    {
+     "name": "identification_vs_length",
+     "sig": "p_intra, p_inter, lengths",
+     "line": 305,
+     "doc": "Binomial-model identification error `min_t max(FAR, FRR)` for each response length."
+    }
+   ]
+  },
+  {
+   "module": "nist",
+   "title": "NIST SP 800-22 randomness tests",
+   "docs": "randomness",
+   "items": [
+    {
+     "name": "monobit",
+     "sig": "seq, alpha=0.01, strict=True",
+     "line": 58,
+     "doc": "2.1 Frequency (monobit) test. Requires n >= 100."
+    },
+    {
+     "name": "block_frequency",
+     "sig": "seq, alpha=0.01, block_size=None, strict=True",
+     "line": 68,
+     "doc": "2.2 Frequency test within a block. Requires n >= 100."
+    },
+    {
+     "name": "runs",
+     "sig": "seq, alpha=0.01, strict=True",
+     "line": 83,
+     "doc": "2.3 Runs test. Requires n >= 100."
+    },
+    {
+     "name": "longest_run",
+     "sig": "seq, alpha=0.01, strict=True",
+     "line": 106,
+     "doc": "2.4 Test for the longest run of ones in a block. Requires n >= 128."
+    },
+    {
+     "name": "cumulative_sums",
+     "sig": "seq, alpha=0.01, strict=True",
+     "line": 148,
+     "doc": "2.13 Cumulative sums (forward and backward). Requires n >= 100."
+    },
+    {
+     "name": "approximate_entropy",
+     "sig": "seq, alpha=0.01, m=None, strict=True",
+     "line": 171,
+     "doc": "2.12 Approximate entropy test. Requires m < floor(log2 n) - 5."
+    },
+    {
+     "name": "serial",
+     "sig": "seq, alpha=0.01, m=None, strict=True",
+     "line": 190,
+     "doc": "2.11 Serial test (two p-values). Requires m < floor(log2 n) - 2."
+    },
+    {
+     "name": "spectral",
+     "sig": "seq, alpha=0.01, strict=True",
+     "line": 212,
+     "doc": "2.6 Discrete Fourier transform (spectral) test. Requires n >= 1000."
+    },
+    {
+     "name": "run_all",
+     "sig": "seq, alpha=0.01, strict=True",
+     "line": 234,
+     "doc": "Run every implemented SP 800-22 test and return a list of results."
+    }
+   ]
+  },
+  {
+   "module": "estimators",
+   "title": "Entropy estimators",
+   "docs": "randomness",
+   "items": [
+    {
+     "name": "shannon_entropy_rate",
+     "sig": "seq",
+     "line": 35,
+     "doc": "Shannon entropy (bits per bit) of the empirical 0/1 distribution."
+    },
+    {
+     "name": "mcv_min_entropy",
+     "sig": "seq",
+     "line": 46,
+     "doc": "SP 800-90B Most Common Value min-entropy estimate (bits per bit)."
+    },
+    {
+     "name": "markov_min_entropy",
+     "sig": "seq, length=128",
+     "line": 57,
+     "doc": "SP 800-90B Markov min-entropy estimate for binary data (bits per bit)."
+    },
+    {
+     "name": "lz_complexity",
+     "sig": "seq",
+     "line": 83,
+     "doc": "Normalised Lempel-Ziv (1976) complexity `c(n) log2(n) / n`."
+    },
+    {
+     "name": "population_entropy",
+     "sig": "data, reference='first'",
+     "line": 115,
+     "doc": "Summary of per-position entropy across a device population."
+    }
+   ]
+  },
+  {
+   "module": "simulators",
+   "title": "PUF simulators",
+   "docs": "simulators",
+   "items": [
+    {
+     "name": "arbiter_features",
+     "sig": "challenges",
+     "line": 43,
+     "doc": "Parity feature transform of the additive delay model."
+    },
+    {
+     "name": "ff_loops",
+     "sig": "stages, loops",
+     "line": 120,
+     "doc": "(source, destination) stage pairs of evenly spaced, non-overlapping feed-forward loops."
+    },
+    {
+     "name": "simulate",
+     "sig": "model='arbiter', n_devices=20, n_bits=128, n_repeats=5, seed=1, …",
+     "line": 191,
+     "doc": "Simulate a PUF population."
+    }
+   ]
+  },
+  {
+   "module": "sweep",
+   "title": "Monte-Carlo sweeps",
+   "docs": "figures",
+   "items": [
+    {
+     "name": "quick_metrics",
+     "sig": "ds",
+     "line": 35,
+     "doc": "Fast headline metrics (no bootstrap, no NIST) used by sweeps."
+    },
+    {
+     "name": "sweep",
+     "sig": "model='arbiter', param='noise', values=(0.01, 0.05, 0.1), …",
+     "line": 63,
+     "doc": "Sweep one (or two) simulator parameters."
+    }
+   ]
+  },
+  {
+   "module": "attacks",
+   "title": "Modelling attacks",
+   "docs": "attack",
+   "items": [
+    {
+     "name": "logistic_regression",
+     "sig": "X, y, l2=0.01, max_iter=30, tol=1e-06",
+     "line": 33,
+     "doc": "Fit ridge-regularised logistic regression with Newton's method."
+    },
+    {
+     "name": "modeling_attack",
+     "sig": "challenges, responses, train_sizes=(50, 100, 200, 500, 1000, …",
+     "line": 73,
+     "doc": "Learning curve of a logistic-regression attack on supplied CRPs."
+    },
+    {
+     "name": "simulated_attack",
+     "sig": "stages=64, xor=1, noise=0.05, train_sizes=(50, 100, 200, 500, …",
+     "line": 90,
+     "doc": "Learning curve of the attack against a simulated (k-XOR) Arbiter PUF."
+    }
+   ]
+  },
+  {
+   "module": "ecc",
+   "title": "Key generation planning",
+   "docs": "ecc",
+   "items": [
+    {
+     "name": "repetition_error",
+     "sig": "p, r",
+     "line": 53,
+     "doc": "Residual bit error after majority decoding of an `(r,1)` repetition code."
+    },
+    {
+     "name": "block_failure",
+     "sig": "p, n, t",
+     "line": 60,
+     "doc": "Probability that a block of `n` bits has more than `t` errors."
+    },
+    {
+     "name": "plan_key_generation",
+     "sig": "ber, min_entropy=1.0, key_bits=128, target_failure=1e-06, …",
+     "line": 65,
+     "doc": "Enumerate ECC configurations and report the feasible ones."
+    }
+   ]
+  },
+  {
+   "module": "rng",
+   "title": "Portable random number generator",
+   "docs": "simulators",
+   "items": [
+    {
+     "name": "PortableRNG",
+     "sig": "seed=0",
+     "line": 31,
+     "doc": "xoshiro128** generator with a SplitMix32 seeder."
+    },
+    {
+     "name": "PortableRNG.next_u32",
+     "sig": "",
+     "line": 56,
+     "doc": "Return the next unsigned 32-bit integer."
+    },
+    {
+     "name": "PortableRNG.random",
+     "sig": "",
+     "line": 70,
+     "doc": "Uniform double in [0, 1)."
+    },
+    {
+     "name": "PortableRNG.bit",
+     "sig": "",
+     "line": 74,
+     "doc": "A single fair random bit (the most significant bit of the output)."
+    },
+    {
+     "name": "PortableRNG.normal",
+     "sig": "",
+     "line": 78,
+     "doc": "Standard normal variate (Box-Muller, cosine branch)."
+    },
+    {
+     "name": "PortableRNG.randint",
+     "sig": "n",
+     "line": 84,
+     "doc": "Uniform integer in `[0, n)`."
+    },
+    {
+     "name": "PortableRNG.bits",
+     "sig": "count",
+     "line": 89,
+     "doc": "Return a list of `count` fair bits."
+    },
+    {
+     "name": "PortableRNG.normals",
+     "sig": "count",
+     "line": 94,
+     "doc": "Return a list of `count` standard normal variates."
+    },
+    {
+     "name": "PortableRNG.randoms",
+     "sig": "count",
+     "line": 99,
+     "doc": "Return a list of `count` uniform doubles in [0, 1)."
+    }
+   ]
+  },
+  {
+   "module": "cli",
+   "title": "Command line",
+   "docs": "python",
+   "items": [
+    {
+     "name": "main",
+     "sig": "argv=None",
+     "line": 93,
+     "doc": "Entry point of the pufanalytics command (analyze, simulate, nist, attack, ecc)."
+    }
+   ]
+  },
+  {
+   "module": "metrics",
+   "title": "Original string API (v1, kept for compatibility)",
+   "docs": "python",
+   "items": [
+    {
+     "name": "hamming_distance",
+     "sig": "seq1, seq2",
+     "line": 5,
+     "doc": "Compute the Hamming distance between two sequences of equal length."
+    },
+    {
+     "name": "bit_error_rate",
+     "sig": "expected, actual",
+     "line": 20,
+     "doc": "Compute the bit error rate between two sequences of equal length."
+    },
+    {
+     "name": "intra_puf_variation",
+     "sig": "responses",
+     "line": 36,
+     "doc": "Compute the intra-PUF variation."
+    },
+    {
+     "name": "inter_puf_variation",
+     "sig": "puf_responses",
+     "line": 58,
+     "doc": "Compute the inter-PUF variation."
+    },
+    {
+     "name": "uniqueness",
+     "sig": "puf_responses",
+     "line": 80,
+     "doc": "Compute the uniqueness metric for a list of PUF responses."
+    },
+    {
+     "name": "reliability",
+     "sig": "responses",
+     "line": 107,
+     "doc": "Compute the reliability of a list of PUF responses."
+    },
+    {
+     "name": "avalanche_effect",
+     "sig": "responses",
+     "line": 129,
+     "doc": "Compute the avalanche effect for a list of PUF responses."
+    },
+    {
+     "name": "uniformity",
+     "sig": "response",
+     "line": 154,
+     "doc": "Compute the uniformity of a single PUF response."
+    },
+    {
+     "name": "bit_aliasing",
+     "sig": "responses",
+     "line": 168,
+     "doc": "Compute the bit aliasing for a list of PUF responses."
+    },
+    {
+     "name": "correlation_coefficient",
+     "sig": "response",
+     "line": 199,
+     "doc": "Compute the correlation coefficient between PUF responses."
+    },
+    {
+     "name": "entropy",
+     "sig": "puf_responses",
+     "line": 226,
+     "doc": "Compute the entropy of a list of PUF responses."
+    },
+    {
+     "name": "mutual_information",
+     "sig": "puf_responses",
+     "line": 248,
+     "doc": "Compute the mutual information between PUF responses."
+    },
+    {
+     "name": "min_entropy",
+     "sig": "puf_responses",
+     "line": 282,
+     "doc": "Compute the min-entropy of a list of PUF responses."
+    }
+   ]
+  }
+ ]
+}

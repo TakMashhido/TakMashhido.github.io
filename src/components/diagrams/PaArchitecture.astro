@@ -1,0 +1,48 @@
+---
+// PUFAnalytics: one data set, two engines, the same numbers. viewBox 1000×470.
+import DgBox from './DgBox.astro';
+import DgLabel from './DgLabel.astro';
+import DgMarkers from './DgMarkers.astro';
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 470" role="img" aria-labelledby="paa-title paa-desc">
+      <title id="paa-title">Two engines, one result</title>
+      <desc id="paa-desc">A data file or a simulator seed goes into either the Python package or the browser engine. Both draw random numbers from the same portable generator and run the same algorithms, so both produce the same analysis result. A parity test in continuous integration checks more than 2,400 values from Python against the browser engine.</desc>
+      <DgMarkers id="paa" />
+
+      <!-- Input fans out to both engines -->
+      <path class="ln" d="M230,233 H272 Q280,233 280,225 V124 Q280,116 288,116 H329" marker-end="url(#paa-arrow)" />
+      <path class="ln" d="M230,255 H272 Q280,255 280,263 V364 Q280,372 288,372 H329" marker-end="url(#paa-arrow)" />
+
+      <!-- Shared RNG feeds both engines -->
+      <line class="ln" x1="450" x2="450" y1="211" y2="154" marker-end="url(#paa-arrow)" />
+      <line class="ln" x1="450" x2="450" y1="277" y2="334" marker-end="url(#paa-arrow)" />
+      <DgLabel x={458} y={188} text="SAME STREAM" anchor="start" />
+      <DgLabel x={458} y={312} text="SAME STREAM" anchor="start" />
+
+      <!-- Engines converge on one result -->
+      <path class="acc" d="M571,116 H640 Q648,116 648,124 V220 Q648,228 656,228 H689" marker-end="url(#paa-acc)" />
+      <path class="acc" d="M571,372 H640 Q648,372 648,364 V268 Q648,260 656,260 H689" marker-end="url(#paa-acc)" />
+      <DgLabel x={606} y={104} text="analyze()" />
+      <DgLabel x={606} y={360} text="analyze()" />
+
+      <!-- Parity check -->
+      <line class="ln dash" x1="815" x2="815" y1="293" y2="355" />
+      <DgLabel x={823} y={330} text="COMPARED IN CI" anchor="start" />
+
+      <DgBox x={40} y={212} w={190} h={64} name="Your PUF data" sub="csv · txt · json · npy" eyebrow="INPUT" />
+      <text class="sub" x="135" y="304" text-anchor="middle">or a simulator + seed</text>
+
+      <DgBox x={330} y={80} w={240} h={72} name="Python package" sub="pufanalytics · NumPy" eyebrow="SCRIPTS, NOTEBOOKS, CLI" />
+      <DgBox x={330} y={212} w={240} h={64} name="Portable RNG" sub="xoshiro128** · SplitMix32" kind="box2" />
+      <DgBox x={330} y={336} w={240} h={72} name="Browser engine" sub="web/js/core · Web Worker" />
+      <text class="eyebrow" x="450" y="432" text-anchor="middle">WEB APP, OFFLINE, NO UPLOAD</text>
+
+      <DgBox x={690} y={196} w={250} h={96} name="Same result" sub="identical JSON, bit for bit" kind="focal" />
+      <DgBox x={690} y={356} w={250} h={64} name="Parity test" sub="2,400+ checks · golden.json" kind="box2" />
+    </svg>
+  </div>
+  <figcaption><strong>Two engines, one answer.</strong> The browser engine is a line-by-line port of the Python package, and both take their random numbers from the same generator in the same order. A simulated population with seed 2024 is therefore the same 49,152 bits in both, and every metric computed from it matches.</figcaption>
+</figure>

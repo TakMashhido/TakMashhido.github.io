@@ -1,0 +1,94 @@
+---
+// The PUFDataset model: devices × measurements × bits, and which comparison gives which metric. viewBox 1000×470.
+import DgLabel from './DgLabel.astro';
+import DgMarkers from './DgMarkers.astro';
+const BITS = 14, P = 17, C = 14, ROWS = 4, RY0 = 152, RP = 22;
+const devices = [
+  { name: 'Device A', x0: 96, seed: 11 },
+  { name: 'Device B', x0: 396, seed: 29 },
+  { name: 'Device C', x0: 696, seed: 47 },
+];
+const conds = ['25C', '25C', '85C', '85C'];
+const ALIAS = 9; // highlighted bit position
+// Deterministic pseudo-random reference bits plus a few re-read flips (more at 85C).
+const lcg = (s: number) => () => ((s = (s * 1103515245 + 12345) % 2147483648) / 2147483648);
+const grid = devices.map((d) => {
+  const r = lcg(d.seed);
+  const ref = Array.from({ length: BITS }, () => (r() < 0.5 ? 0 : 1));
+  return conds.map((_, m) => ref.map((b, i) => {
+    const flip = m > 0 && r() < (m >= 2 ? 0.09 : 0.04) && i !== ALIAS;
+    return { b: flip ? 1 - b : b, flip };
+  }));
+});
+const blockW = BITS * P - (P - C);
+const rowY = (m: number) => RY0 + m * RP;
+const cx = (d: number) => devices[d].x0 + blockW / 2;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 470" role="img" aria-labelledby="pdm-title pdm-desc">
+      <title id="pdm-title">The data model: devices, read-outs and bits</title>
+      <desc id="pdm-desc">Three devices, each read four times, two times at 25 degrees and two at 85 degrees. The first read-out of each device is its enrolment reference. Comparing the references of different devices gives uniqueness. Comparing a device's later read-outs with its own reference gives reliability and the bit error rate. The share of ones in a reference gives uniformity, and one bit position across all references gives bit-aliasing.</desc>
+      <DgMarkers id="pdm" />
+
+      <!-- Inter-device comparison: a symmetric bus joining every reference row -->
+      <path class="acc" d={`M${devices[0].x0 + 30},${RY0 - 6} V72 H${devices[2].x0 + 30} V${RY0 - 6}`} />
+      <line class="acc" x1={devices[1].x0 + 30} x2={devices[1].x0 + 30} y1="72" y2={RY0 - 6} />
+      <circle class="bus-dot" cx={devices[1].x0 + 30} cy="72" r="3.5" />
+      <g>
+        <rect class="mask" x={(devices[0].x0 + devices[1].x0) / 2 + 30 - 134} y="60" width="268" height="16" />
+        <text class="lbl focal-text" x={(devices[0].x0 + devices[1].x0) / 2 + 30} y="72" text-anchor="middle">REFERENCE vs REFERENCE → UNIQUENESS</text>
+      </g>
+
+      {devices.map((d, di) => (
+        <g>
+          <text class="name" x={cx(di) + 20} y={RY0 - 22} text-anchor="middle">{d.name}</text>
+          <rect class="focal" x={d.x0 - 6} y={rowY(0) - 4} width={blockW + 12} height={C + 8} rx="5" />
+          {grid[di].map((row, m) => row.map((c, i) => (
+            <g>
+              <rect class={`cell ${c.b ? 'one' : 'zero'}`} x={d.x0 + i * P} y={rowY(m)} width={C} height={C} rx="3" />
+              {c.flip && <circle class={c.b ? 'flip-on-one' : 'flip-on-zero'} cx={d.x0 + i * P + C / 2} cy={rowY(m) + C / 2} r="3.2" />}
+            </g>
+          )))}
+          <rect class="alias" x={d.x0 + ALIAS * P - 3} y={rowY(0) - 8} width={C + 6} height={ROWS * RP + 10} rx="5" />
+        </g>
+      ))}
+
+      {conds.map((c, m) => (
+        <text class="sub" x="84" y={rowY(m) + 11} text-anchor="end">{m === 0 ? 'm0 enrol' : `m${m} ${c}`}</text>
+      ))}
+
+      <!-- Intra-device bracket and metric notes under the blocks -->
+      <path class="ln" d={`M${devices[0].x0 + blockW + 14},${rowY(1)} H${devices[0].x0 + blockW + 22} V${rowY(3) + C} H${devices[0].x0 + blockW + 14}`} />
+      <text class="sub" x={cx(0)} y="276" text-anchor="middle">re-reads vs own reference</text>
+      <text class="lbl" x={cx(0)} y="296" text-anchor="middle">→ RELIABILITY, BER</text>
+      <text class="sub" x={cx(1)} y="276" text-anchor="middle">share of 1s in m0</text>
+      <text class="lbl" x={cx(1)} y="296" text-anchor="middle">→ UNIFORMITY</text>
+      <text class="sub" x={cx(2)} y="276" text-anchor="middle">{`bit ${ALIAS} across all devices`}</text>
+      <text class="lbl" x={cx(2)} y="296" text-anchor="middle">→ BIT-ALIASING</text>
+
+      <line class="rule" x1="40" x2="960" y1="336" y2="336" />
+      <g transform="translate(96 372)">
+        <rect class="cell one" x="0" y="0" width={C} height={C} rx="3" /><text class="sub" x="22" y="11">bit = 1</text>
+        <rect class="cell zero" x="110" y="0" width={C} height={C} rx="3" /><text class="sub" x="132" y="11">bit = 0</text>
+        <rect class="cell zero" x="220" y="0" width={C} height={C} rx="3" /><circle class="flip-on-zero" cx={220 + C / 2} cy={C / 2} r="3.2" /><text class="sub" x="242" y="11">flipped vs enrolment (noise)</text>
+        <rect class="focal" x="480" y="-3" width="40" height="20" rx="5" /><text class="sub" x="530" y="11">enrolment reference</text>
+        <rect class="alias" x="700" y="-3" width="20" height="20" rx="5" /><text class="sub" x="730" y="11">one bit position</text>
+      </g>
+      <text class="sub" x="500" y="430" text-anchor="middle">PUFDataset holds one devices × measurements × bits block plus a condition label per read-out</text>
+    </svg>
+  </div>
+  <figcaption><strong>Every metric is one kind of comparison inside this block.</strong> Measurement 0 is the enrolment reference (or, with <code>reference="majority"</code>, the bitwise majority of all reads). Note how the 85&nbsp;°C reads flip more bits: that is what the per-condition BER measures.</figcaption>
+</figure>
+
+<style>
+  .dg :global(.cell) { stroke-width: 1; }
+  .dg :global(.one) { fill: color-mix(in srgb, var(--ink) 72%, var(--surface)); stroke: none; }
+  .dg :global(.zero) { fill: var(--surface); stroke: color-mix(in srgb, var(--ink) 28%, transparent); }
+  .dg :global(.flip-on-zero) { fill: var(--primary); }
+  .dg :global(.flip-on-one) { fill: var(--surface); }
+  .dg :global(.bus-dot) { fill: var(--primary); }
+  .dg :global(.alias) { fill: none; stroke: var(--ink-soft); stroke-width: 1.4; stroke-dasharray: 4 3; }
+  .dg :global(rect.focal) { fill: color-mix(in srgb, var(--primary) 10%, transparent); }
+</style>

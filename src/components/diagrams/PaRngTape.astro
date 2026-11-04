@@ -1,0 +1,45 @@
+---
+// How a seed becomes a population: one random stream, consumed in a documented order. viewBox 1000×430.
+import DgBox from './DgBox.astro';
+import DgMarkers from './DgMarkers.astro';
+const TY = 236, TH = 56;
+const segs = [
+  { x: 60, w: 230, name: 'Challenge bits', count: '128 × 64 = 8,192 bits', note: 'one u32 each, top bit' },
+  { x: 300, w: 230, name: 'Delay weights', count: '32 × 65 = 2,080 normals', note: 'two u32 each, Box–Muller' },
+  { x: 540, w: 400, name: 'Measurement noise', count: '32 × 12 × 128 = 49,152 normals', note: 'one per device, read-out and bit' },
+];
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1000 430" role="img" aria-labelledby="prt-title prt-desc">
+      <title id="prt-title">One seed, one stream, one population</title>
+      <desc id="prt-desc">The seed 2024 is expanded by SplitMix32 into the four-word state of xoshiro128**. The generator's output stream is read in a fixed order for the arbiter simulator: first 8,192 challenge bits, then 2,080 normally distributed delay weights, then 49,152 noise values. Python and JavaScript read the stream in exactly this order, so they build the same population.</desc>
+      <DgMarkers id="prt" />
+
+      <line class="ln" x1="211" x2="309" y1="96" y2="96" marker-end="url(#prt-arrow)" />
+      <line class="ln" x1="481" x2="579" y1="96" y2="96" marker-end="url(#prt-arrow)" />
+      <path class="ln" d={`M690,129 V176 Q690,184 682,184 H76 Q68,184 68,192 V${TY - 2}`} marker-end="url(#prt-arrow)" />
+
+      <DgBox x={60} y={64} w={150} h={64} name="Seed 2024" sub="any integer" kind="focal" />
+      <DgBox x={310} y={64} w={170} h={64} name="SplitMix32" sub="seed → 4 × 32-bit state" />
+      <DgBox x={580} y={64} w={220} h={64} name="xoshiro128**" sub="period 2¹²⁸ − 1" />
+
+      <text class="eyebrow" x="60" y={TY - 14}>THE STREAM, READ LEFT TO RIGHT (NOT TO SCALE)</text>
+      {segs.map((s, i) => (
+        <g>
+          <rect class={i === 2 ? 'box2' : 'box'} x={s.x} y={TY} width={s.w} height={TH} rx="6" />
+          <text class="name" x={s.x + 14} y={TY + 24}>{s.name}</text>
+          <text class="sub" x={s.x + 14} y={TY + 44}>{s.count}</text>
+          <text class="sub" x={s.x + 14} y={TY + TH + 22}>{s.note}</text>
+        </g>
+      ))}
+      <line class="ln" x1="941" x2="968" y1={TY + TH / 2} y2={TY + TH / 2} marker-end="url(#prt-arrow)" />
+
+      <line class="rule" x1="60" x2="940" y1="352" y2="352" />
+      <text class="sub" x="60" y="384">Python  rng.bits(n·k) → rng.normals(d·(k+1)) → rng.normals(d·m·n)</text>
+      <text class="sub" x="60" y="406">Browser  the same three calls, in the same order, with identical integer arithmetic</text>
+    </svg>
+  </div>
+  <figcaption><strong>Reproducibility is a contract about order.</strong> Same generator, same seed and the same order of draws give the same bits, so a population you simulate in the browser for a paper can be rebuilt by any reader with <code>pa.simulate(..., seed=2024)</code>. Shown here for the demo population: 32 devices, 12 read-outs, 128 challenges on a 64-stage Arbiter PUF.</figcaption>
+</figure>

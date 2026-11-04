@@ -18,7 +18,7 @@ const count = (c: string) => apps.filter((a) => a.data.category === c).length;
       {cats.every((c) => count(c) > 0) && (
         <div class="chips filters" role="group" aria-label="Filter apps">
           <button type="button" class="chip" data-cat="all" aria-pressed="true">All <span class="count">{apps.length}</span></button>
-          {cats.map((c) => <button type="button" class="chip" data-cat={c} aria-pressed="false">{c}s <span class="count">{count(c)}</span></button>)}
+          {cats.map((c) => <button type="button" class="chip" data-cat={c} aria-pressed="false">{c === 'Research' ? 'Research' : `${c}s`} <span class="count">{count(c)}</span></button>)}
         </div>
       )}
       <div class="app-grid" id="apps">

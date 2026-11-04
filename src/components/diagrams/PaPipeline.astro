@@ -1,0 +1,40 @@
+---
+// The evaluation pipeline, one stage per question a PUF paper must answer. viewBox 1120×300.
+import DgBox from './DgBox.astro';
+import DgMarkers from './DgMarkers.astro';
+const W = 140, G = 18, X0 = 16, Y = 64, H = 60;
+const stages = [
+  { name: 'Data', q: ['import or simulate', 'devices × reads', '× bits'] },
+  { name: 'Quality', q: ['balanced, unique', 'and stable?'] },
+  { name: 'Identification', q: ['can devices be', 'told apart?'] },
+  { name: 'Randomness', q: ['any pattern an', 'attacker can use?'] },
+  { name: 'Attack', q: ['can a model', 'learn the PUF?'] },
+  { name: 'Key generation', q: ['how many bits', 'for a safe key?'] },
+  { name: 'Report', q: ['tables, figures,', 'methods, script'] },
+];
+const x = (i: number) => X0 + i * (W + G);
+const bx1 = x(1) + 10, bx2 = x(5) + W - 10;
+---
+<figure class="figure">
+  <p class="dg-hint">Scroll sideways to see the whole diagram.</p>
+  <div class="dg-scroll">
+    <svg class="dg" viewBox="0 0 1120 300" role="img" aria-labelledby="pap-title pap-desc">
+      <title id="pap-title">The evaluation pipeline</title>
+      <desc id="pap-desc">Seven stages from left to right: data, quality metrics, identification, randomness, modelling attacks, key generation and the report. The figure studio, simulation studio and compare view work across the five analysis stages.</desc>
+      <DgMarkers id="pap" />
+      {stages.slice(0, -1).map((_, i) => (
+        <line class={i === 5 ? 'acc' : 'ln'} x1={x(i) + W + 1} x2={x(i + 1) - 1} y1={Y + H / 2} y2={Y + H / 2} marker-end={`url(#pap-${i === 5 ? 'acc' : 'arrow'})`} />
+      ))}
+      {stages.map((s, i) => (
+        <g>
+          <text class="eyebrow" x={x(i) + W / 2} y={Y - 14} text-anchor="middle">{`STEP ${i + 1}`}</text>
+          <DgBox x={x(i)} y={Y} w={W} h={H} name={s.name} kind={i === 6 ? 'focal' : i === 0 ? 'box2' : 'box'} />
+          {s.q.map((line, j) => <text class="sub" x={x(i) + W / 2} y={Y + H + 28 + j * 17} text-anchor="middle">{line}</text>)}
+        </g>
+      ))}
+      <path class="rule" d={`M${bx1},226 V236 H${bx2} V226`} fill="none" />
+      <text class="sub" x={(bx1 + bx2) / 2} y="262" text-anchor="middle">Figure studio · Simulation studio · Compare work across these five stages</text>
+    </svg>
+  </div>
+  <figcaption><strong>One question per step.</strong> The sidebar of the web app follows this order, so working down it top to bottom is a complete evaluation. Each step is also a module of the Python package.</figcaption>
+</figure>

@@ -1,0 +1,66 @@
+---
+// Complete public API of the PUFAnalytics Python package, generated from its source (src/data/pufanalytics-api.json).
+// Every name links to its definition on GitHub (pinned commit); every module links to the matching Methods & docs section.
+import api from '../data/pufanalytics-api.json';
+const REPO = 'https://github.com/TakMashhido/PUFAnalytics';
+const APP = 'https://koustav.isroot.in/PUFAnalytics/#/docs/';
+const code = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/`([^`]+)`/g, '<code>$1</code>');
+const total = api.modules.reduce((n, m) => n + m.items.length, 0);
+---
+<div class="api">
+  <p class="api-meta">{total} public functions, classes and methods in {api.modules.length} modules. Names link to the source line; <em>Method notes</em> opens the matching section of the web app's Methods &amp; docs page.</p>
+  {api.modules.map((m, i) => (
+    <details class="api-mod" open={i === 0}>
+      <summary>
+        <span class="api-mod-name"><code>pufanalytics.{m.module}</code></span>
+        <span class="api-mod-title">{m.title}</span>
+        <span class="api-count">{m.items.length}</span>
+      </summary>
+      <p class="api-links">
+        <a href={`${REPO}/blob/${api.sha}/pufanalytics/${m.module}.py`} target="_blank" rel="noopener">Source</a>
+        <a href={`${APP}${m.docs}`} target="_blank" rel="noopener">Method notes</a>
+      </p>
+      <div class="table-scroll">
+        <table>
+          <thead><tr><th scope="col">Name</th><th scope="col">What it does</th></tr></thead>
+          <tbody>
+            {m.items.map((f) => (
+              <tr>
+                <td class="api-name"><a href={`${REPO}/blob/${api.sha}/pufanalytics/${m.module}.py#L${f.line}`} target="_blank" rel="noopener"><code>{f.name}{f.sig !== null && <span class="api-sig">({f.sig})</span>}</code></a></td>
+                <td set:html={code(f.doc)} />
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  ))}
+</div>
+
+<style>
+  .api { margin: var(--space-m, 1.5rem) 0; }
+  .api-meta { font-size: var(--step--1); color: var(--ink-soft); }
+  .api-mod { border-radius: 18px; background: var(--surface); box-shadow: var(--clay-sm); margin: 0 0 12px; padding: 0 18px; }
+  .api-mod summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; padding: 14px 0; list-style-position: inside; }
+  .api-mod summary::marker { color: var(--primary); }
+  .api-mod-name code { font-weight: 700; background: none; padding: 0; }
+  .api-mod-title { color: var(--ink-soft); font-size: var(--step--1); }
+  .api-count { margin-left: auto; font-size: var(--step--1); font-weight: 700; color: var(--primary); font-variant-numeric: tabular-nums; }
+  .api-links { display: flex; gap: 16px; margin: 0 0 8px; font-size: var(--step--1); font-weight: 650; }
+  .table-scroll { overflow-x: auto; margin-bottom: 14px; }
+  .api table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+  .api th { text-align: left; color: var(--ink-soft); font-weight: 650; padding: 6px 10px 6px 0; border-bottom: 1px solid var(--surface-2); }
+  .api td { vertical-align: top; padding: 8px 10px 8px 0; border-bottom: 1px solid var(--surface-2); }
+  .api-name { min-width: 15rem; max-width: 22rem; }
+  .api-name a { text-decoration: none; }
+  .api-name code { font-weight: 650; white-space: normal; overflow-wrap: anywhere; }
+  .api-sig { font-weight: 400; color: var(--ink-soft); }
+  @media (max-width: 640px) {
+    .api-mod { padding: 0 14px; }
+    .api thead { display: none; }
+    .api tr, .api td { display: block; }
+    .api tr { padding: 10px 0; border-bottom: 1px solid var(--surface-2); }
+    .api td { border: 0; padding: 0; }
+    .api-name { min-width: 0; max-width: none; margin-bottom: 4px; }
+  }
+</style>

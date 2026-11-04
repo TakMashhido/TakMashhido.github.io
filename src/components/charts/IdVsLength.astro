@@ -1,0 +1,68 @@
+---
+// Binomial-model identification error min_t max(FAR, FRR) vs response length, for four intra-device error rates.
+// Values computed with pufanalytics.stats.identification_vs_length(p_intra, 0.5, lengths), v2.1.0.
+const W = 760, H = 360, L = 64, R = 92, T = 28, B = 56;
+const pw = W - L - R, ph = H - T - B;
+const lengths = [16, 32, 48, 64, 96, 128, 192, 256];
+const series = [
+  { ber: '1%', color: 'var(--s1)', err: [2.090e-3, 1.608e-5, 3.120e-7, 1.771e-9, 3.621e-13, 7.768e-17, 6.785e-25, 3.611e-32] },
+  { ber: '5%', color: 'var(--s2)', err: [1.064e-2, 8.685e-4, 3.085e-5, 2.716e-6, 9.679e-9, 3.644e-11, 5.603e-16, 9.117e-21] },
+  { ber: '10%', color: 'var(--s3)', err: [3.841e-2, 3.500e-3, 6.606e-4, 1.134e-4, 1.793e-6, 5.436e-8, 2.974e-11, 1.720e-14] },
+  { ber: '15%', color: 'var(--s4)', err: [7.905e-2, 1.563e-2, 3.444e-3, 7.958e-4, 6.611e-5, 5.827e-6, 2.815e-8, 1.840e-10] },
+];
+const ylo = -35, yhi = 0;
+const x = (n: number) => L + (n / 256) * pw;
+const y = (v: number) => T + ((yhi - Math.log10(v)) / (yhi - ylo)) * ph;
+const path = (e: number[]) => lengths.map((n, i) => `${i ? 'L' : 'M'}${x(n)},${y(e[i])}`).join(' ');
+const sci = (v: number) => { const [m, ex] = v.toExponential(1).split('e'); return `${m}×10<sup>${Number(ex)}</sup>`; };
+const plain = (v: number) => v.toExponential(1).replace('e', ' × 10^');
+const edges = lengths.map((n, i) => [i === 0 ? x(n) - 14 : (x(lengths[i - 1]) + x(n)) / 2, i === lengths.length - 1 ? x(n) + 14 : (x(n) + x(lengths[i + 1])) / 2]);
+const target = 1e-6;
+---
+<figure class="figure viz">
+  <ul class="viz-legend" aria-hidden="true">
+    {series.map((s) => <li><i style={`background: ${s.color}`}></i>Bit error rate {s.ber}</li>)}
+  </ul>
+  <div class="dg-scroll"><svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="ivl-title ivl-desc">
+    <title id="ivl-title">Identification error vs response length</title>
+    <desc id="ivl-desc">With inter-device distance at the ideal 50 percent, the identification error falls exponentially with response length. At a 1 percent bit error rate, 48 bits already reach one in a million; at 15 percent it takes between 128 and 192 bits.</desc>
+    {[0, -10, -20, -30].map((t) => (
+      <g>
+        <line class={t === 0 ? 'base' : 'grid'} x1={L} x2={L + pw} y1={y(10 ** t)} y2={y(10 ** t)} />
+        <text x={L - 8} y={y(10 ** t) + 4} text-anchor="end">{t === 0 ? '1' : `1e${t}`}</text>
+      </g>
+    ))}
+    {[0, 64, 128, 192, 256].map((t) => <text x={x(t)} y={T + ph + 20} text-anchor="middle">{t}</text>)}
+    <text class="axis-title" x={L + pw / 2} y={H - 8} text-anchor="middle">Response length n (bits)</text>
+    <text class="axis-title" x={L} y={14}>Identification error, min over t of max(FAR, FRR), log scale</text>
+
+    <line class="ref" x1={L} x2={L + pw} y1={y(target)} y2={y(target)} />
+    <text x={L + pw - 4} y={y(target) - 6} text-anchor="end">one in a million</text>
+
+    {series.map((s) => <path d={path(s.err)} fill="none" style={`stroke: ${s.color}`} stroke-width="2" stroke-linejoin="round" />)}
+    {series.map((s) => lengths.map((n, i) => <circle cx={x(n)} cy={y(s.err[i])} r="4.5" style={`fill: ${s.color}; stroke: var(--surface)`} stroke-width="2" />))}
+    {series.map((s) => <text class="direct" x={x(256) + 12} y={y(s.err[7]) + 4}>{s.ber} BER</text>)}
+
+    {lengths.map((n, i) => (
+      <g>
+        <rect class="hit" tabindex="0" x={edges[i][0]} y={T} width={edges[i][1] - edges[i][0]} height={ph}
+          data-tip={`<b>${n}-bit responses</b><br/>${series.map((s) => `${s.ber} BER: ${sci(s.err[i])}`).join('<br/>')}`}
+          aria-label={`${n} bits: ${series.map((s) => `${s.ber} bit error rate ${plain(s.err[i])}`).join(', ')}`} />
+        <line class="hl" x1={x(n)} x2={x(n)} y1={T} y2={T + ph} />
+      </g>
+    ))}
+  </svg></div>
+  <details class="viz-table">
+    <summary>Show the numbers</summary>
+    <table>
+      <thead><tr><th>Length</th>{series.map((s) => <th>{s.ber} BER</th>)}</tr></thead>
+      <tbody>{lengths.map((n, i) => <tr><td>{n} bits</td>{series.map((s) => <td>{s.err[i].toExponential(1)}</td>)}</tr>)}</tbody>
+    </table>
+  </details>
+  <figcaption><strong>Every extra bit buys a constant factor of safety.</strong> Error under the binomial model with inter-device distance at the ideal 50%, from <code>stats.identification_vs_length()</code>. Empirical rates can never show anything this small: 32 devices give only 496 inter-device pairs, so the smallest error you can observe directly is about 1 in 500.</figcaption>
+</figure>
+
+<script>
+  import { bindTooltips } from '../../scripts/viz';
+  bindTooltips();
+</script>
