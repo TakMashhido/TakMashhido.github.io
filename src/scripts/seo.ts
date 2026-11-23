@@ -4,7 +4,7 @@
 import { site, socials } from '../data/site';
 import { education } from '../data/cv';
 
-export const SITE_URL = 'https://koustav.isroot.in';
+export const SITE_URL = 'https://koustavmondal.com';
 export const abs = (path: string) => new URL(path, SITE_URL).href;
 
 export const PERSON_ID = `${SITE_URL}/#person`;
@@ -47,7 +47,7 @@ export const website = {
   '@id': WEBSITE_ID,
   url: `${SITE_URL}/`,
   name: site.name,
-  alternateName: ['Koustav Kumar Mondal', 'koustav.isroot.in'],
+  alternateName: ['Koustav Kumar Mondal', 'koustavmondal.com'],
   description: site.description,
   inLanguage: 'en',
   author: { '@id': PERSON_ID },

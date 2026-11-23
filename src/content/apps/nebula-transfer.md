@@ -1,7 +1,7 @@
 ---
 title: NebulaTransfer
 summary: Send files of up to 100 GB straight from one browser to another. No upload, no account, no cloud in between; link devices with a short ID or a QR code.
-url: https://koustav.isroot.in/NebulaTransfer/
+url: https://koustavmondal.com/NebulaTransfer/
 category: Side project
 status: Live
 date: 2026-11-04

@@ -5,7 +5,7 @@ import { publications, typeLabels } from '../data/publications';
 import { getPosts } from '../scripts/blog';
 import { getApps } from '../scripts/apps';
 
-const SITE = 'https://koustav.isroot.in';
+const SITE = 'https://koustavmondal.com';
 
 export async function GET() {
   const posts = await getPosts();

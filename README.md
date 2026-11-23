@@ -1,4 +1,4 @@
-# koustav.isroot.in
+# koustavmondal.com
 
 Personal research portfolio of Koustav Kumar Mondal. Built with Astro, a claymorphism design, and a Markdown blog.
 
@@ -96,11 +96,13 @@ The site handles SEO itself; when you add content, only these steps matter:
 
 ## Deployment
 
-Live at **https://koustav.isroot.in**, served by GitHub Pages.
+Live at **https://koustavmondal.com**, served by GitHub Pages.
 
 - Every push to `main` runs `.github/workflows/deploy.yml`, which builds the site and publishes it (about a minute).
-- DNS: isroot.in delegates `koustav.isroot.in` to deSEC (`ns1.desec.io`, `ns2.desec.org`). The deSEC zone holds:
-  - `A` → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
-  - `AAAA` → `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
-  - `CAA` → `0 issue "letsencrypt.org"` (needed: the parent zone's nameservers time out on CAA queries, which blocks certificate issuance)
+- DNS: `koustavmondal.com` is registered with BigRock, and its DNS zone (BigRock nameservers) holds:
+  - `A` (apex) → `185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`
+  - `AAAA` (apex) → `2606:50c0:8000::153`, `2606:50c0:8001::153`, `2606:50c0:8002::153`, `2606:50c0:8003::153`
+  - `CNAME` `www` → `takmashhido.github.io` (GitHub redirects `www` to the apex)
+  - `TXT` for Google Search Console and GitHub's verified-domain check
+- The site used to live at `koustav.isroot.in`.
 - HTTPS: Let's Encrypt certificate issued and renewed by GitHub; *Enforce HTTPS* is on. `public/CNAME` holds the domain.

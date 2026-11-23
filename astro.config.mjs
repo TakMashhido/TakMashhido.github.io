@@ -25,7 +25,7 @@ function rehypeImageSize() {
 }
 
 // Last-modified dates for the sitemap, read from the front matter of posts and apps.
-const SITE = 'https://koustav.isroot.in';
+const SITE = 'https://koustavmondal.com';
 const lastmod = new Map();
 const fm = (file, key) => (readFileSync(file, 'utf8').match(new RegExp(`^${key}:\\s*(\\S+)`, 'm')) || [])[1];
 for (const [dir, base] of [['src/content/blog', '/blog/'], ['src/content/apps', '/apps/']]) {

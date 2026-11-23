@@ -19,7 +19,7 @@ A paper about a new physically unclonable function (PUF) has to report the same 
 
 **PUFAnalytics** is my attempt to make that part of the work boring and correct. It is a Python package and a web app that give the same answers to the last digit. You can load measurements or simulate a population, get every standard metric with confidence intervals, and leave with a LaTeX table, figures and a script that reproduces it all. It accompanies our IEEE APCC 2025 paper.
 
-**Try it:** [open the PUFAnalytics web app](https://koustav.isroot.in/PUFAnalytics/) and press **Explore a demo population**. Nothing is uploaded; it runs in your browser and works offline. The code is on [GitHub](https://github.com/TakMashhido/PUFAnalytics) under the MIT license.
+**Try it:** [open the PUFAnalytics web app](https://koustavmondal.com/PUFAnalytics/) and press **Explore a demo population**. Nothing is uploaded; it runs in your browser and works offline. The code is on [GitHub](https://github.com/TakMashhido/PUFAnalytics) under the MIT license.
 
 ![The PUFAnalytics overview for a simulated 64-stage Arbiter PUF: quality index 94, NIST 7 of 8 tests passed, mean BER 0.46%, and a radar chart of seven normalised scores](/images/blog/pufanalytics/overview.webp)
 
@@ -82,7 +82,7 @@ Simpler layouts also work:
 - whitespace-separated bits;
 - NumPy arrays shaped `(devices, bits)` or `(devices, measurements, bits)`.
 
-Separators can be commas, semicolons, tabs or spaces, and `#` starts a comment. In auto mode a file is read as binary only if *every* response is made of 0s and 1s; otherwise it is hex, at 4 bits per digit. [Method notes: data formats](https://koustav.isroot.in/PUFAnalytics/#/docs/formats).
+Separators can be commas, semicolons, tabs or spaces, and `#` starts a comment. In auto mode a file is read as binary only if *every* response is made of 0s and 1s; otherwise it is hex, at 4 bits per digit. [Method notes: data formats](https://koustavmondal.com/PUFAnalytics/#/docs/formats).
 
 ## The evaluation pipeline
 
@@ -92,7 +92,7 @@ A full evaluation answers six questions in order and then writes them up. The we
 
 ## A tour of the web app
 
-Open [the app](https://koustav.isroot.in/PUFAnalytics/). With no data loaded, the overview offers two ways in:
+Open [the app](https://koustavmondal.com/PUFAnalytics/). With no data loaded, the overview offers two ways in:
 
 - **Explore a demo population** simulates 32 Arbiter PUF devices (64 stages, 128 challenges each). Each device is read 4 times at each of three conditions (25 °C, −40 °C and 85 °C), with noise scaled 1×, 1.8× and 2.6×.
 - **Import your data** takes you to the import panel.
@@ -131,7 +131,7 @@ Seven models are built in:
 | **DRAM** | Retention: a cell reads 1 if it decays during the refresh pause; heat speeds decay | noise 0.1, threshold 0, temperature shift 0.3 |
 | **Ideal** | Uniform random bits with independent flips: what "perfect" looks like at your sample size | flip probability 0.02 |
 
-The Ideal model is more useful than it looks. With 32 devices, even a perfect PUF will not show exactly 50% uniqueness, and simulating an ideal population of the same size shows you how much scatter to expect. [Method notes: simulators](https://koustav.isroot.in/PUFAnalytics/#/docs/simulators).
+The Ideal model is more useful than it looks. With 32 devices, even a perfect PUF will not show exactly 50% uniqueness, and simulating an ideal population of the same size shows you how much scatter to expect. [Method notes: simulators](https://koustavmondal.com/PUFAnalytics/#/docs/simulators).
 
 **To import:**
 
@@ -187,7 +187,7 @@ $$
 
 One historical note: PUFAnalytics versions before 2.0 returned uniqueness as *twice* the mean inter-device distance (ideal 1.0 instead of 0.5). Version 2.0 fixed this, and the changelog says so, because a value copied from an old version into a new paper would be wrong by a factor of two.
 
-[Method notes: quality metrics](https://koustav.isroot.in/PUFAnalytics/#/docs/metrics). In Python, the `pufanalytics.quality` module has one function per metric.
+[Method notes: quality metrics](https://koustavmondal.com/PUFAnalytics/#/docs/metrics). In Python, the `pufanalytics.quality` module has one function per metric.
 
 ### 3. Identification
 
@@ -211,7 +211,7 @@ Those tails are summed in log space, so they stay accurate below 10<sup>−300</
 
 The **acceptance threshold explorer** has a slider for *t*. It shows the empirical and model FAR and FRR at the chosen threshold, and draws all four curves on a log axis. Further down are a **DET curve** (FRR against FAR, the standard biometric plot) and the **inter-device distance matrix**. A dark cell off the diagonal there means two devices that are suspiciously alike.
 
-[Method notes: identification](https://koustav.isroot.in/PUFAnalytics/#/docs/identification). In Python: `stats.decidability()`, `stats.far_frr_curve()`, `stats.binomial_far_frr()`, `stats.binomial_fit()` and `stats.identification_vs_length()`.
+[Method notes: identification](https://koustavmondal.com/PUFAnalytics/#/docs/identification). In Python: `stats.decidability()`, `stats.far_frr_curve()`, `stats.binomial_far_frr()`, `stats.binomial_fit()` and `stats.identification_vs_length()`.
 
 ### 4. Randomness & entropy
 
@@ -246,7 +246,7 @@ The tiles above the table give five entropy estimates, plus a correlation figure
 
 The charts below show entropy per bit position, the bit-position correlation matrix, and the autocorrelation of the responses with a 95% white-noise band.
 
-[Method notes: randomness and entropy](https://koustav.isroot.in/PUFAnalytics/#/docs/randomness). In Python: `nist.run_all()` and the eight test functions, plus the `estimators` module.
+[Method notes: randomness and entropy](https://koustavmondal.com/PUFAnalytics/#/docs/randomness). In Python: `nist.run_all()` and the eight test functions, plus the `estimators` module.
 
 ### 5. Figure studio
 
@@ -265,7 +265,7 @@ The **temporal majority voting** figure answers a practical question: if the dev
 
 ![Two 3D figures: inter-device distance bars for the first 20 devices, and the identification design space, a surface of log identification error over response length and intra-device BER](/images/blog/pufanalytics/figures-3d.webp)
 
-The 3D figures are drawn as SVG with no library behind them. Drag to rotate, scroll to zoom, or use **Reset**, **Top**, **Front** and **Spin**. The export is whatever view you are looking at. [Method notes: figure studio](https://koustav.isroot.in/PUFAnalytics/#/docs/figures). In Python: `quality.tmv_ber()` and `stats.identification_vs_length()`.
+The 3D figures are drawn as SVG with no library behind them. Drag to rotate, scroll to zoom, or use **Reset**, **Top**, **Front** and **Spin**. The export is whatever view you are looking at. [Method notes: figure studio](https://koustavmondal.com/PUFAnalytics/#/docs/figures). In Python: `quality.tmv_ber()` and `stats.identification_vs_length()`.
 
 ### 6. Simulation studio
 
@@ -290,7 +290,7 @@ Each grid point is simulated with every seed, and the result is the mean with a 
 
 In the screenshot, SRAM reliability falls almost linearly from 100% to 80% as noise rises to 0.5, while uniqueness and uniformity do not move. Noise costs you reliability, not uniqueness.
 
-**CSV** and **Python script** buttons export the sweep, and `pa.sweep()` runs the identical computation in Python. [Method notes: simulation studio](https://koustav.isroot.in/PUFAnalytics/#/docs/figures).
+**CSV** and **Python script** buttons export the sweep, and `pa.sweep()` runs the identical computation in Python. [Method notes: simulation studio](https://koustavmondal.com/PUFAnalytics/#/docs/figures).
 
 ### 7. Attack lab
 
@@ -324,7 +324,7 @@ Two more tools sit below the chart:
 - **3D learnability landscape** plots accuracy over the number of stages and the training set size.
 - **Attack your own CRPs** takes pasted `challenge,response` lines, or the active simulated Arbiter data set, and runs the same attack on your own data.
 
-[Method notes: modelling attacks](https://koustav.isroot.in/PUFAnalytics/#/docs/attack). In Python: `attacks.simulated_attack()`, `attacks.modeling_attack()` and `attacks.logistic_regression()`.
+[Method notes: modelling attacks](https://koustavmondal.com/PUFAnalytics/#/docs/attack). In Python: `attacks.simulated_attack()`, `attacks.modeling_attack()` and `attacks.logistic_regression()`.
 
 ### 8. Key generation
 
@@ -353,7 +353,7 @@ For the demo, with a worst-case BER of 0.62%, *h* = 0.838 and a 128-bit key at 1
 
 The **cost vs failure** scatter plots every configuration, and the **BER sensitivity** curve shows how fast the selected design fails if the error rate drifts. The 3D landscape shows the same thing over BER and repetition at once. Click any row of the table to inspect it.
 
-The model assumes independent bit errors and ignores decoder-specific and side-channel leakage. [Method notes: key generation](https://koustav.isroot.in/PUFAnalytics/#/docs/ecc). In Python: `ecc.plan_key_generation()`, `ecc.repetition_error()` and `ecc.block_failure()`.
+The model assumes independent bit errors and ignores decoder-specific and side-channel leakage. [Method notes: key generation](https://koustavmondal.com/PUFAnalytics/#/docs/ecc). In Python: `ecc.plan_key_generation()`, `ecc.repetition_error()` and `ecc.block_failure()`.
 
 ### 9. Compare
 
@@ -373,7 +373,7 @@ The quality index is the mean of seven normalised scores, which the radar also s
 - identifiability, from *d′*;
 - the share of NIST tests passed.
 
-It is a navigation aid, not a standard. The app says so, and so do I: report the individual metrics in papers. [Method notes: quality index](https://koustav.isroot.in/PUFAnalytics/#/docs/index).
+It is a navigation aid, not a standard. The app says so, and so do I: report the individual metrics in papers. [Method notes: quality index](https://koustavmondal.com/PUFAnalytics/#/docs/index).
 
 ### 10. Report & export
 
@@ -399,18 +399,18 @@ Each section has its own link, so you can cite exactly the part you mean:
 
 | Section | Link |
 |---|---|
-| Getting started | [#/docs/start](https://koustav.isroot.in/PUFAnalytics/#/docs/start) |
-| Data formats | [#/docs/formats](https://koustav.isroot.in/PUFAnalytics/#/docs/formats) |
-| Quality metrics and confidence intervals | [#/docs/metrics](https://koustav.isroot.in/PUFAnalytics/#/docs/metrics) |
-| Identification statistics | [#/docs/identification](https://koustav.isroot.in/PUFAnalytics/#/docs/identification) |
-| Randomness tests and entropy | [#/docs/randomness](https://koustav.isroot.in/PUFAnalytics/#/docs/randomness) |
-| Simulators | [#/docs/simulators](https://koustav.isroot.in/PUFAnalytics/#/docs/simulators) |
-| Figure studio, TMV and sweeps | [#/docs/figures](https://koustav.isroot.in/PUFAnalytics/#/docs/figures) |
-| Modelling attacks | [#/docs/attack](https://koustav.isroot.in/PUFAnalytics/#/docs/attack) |
-| Key generation | [#/docs/ecc](https://koustav.isroot.in/PUFAnalytics/#/docs/ecc) |
-| Quality index | [#/docs/index](https://koustav.isroot.in/PUFAnalytics/#/docs/index) |
-| Python package and CLI | [#/docs/python](https://koustav.isroot.in/PUFAnalytics/#/docs/python) |
-| References and citation | [#/docs/refs](https://koustav.isroot.in/PUFAnalytics/#/docs/refs) |
+| Getting started | [#/docs/start](https://koustavmondal.com/PUFAnalytics/#/docs/start) |
+| Data formats | [#/docs/formats](https://koustavmondal.com/PUFAnalytics/#/docs/formats) |
+| Quality metrics and confidence intervals | [#/docs/metrics](https://koustavmondal.com/PUFAnalytics/#/docs/metrics) |
+| Identification statistics | [#/docs/identification](https://koustavmondal.com/PUFAnalytics/#/docs/identification) |
+| Randomness tests and entropy | [#/docs/randomness](https://koustavmondal.com/PUFAnalytics/#/docs/randomness) |
+| Simulators | [#/docs/simulators](https://koustavmondal.com/PUFAnalytics/#/docs/simulators) |
+| Figure studio, TMV and sweeps | [#/docs/figures](https://koustavmondal.com/PUFAnalytics/#/docs/figures) |
+| Modelling attacks | [#/docs/attack](https://koustavmondal.com/PUFAnalytics/#/docs/attack) |
+| Key generation | [#/docs/ecc](https://koustavmondal.com/PUFAnalytics/#/docs/ecc) |
+| Quality index | [#/docs/index](https://koustavmondal.com/PUFAnalytics/#/docs/index) |
+| Python package and CLI | [#/docs/python](https://koustavmondal.com/PUFAnalytics/#/docs/python) |
+| References and citation | [#/docs/refs](https://koustavmondal.com/PUFAnalytics/#/docs/refs) |
 
 ![The PUFAnalytics overview in dark mode](/images/blog/pufanalytics/overview-dark.webp)
 
@@ -542,7 +542,7 @@ The **Copy BibTeX** button in the app, and `CITATION.cff` in the repository, hav
 
 ## Links
 
-- **Web app:** [koustav.isroot.in/PUFAnalytics](https://koustav.isroot.in/PUFAnalytics/), and its [Methods & docs](https://koustav.isroot.in/PUFAnalytics/#/docs/start)
+- **Web app:** [koustavmondal.com/PUFAnalytics](https://koustavmondal.com/PUFAnalytics/), and its [Methods & docs](https://koustavmondal.com/PUFAnalytics/#/docs/start)
 - **Source, issues and changelog:** [github.com/TakMashhido/PUFAnalytics](https://github.com/TakMashhido/PUFAnalytics)
 - **The paper:** [doi:10.23919/apcc64555.2025.11279762](https://doi.org/10.23919/apcc64555.2025.11279762)
 - **Background:** [How a PUF works, from silicon variation to a login protocol](/blog/how-a-puf-works/)

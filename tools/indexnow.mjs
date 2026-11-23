@@ -14,7 +14,7 @@ import { readFileSync, existsSync, readdirSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import https from 'node:https';
 
-const SITE = 'https://koustav.isroot.in';
+const SITE = 'https://koustavmondal.com';
 const HOST = new URL(SITE).hostname;
 // The key file in public/ is the proof that we own the host; search engines fetch it from keyLocation.
 const keyFile = readdirSync('public').find((f) => /^[0-9a-f]{32}\.txt$/.test(f));
@@ -34,7 +34,7 @@ function get(url) {
         const ip = PAGES_IPS[Math.floor(Math.random() * PAGES_IPS.length)];
         return opts?.all ? cb(null, [{ address: ip, family: 4 }]) : cb(null, ip, 4);
       },
-      headers: { 'user-agent': 'indexnow-diff (koustav.isroot.in deploy)' },
+      headers: { 'user-agent': 'indexnow-diff (koustavmondal.com deploy)' },
       timeout: 15000,
     }, (res) => {
       let body = '';

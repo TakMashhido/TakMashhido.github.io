@@ -8,4 +8,4 @@ export async function getApps(): Promise<App[]> {
 }
 
 export const isExternal = (url: string) => /^https?:\/\//.test(url);
-export const hostOf = (url: string) => (isExternal(url) ? new URL(url).host.replace(/^www\./, '') : 'koustav.isroot.in');
+export const hostOf = (url: string) => (isExternal(url) ? new URL(url).host.replace(/^www\./, '') : 'koustavmondal.com');
