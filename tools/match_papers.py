@@ -2,7 +2,7 @@
 # requires-python = ">=3.10"
 # dependencies = ["pypdf>=5"]
 # ///
-"""Match PDFs in public/papers/ to publications, whatever their file names.
+"""Match PDFs in papers/ to publications, whatever their file names.
 
     uv run tools/match_papers.py
 
@@ -10,8 +10,13 @@ For each PDF it looks, in order, for:
   1. a known DOI in the PDF text or metadata (most reliable),
   2. a publication title on the first pages,
   3. a file name that resembles a title.
-Matches are written to src/data/paper-files.json, which the site reads at build time
-to show a "PDF" download button. Runs automatically before `npm run dev` and `npm run build`.
+Matches are written to src/data/paper-files.json, which the site reads at build time.
+Each matched paper gets its own page at /publications/<slug>/ with the PDF next to it
+(/publications/<slug>/<slug>.pdf), which is the layout Google Scholar needs to link the PDF.
+Runs automatically before `npm run dev` and `npm run build`.
+
+Google Scholar only indexes PDFs that have searchable text and are at most 5 MB, so the
+script records both and warns when a PDF fails either check.
 """
 from __future__ import annotations
 
@@ -19,7 +24,6 @@ import json
 import logging
 import re
 import sys
-import urllib.parse
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -28,7 +32,8 @@ from pypdf import PdfReader
 logging.getLogger("pypdf").setLevel(logging.ERROR)  # font/encoding chatter is not useful here
 
 ROOT = Path(__file__).resolve().parent.parent
-PAPERS = ROOT / "public" / "papers"
+PAPERS = ROOT / "papers"
+SCHOLAR_MAX_BYTES = 5 * 1024 * 1024
 OUT = ROOT / "src" / "data" / "paper-files.json"
 PUBS_TS = ROOT / "src" / "data" / "publications.ts"
 CITES = ROOT / "src" / "data" / "citations.json"
@@ -84,12 +89,11 @@ def best_title_match(text: str, pubs: list[dict]) -> tuple[float, dict | None]:
 def main() -> int:
     pubs = load_publications()
     by_doi = {p["doi"]: p for p in pubs if p["doi"]}
-    mapping: dict[str, str] = {}
+    mapping: dict[str, dict] = {}
     report: list[str] = []
     pdfs = sorted(f for f in PAPERS.glob("*") if f.suffix.lower() == ".pdf") if PAPERS.exists() else []
 
     for f in pdfs:
-        url = "/papers/" + urllib.parse.quote(f.name)
         try:
             meta, body = pdf_text(f)
         except Exception as e:  # noqa: BLE001
@@ -128,11 +132,17 @@ def main() -> int:
         if match["id"] in mapping:
             report.append(f"  ! {f.name}: also matches {match['id']}, already linked to {mapping[match['id']]}; skipped")
             continue
-        mapping[match["id"]] = url
+        size = f.stat().st_size
+        has_text = len(re.sub(r"\s+", "", body)) > 200
+        mapping[match["id"]] = {"file": f.name, "bytes": size, "text": has_text}
         report.append(f"  ✓ {f.name} → {match['id']}  (by {how})")
+        if not has_text:
+            report.append("    ! no searchable text (scanned or printed to PDF): Google Scholar will not index it")
+        if size > SCHOLAR_MAX_BYTES:
+            report.append(f"    ! {size / 1048576:.1f} MB: Google Scholar ignores PDFs over 5 MB; compress it")
 
     OUT.write_text(json.dumps(dict(sorted(mapping.items())), indent=1) + "\n", encoding="utf-8")
-    print(f"Paper PDFs: {len(mapping)} linked, {len(pdfs) - len(mapping)} not linked (public/papers/)")
+    print(f"Paper PDFs: {len(mapping)} linked, {len(pdfs) - len(mapping)} not linked (papers/)")
     print("\n".join(report) if report else "  (no PDFs found)")
     return 0
 

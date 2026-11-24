@@ -3,6 +3,8 @@
   "type": "module",
   "version": "1.0.0",
   "private": true,
+  "author": "Koustav Kumar Mondal <koustav@koustavmondal.com>",
+  "homepage": "https://koustavmondal.com",
   "scripts": {
     "papers": "uv run tools/match_papers.py",
     "predev": "npm run papers --silent || echo 'Paper matching skipped (is uv installed?)'",

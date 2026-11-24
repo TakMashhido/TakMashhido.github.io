@@ -40,7 +40,7 @@ const related = (keys: string[]) =>
           {related(t.keys).length > 0 && (
             <>
               <h3>Related papers</h3>
-              <ul>{related(t.keys).map((p) => <li><a href={`/publications/#${p.id}`}>{p.title}</a> <span class="muted">({p.year})</span></li>)}</ul>
+              <ul>{related(t.keys).map((p) => <li><a href={p.url}>{p.title}</a> <span class="muted">({p.year})</span></li>)}</ul>
             </>
           )}
         </article>

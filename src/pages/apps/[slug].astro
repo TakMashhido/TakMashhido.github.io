@@ -79,7 +79,7 @@ const software = {
           <dt>Status</dt><dd>{status}</dd>
           <dt>Released</dt><dd><time datetime={date.toISOString()}>{formatDate(date)}</time></dd>
           {stack.length > 0 && <><dt>Built with</dt><dd><ul class="stack">{stack.map((s) => <li>{s}</li>)}</ul></dd></>}
-          {pub && <><dt>Related paper</dt><dd><a href={`/publications/#${pub.id}`}>{pub.title}</a></dd></>}
+          {pub && <><dt>Related paper</dt><dd><a href={pub.url}>{pub.title}</a></dd></>}
           {blogPost && <><dt>Read more</dt><dd><a href={`/blog/${blogPost.id}/`}>{blogPost.data.title}</a></dd></>}
           {tags.length > 0 && <><dt>Topics</dt><dd>{tags.join(', ')}</dd></>}
         </dl>

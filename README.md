@@ -18,7 +18,8 @@ npm run build      # output in dist/
 | Bio, education, experience, skills, awards, service, projects | `src/data/cv.ts` |
 | Publications | `src/data/publications.ts` (list) + `src/data/citations.json` (DOIs, BibTeX, APA/IEEE/MLA/Chicago/Harvard from Crossref) |
 | Blog posts | `src/content/blog/*.md` |
-| Paper PDFs | `public/papers/` |
+| Paper PDFs | `papers/` (served at `/publications/<slug>/<slug>.pdf`) |
+| Paper abstracts | `src/data/abstracts.json` |
 | Photo | `src/assets/headshot.jpg` |
 | Colours, fonts, clay shadows | `src/styles/global.css` |
 
@@ -77,8 +78,24 @@ That creates the card on `/apps/` and the intro page at `/apps/my-app/`. Apps ho
 
 1. Add it to `raw` in `src/data/publications.ts`.
 2. Re-run the lookups to refresh `citations.json`: `python3 tools/lookup-dois.py` then `python3 tools/fetch-citations.py` (see the scripts for arguments), or add the entry by hand.
-3. Optional: drop the PDF into `public/papers/` with any file name. `tools/match_papers.py` (run with uv, automatically before
-   `npm run dev` and `npm run build`, or by hand with `npm run papers`) finds the paper by its DOI or title and adds a download button.
+3. Drop the PDF into `papers/` with any file name. `tools/match_papers.py` (run with uv, automatically before
+   `npm run dev` and `npm run build`, or by hand with `npm run papers`) finds the paper by its DOI or title.
+4. Add the abstract to `src/data/abstracts.json` (key = the paper's `id`). Fix words the PDF split at line ends ("hardwarebased").
+
+Every paper with a PDF or an abstract gets its own page at `/publications/<slug>/` (slug from the title), with the PDF beside it.
+
+## Google Scholar
+
+Each paper page carries Google Scholar's `citation_*` meta tags (`src/scripts/scholar.ts`), so Scholar can add the site's
+PDF to the paper's entry (the "[PDF] koustavmondal.com" link). Scholar's rules, all handled by the build:
+
+- one paper per page, with the abstract visible on the page;
+- `citation_pdf_url` points to a PDF in the **same directory** as the page;
+- the PDF has searchable text and is **at most 5 MB**. `npm run papers` warns when a PDF fails either check, and such a
+  PDF is still offered for download but left out of `citation_pdf_url`. Compress a large PDF with
+  `gs -sDEVICE=pdfwrite -dPDFSETTINGS=/printer -dNOPAUSE -dBATCH -sOutputFile=out.pdf in.pdf`.
+
+Scholar re-crawls on its own schedule: new papers usually appear within a few weeks, changes to existing entries can take months.
 
 ## Search engines (SEO)
 

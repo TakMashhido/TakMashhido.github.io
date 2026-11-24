@@ -1,13 +1,16 @@
 // Publications from the CV, enriched with publisher metadata.
 // DOIs, years, volume/pages, BibTeX and formatted citations come from Crossref / doi.org
 // (see tools/lookup-dois.py and tools/fetch-citations.py) and live in ./citations.json.
-// To offer your own copy of a paper: put it in public/papers/ and add pdf: '/papers/<file>.pdf'.
+// Abstracts (taken from the papers themselves) live in ./abstracts.json.
 import citations from './citations.json';
 import paperFiles from './paper-files.json';
+import abstracts from './abstracts.json';
 
-// PDFs dropped into public/papers/ (any file name) are matched to papers by tools/match_papers.py,
-// which writes ./paper-files.json. A matched paper gets a download button.
-const pdfFor = (id: string) => (paperFiles as Record<string, string>)[id];
+// PDFs dropped into papers/ (any file name) are matched to papers by tools/match_papers.py,
+// which writes ./paper-files.json. A matched paper gets its own page with the PDF beside it.
+type PaperFile = { file: string; bytes: number; text: boolean };
+const files = paperFiles as Record<string, PaperFile>;
+const SCHOLAR_MAX_BYTES = 5 * 1024 * 1024;
 
 export type PubType = 'journal' | 'conference' | 'chapter' | 'patent';
 
@@ -20,9 +23,23 @@ export interface Publication {
   details?: string;
   year: number;
   doi?: string;
-  pdf?: string;
   bibtex: string;
   styles: Record<CiteStyle, string>;
+  /** URL slug of the paper's own page (papers with a PDF or an abstract). */
+  slug?: string;
+  /** Where links to this paper go: its own page, or its entry on /publications/. */
+  url: string;
+  /** Public URL of the PDF, served next to the paper page. */
+  pdf?: string;
+  /** Source file in papers/. */
+  pdfFile?: string;
+  /** PDF meets Google Scholar's rules (searchable text, at most 5 MB). */
+  scholarPdf: boolean;
+  abstract?: string;
+  /** The chapter has no abstract, so `abstract` holds its opening paragraph instead. */
+  abstractIsExcerpt: boolean;
+  /** Fields parsed from the BibTeX entry (full author names, volume, pages, ...). */
+  bib: Record<string, string>;
 }
 
 export type CiteStyle = 'apa' | 'ieee' | 'mla' | 'chicago' | 'harvard';
@@ -36,7 +53,8 @@ export const typeLabels: Record<PubType, string> = {
   patent: 'Patent',
 };
 
-const raw: Omit<Publication, 'bibtex' | 'styles'>[] = [
+type RawPublication = Pick<Publication, 'id' | 'type' | 'title' | 'authors' | 'venue' | 'details' | 'year'>;
+const raw: RawPublication[] = [
   // Patent
   {
     id: 'mondal2026mems', type: 'patent', year: 2026,
@@ -181,13 +199,53 @@ const patentBib = `@misc{mondal2026mems,
 
 type Cite = { doi: string; year: number; details: string | null; bibtex: string; styles: Record<CiteStyle, string> };
 const cites = citations as Record<string, Cite>;
+const abstractText = abstracts as Record<string, string>;
+// Chapters published without an abstract: abstracts.json holds their opening paragraph.
+const excerpts = new Set(['mondal2022iotsec']);
+
+/** Flat `key = {value}` fields of a BibTeX entry (keys lower-cased). */
+export function parseBib(entry: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  const type = /^@(\w+)\{/.exec(entry);
+  if (type) out.entrytype = type[1].toLowerCase();
+  for (const m of entry.matchAll(/^\s*(\w+)\s*=\s*(?:\{(.*)\}|(\w+)),?\s*$/gm)) out[m[1].toLowerCase()] = (m[2] ?? m[3]).trim();
+  return out;
+}
+
+const slugify = (title: string) => {
+  const words = title.toLowerCase().normalize('NFKD').replace(/[^a-z0-9\s-]/g, ' ').split(/[\s-]+/).filter(Boolean);
+  let slug = '';
+  for (const w of words) {
+    if (slug && (slug + '-' + w).length > 64) break;
+    slug = slug ? `${slug}-${w}` : w;
+  }
+  // Do not end on a filler word ("...-protocol-for").
+  return slug.replace(/(-(a|an|the|and|or|for|of|on|in|with|to|using|via|by))+$/, '');
+};
 
 export const publications: Publication[] = raw.map((p) => {
   const c = cites[p.id];
-  const pdf = p.pdf ?? pdfFor(p.id);
-  if (!c) return { ...p, pdf, bibtex: patentBib, styles: patentStyles };
-  return { ...p, pdf, year: c.year ?? p.year, details: c.details ?? p.details, doi: c.doi, bibtex: c.bibtex, styles: c.styles };
+  const file = files[p.id];
+  const abstract = abstractText[p.id];
+  const slug = file || abstract ? slugify(p.title) : undefined;
+  const base = c
+    ? { ...p, year: c.year ?? p.year, details: c.details ?? p.details, doi: c.doi, bibtex: c.bibtex, styles: c.styles }
+    : { ...p, bibtex: patentBib, styles: patentStyles };
+  return {
+    ...base,
+    slug,
+    url: slug ? `/publications/${slug}/` : `/publications/#${p.id}`,
+    pdf: slug && file ? `/publications/${slug}/${slug}.pdf` : undefined,
+    pdfFile: file?.file,
+    scholarPdf: !!file && file.text && file.bytes <= SCHOLAR_MAX_BYTES,
+    abstract,
+    abstractIsExcerpt: excerpts.has(p.id),
+    bib: parseBib(base.bibtex),
+  };
 });
+
+const slugs = publications.flatMap((p) => (p.slug ? [p.slug] : []));
+if (new Set(slugs).size !== slugs.length) throw new Error('Two publications have the same page slug; shorten or change a title.');
 
 export const doiUrl = (doi: string) => `https://doi.org/${doi}`;
 export const bibtex = (p: Publication) => p.bibtex;
