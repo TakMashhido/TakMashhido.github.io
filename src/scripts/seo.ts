@@ -16,7 +16,7 @@ export const person = {
   name: site.name,
   givenName: 'Koustav Kumar',
   familyName: 'Mondal',
-  alternateName: ['Koustav Mondal', 'Koustav K. Mondal', 'K. K. Mondal', 'TakMashhido'],
+  alternateName: ['Koustav K. Mondal', 'K. K. Mondal', 'TakMashhido'],
   url: `${SITE_URL}/`,
   image: { '@type': 'ImageObject', url: abs('/images/koustav-kumar-mondal.jpg'), width: 800, height: 800, caption: site.name },
   email: `mailto:${site.email}`,
