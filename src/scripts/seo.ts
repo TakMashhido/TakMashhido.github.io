@@ -7,6 +7,19 @@ import { education } from '../data/cv';
 export const SITE_URL = 'https://koustavmondal.com';
 export const abs = (path: string) => new URL(path, SITE_URL).href;
 
+// Every way people write or misspell the name, so a search for any of them finds this site.
+// Search engines read these from the Person node; they are not shown on the page.
+const givenNames = ['Koustav', 'Kaustav', 'Koustab', 'Kaustab', 'Koustuv', 'Kaustuv', 'Kostav', 'Koustov', 'Kowstav'];
+const surnames = ['Mondal', 'Mandal', 'Mondol', 'Mandol'];
+export const nameVariants = [
+  ...new Set([
+    ...givenNames.flatMap((g) => surnames.flatMap((s) => [`${g} ${s}`, `${g} Kumar ${s}`, `${g} K. ${s}`, `${g} K ${s}`])),
+    ...surnames.flatMap((s) => [`K. K. ${s}`, `K K ${s}`, `KK ${s}`, `K. ${s}`, `${s} K. K.`, `${s}, Koustav Kumar`, `${s} Koustav`, `${s} Koustav Kumar`]),
+    'Koustav Kumar', 'Koustav', 'koustavmondal', 'TakMashhido', 'Tak Mashhido',
+    'কৌস্তভ কুমার মণ্ডল', 'কৌস্তভ মণ্ডল', 'कौस्तव कुमार मंडल', 'कौस्तव मंडल',
+  ]),
+].filter((n) => n !== 'Koustav Kumar Mondal');
+
 export const PERSON_ID = `${SITE_URL}/#person`;
 export const WEBSITE_ID = `${SITE_URL}/#website`;
 
@@ -16,7 +29,7 @@ export const person = {
   name: site.name,
   givenName: 'Koustav Kumar',
   familyName: 'Mondal',
-  alternateName: ['Koustav K. Mondal', 'K. K. Mondal', 'TakMashhido'],
+  alternateName: nameVariants,
   url: `${SITE_URL}/`,
   image: { '@type': 'ImageObject', url: abs('/images/koustav-kumar-mondal.jpg'), width: 800, height: 800, caption: site.name },
   email: `mailto:${site.email}`,
@@ -47,7 +60,7 @@ export const website = {
   '@id': WEBSITE_ID,
   url: `${SITE_URL}/`,
   name: site.name,
-  alternateName: ['Koustav Kumar Mondal', 'koustavmondal.com'],
+  alternateName: ['Koustav Mondal', 'koustavmondal.com', 'Koustav Kumar Mondal portfolio'],
   description: site.description,
   inLanguage: 'en',
   author: { '@id': PERSON_ID },

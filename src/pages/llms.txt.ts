@@ -18,6 +18,8 @@ export async function GET() {
     '',
     `${site.name} is a hardware security researcher. ${site.role}. Research areas: physically unclonable functions (PUFs) and PUF-based authentication for IoT and connected vehicles, blockchain consensus, post-quantum security and fault-tolerant distributed quantum computing.`,
     '',
+    `Also written as: Koustav Mondal, K. K. Mondal, Kaustav Mondal, Kaustav Kumar Mondal, Koustav Mandal, Koustab Mondal, কৌস্তভ কুমার মণ্ডল. Online handle: TakMashhido.`,
+    '',
     `Education: ${education.map((e) => `${e.degree}, ${e.school} (${e.period})`).join('; ')}.`,
     '',
     `Contact: ${site.email}. Profiles: ${socials.filter((s) => !s.demo).map((s) => `[${s.label}](${s.href})`).join(', ')}.`,

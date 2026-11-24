@@ -13,6 +13,7 @@ import { bio, education, experience, skills, domains, awards, service } from '..
     <div>
       <h1>About me</h1>
       {bio.map((p, i) => <p class={i === 0 ? 'lede first' : 'body-text'}>{p}</p>)}
+      <p class="aka muted">Also written as Koustav Mondal, K. K. Mondal (on papers), Kaustav Mondal or Koustav Mandal; in Bengali কৌস্তভ কুমার মণ্ডল.</p>
       <div class="cta">
         <a class="btn btn-primary" href="/publications/">See my publications</a>
         <a class="btn" href="/contact/">Contact me</a>
@@ -172,4 +173,5 @@ import { bio, education, experience, skills, domains, awards, service } from '..
     .intro { grid-template-columns: 1fr; }
     .mini { order: -1; width: 200px; }
   }
+  .aka { font-size: var(--step--1); margin-top: 4px; }
 </style>
