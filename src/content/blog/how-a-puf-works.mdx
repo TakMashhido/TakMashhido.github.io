@@ -110,7 +110,7 @@ The simplest protocol has two phases. **Enrolment** happens once, in a trusted p
 
 Two rules make this safe. First, the verifier never reuses a challenge, so a recorded CRP is useless to an eavesdropper. Second, the comparison uses a threshold instead of exact equality, because PUF responses are noisy.
 
-In a large deployment, such as thousands of vehicles roaming between roadside units, one central verifier becomes a bottleneck and a single point of failure. In my research we anchor the enrolled data on a blockchain ledger instead, storing only hashes of expected responses, so any edge verifier can check a device without a central database ([read the paper](/publications/#mondal2025bcpuf)).
+In a large deployment, such as thousands of vehicles roaming between roadside units, one central verifier becomes a bottleneck and a single point of failure. In my research we anchor the enrolled data on a blockchain ledger instead, storing only hashes of expected responses, so any edge verifier can check a device without a central database ([read the paper](/publications/a-blockchain-integrated-puf-framework-for-secure-authentication/)).
 
 <PufAuthSequence />
 
@@ -139,7 +139,7 @@ XOR is not the end of the story: with enough CRPs, specialised logistic-regressi
 - **Never expose raw CRPs.** Hash or encrypt responses inside the device, and limit how many challenges can be asked.
 - **Use non-linear designs** such as XOR, feed-forward or interpose PUFs, sized against current attacks.
 - **Bind the PUF to a protocol** that uses each CRP once and refreshes enrolment data securely.
-- **Measure, don't assume.** Evaluate uniqueness, reliability and attack resistance on real hardware across temperature and voltage. We built [PUFAnalytics](/publications/#mondal2025pufanalytics), a Python library, for exactly this kind of evaluation.
+- **Measure, don't assume.** Evaluate uniqueness, reliability and attack resistance on real hardware across temperature and voltage. We built [PUFAnalytics](/publications/pufanalytics-python-library-for-comprehensive-evaluation/), a Python library, for exactly this kind of evaluation.
 
 ## Try it yourself
 

@@ -1,0 +1,80 @@
+---
+// One page per paper: abstract, PDF, citation formats, and the Google Scholar meta tags.
+// The PDF is served from this page's directory (see ./[slug]/[file].ts), as Scholar requires.
+import Base from '../../layouts/Base.astro';
+import PubItem from '../../components/PubItem.astro';
+import Icon from '../../components/Icon.astro';
+import { publications, typeLabels, type Publication } from '../../data/publications';
+import { scholarMeta, workNode, publishedDate } from '../../scripts/scholar';
+
+export function getStaticPaths() {
+  return publications.filter((p) => p.slug).map((p) => ({ params: { slug: p.slug }, props: { pub: p } }));
+}
+interface Props { pub: Publication }
+const { pub } = Astro.props;
+
+const lead = pub.title.split(':')[0];
+const shortTitle = pub.title.includes(':') && lead.length <= 40 ? lead : pub.title;
+const clip = (s: string, n: number) => (s.length <= n ? s : `${s.slice(0, s.lastIndexOf(' ', n - 1))}…`);
+const description = pub.abstract && !pub.abstractIsExcerpt
+  ? clip(pub.abstract, 158)
+  : clip(`${typeLabels[pub.type]} by ${pub.authors.join(', ')} in ${pub.venue}, ${pub.year}.`, 158);
+const related = publications
+  .filter((p) => p.slug && p.id !== pub.id)
+  .map((p) => ({
+    p,
+    score: p.authors.filter((a) => pub.authors.includes(a) && !/Mondal/.test(a)).length
+      + (p.type === pub.type ? 0.5 : 0) + (Math.abs(p.year - pub.year) <= 1 ? 0.25 : 0),
+  }))
+  .sort((a, b) => b.score - a.score)
+  .slice(0, 3)
+  .map((r) => r.p);
+---
+<Base title={pub.title} description={description} type="article" published={publishedDate(pub)} tags={[typeLabels[pub.type]]}
+  crumbs={[{ name: 'Publications', path: '/publications/' }, { name: shortTitle, path: pub.url }]} schema={[workNode(pub, true)]}>
+  <Fragment slot="head">
+    {scholarMeta(pub).map((m) => <meta name={m.name} content={m.content} />)}
+  </Fragment>
+
+  <div class="wrap paper">
+    <nav class="back" aria-label="Back"><a href={`/publications/#${pub.id}`}><Icon name="arrowLeft" /> All publications</a></nav>
+
+    <PubItem pub={pub} page>
+      {pub.abstract && (
+        <section class="abstract" aria-labelledby="abstract-h">
+          <h2 id="abstract-h">{pub.abstractIsExcerpt ? 'From the introduction' : 'Abstract'}</h2>
+          <p>{pub.abstract}</p>
+        </section>
+      )}
+    </PubItem>
+
+    {pub.pdf && (
+      <p class="note muted">
+        The PDF is the author's copy for personal and research use. Please cite the published version{pub.doi && <> (<a href={`https://doi.org/${pub.doi}`} rel="noopener">doi:{pub.doi}</a>)</>}.
+      </p>
+    )}
+
+    {related.length > 0 && (
+      <section class="related">
+        <h2>Related papers</h2>
+        <ul>
+          {related.map((p) => <li><a href={p.url}>{p.title}</a> <span class="muted">({p.venue}, {p.year})</span></li>)}
+        </ul>
+      </section>
+    )}
+  </div>
+</Base>
+
+<style>
+  .paper { max-width: 900px; margin-top: 28px; }
+  .back { margin-bottom: 18px; }
+  .back a { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; }
+  .back :global(svg) { width: 18px; height: 18px; }
+  .abstract { margin: 22px 0 6px; }
+  .abstract h2 { font-size: var(--step-1); margin: 0 0 10px; }
+  .abstract p { margin: 0; font-family: var(--font-read); font-size: 1.05rem; line-height: 1.75; color: var(--ink); max-width: 72ch; }
+  .note { margin: 18px 4px 0; font-size: var(--step--1); }
+  .related { margin-top: 40px; }
+  .related h2 { font-size: var(--step-2); }
+  .related ul { padding-left: 1.2em; display: grid; gap: 10px; }
+</style>

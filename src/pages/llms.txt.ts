@@ -42,7 +42,7 @@ export async function GET() {
     '',
     '## Publications',
     '',
-    ...publications.map((p) => `- ${p.authors.join(', ')}. "${p.title}." ${p.venue}, ${p.year}. ${typeLabels[p.type]}.${p.doi ? ` https://doi.org/${p.doi}` : ''}`),
+    ...publications.map((p) => `- ${p.authors.join(', ')}. "${p.title}." ${p.venue}, ${p.year}. ${typeLabels[p.type]}.${p.slug ? ` Abstract and PDF: ${SITE}${p.url}` : ''}${p.doi ? ` https://doi.org/${p.doi}` : ''}`),
     '',
   ];
   return new Response(lines.join('\n'), { headers: { 'Content-Type': 'text/plain; charset=utf-8' } });

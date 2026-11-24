@@ -1,31 +1,43 @@
 ---
 import Icon from './Icon.astro';
 import { doiUrl, styleLabels, typeLabels, type CiteStyle, type Publication } from '../data/publications';
-interface Props { pub: Publication; compact?: boolean }
-const { pub, compact = false } = Astro.props;
+import { fullAuthors, displayName } from '../scripts/scholar';
+interface Props {
+  pub: Publication;
+  compact?: boolean;
+  /** On the paper's own page: the title is the page heading (h1) and the abstract goes in the slot. */
+  page?: boolean;
+}
+const { pub, compact = false, page = false } = Astro.props;
+const Heading = page ? 'h1' : 'h3';
+// The paper page shows full names (as on the paper); lists use the short form.
+const authors = page ? fullAuthors(pub).map(displayName) : pub.authors;
+const titleHref = pub.slug ? pub.url : pub.doi ? doiUrl(pub.doi) : undefined;
 const me = /Mondal/;
 const searchText = `${pub.title} ${pub.authors.join(' ')} ${pub.venue} ${pub.year} ${pub.doi ?? ''}`.toLowerCase();
 const styles = Object.keys(styleLabels) as CiteStyle[];
 const tabs = [...styles.map((s) => ({ key: s, label: styleLabels[s], text: pub.styles[s], code: false })), { key: 'bibtex', label: 'BibTeX', text: pub.bibtex, code: true }];
 const scholar = `https://scholar.google.com/scholar?q=${encodeURIComponent(`"${pub.title}"`)}`;
 ---
-<article id={compact ? undefined : pub.id} class="pub clay-sm" data-type={pub.type} data-year={pub.year} data-search={searchText}>
+<article class:list={['pub', 'clay-sm', { 'pub-page': page }]} data-type={pub.type} data-year={pub.year} data-search={searchText}>
   <div class="meta">
     <span class={`chip type-${pub.type}`}>{typeLabels[pub.type]}</span>
     <span class="year">{pub.year}</span>
   </div>
-  <h3>{pub.doi ? <a class="title-link" href={doiUrl(pub.doi)} rel="noopener">{pub.title}</a> : pub.title}</h3>
+  <Heading class="pub-title">{!page && titleHref ? <a class="title-link" href={titleHref}>{pub.title}</a> : pub.title}</Heading>
   <p class="authors">
-    {pub.authors.map((a, i) => (
-      <>{me.test(a) ? <strong>{a}</strong> : a}{i < pub.authors.length - 1 ? ', ' : ''}</>
+    {authors.map((a, i) => (
+      <>{me.test(a) ? (page ? <a href="/about/"><strong>{a}</strong></a> : <strong>{a}</strong>) : a}{i < authors.length - 1 ? ', ' : ''}</>
     ))}
   </p>
   <p class="venue"><em>{pub.venue}</em>{pub.details && `, ${pub.details}`}</p>
   {pub.doi && <p class="doi">DOI: <a href={doiUrl(pub.doi)} rel="noopener">{pub.doi}</a></p>}
+  <slot />
   {!compact && (
     <div class="links">
-      {pub.doi && <a class="btn btn-sm btn-primary" href={doiUrl(pub.doi)} rel="noopener"><Icon name="link" /> Read the paper</a>}
-      {pub.pdf && <a class="btn btn-sm" href={pub.pdf} download><Icon name="download" /> PDF</a>}
+      {!page && pub.slug && <a class="btn btn-sm btn-primary" href={pub.url}><Icon name="file" /> Abstract{pub.pdf ? ' & PDF' : ''}</a>}
+      {page && pub.pdf && <a class="btn btn-sm btn-primary" href={pub.pdf}><Icon name="download" /> Download PDF</a>}
+      {pub.doi && <a class:list={['btn', 'btn-sm', { 'btn-primary': !pub.slug }]} href={doiUrl(pub.doi)} rel="noopener"><Icon name="link" /> Publisher's version</a>}
       {pub.type !== 'patent' && <a class="btn btn-sm" href={scholar} rel="noopener"><Icon name="search" /> Google Scholar</a>}
       <details class="cite">
         <summary class="btn btn-sm"><Icon name="quote" /> Cite</summary>
@@ -56,7 +68,8 @@ const scholar = `https://scholar.google.com/scholar?q=${encodeURIComponent(`"${p
   .type-conference { background: var(--mint); color: var(--mint-ink); }
   .type-chapter { background: var(--butter); color: var(--butter-ink); }
   .type-patent { background: var(--rose); color: #4a0f1d; }
-  h3 { margin-bottom: 8px; font-size: var(--step-1); }
+  .pub-title { margin-bottom: 8px; font-size: var(--step-1); }
+  .pub-page .pub-title { font-size: var(--step-3); line-height: 1.15; margin-bottom: 14px; }
   .title-link { color: var(--ink); font-weight: inherit; }
   .title-link:hover { color: var(--primary); }
   .authors, .venue, .doi { margin: 0 0 4px; color: var(--ink-soft); font-size: var(--step--1); }
