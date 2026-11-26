@@ -14,8 +14,9 @@ export const site = {
   description:
     'Koustav Kumar Mondal, hardware security researcher at the University of Melbourne and IIT Jodhpur: PUF authentication, post-quantum security, quantum computing.',
   email: 'contact@koustavmondal.com',
-  // Contact form: get a free access key at https://web3forms.com (DEMO value below)
-  web3formsKey: 'YOUR_WEB3FORMS_ACCESS_KEY',
+  // Contact form (https://web3forms.com). The access key is read at build time from PUBLIC_WEB3FORMS_KEY:
+  // the WEB3FORMS_KEY repository variable on GitHub, or a local .env file. It is not kept in the repository.
+  web3formsKey: import.meta.env.PUBLIC_WEB3FORMS_KEY ?? '',
 };
 
 export const socials = [

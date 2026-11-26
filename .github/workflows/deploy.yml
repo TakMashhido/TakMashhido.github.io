@@ -28,6 +28,8 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - run: npm ci
       - run: npm run build
+        env:
+          PUBLIC_WEB3FORMS_KEY: ${{ vars.WEB3FORMS_KEY }}
       # Compare the new build with the live site (before it is replaced) for IndexNow.
       - id: indexnow
         continue-on-error: true
