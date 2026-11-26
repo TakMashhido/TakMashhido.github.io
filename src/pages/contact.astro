@@ -14,6 +14,7 @@ import { site, socials } from '../data/site';
     <form class="form clay" id="contact-form" action="https://api.web3forms.com/submit" method="POST" novalidate>
       <input type="hidden" name="access_key" value={site.web3formsKey} />
       <input type="hidden" name="subject" value="New message from koustavmondal.com" />
+      <input type="hidden" name="from_name" value="koustavmondal.com contact form" />
       <input type="checkbox" name="botcheck" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
       <div class="row">
@@ -95,11 +96,14 @@ import { site, socials } from '../data/site';
       return;
     }
     const key = (form.elements.namedItem('access_key') as HTMLInputElement).value;
-    if (!key || key.startsWith('YOUR_')) {
+    if (!key) {
       status.textContent = 'The form is not connected yet. Please email me directly for now.';
       status.classList.add('err');
       return;
     }
+    // Subject shows the topic and sender, e.g. "[Research collaboration] Jane Doe via koustavmondal.com".
+    const field = (n: string) => (form.elements.namedItem(n) as HTMLInputElement).value.trim();
+    (form.elements.namedItem('subject') as HTMLInputElement).value = `[${field('topic')}] ${field('name')} via koustavmondal.com`;
     send.disabled = true;
     status.textContent = 'Sending…';
     try {

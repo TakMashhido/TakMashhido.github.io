@@ -107,9 +107,16 @@ The site handles SEO itself; when you add content, only these steps matter:
 - **Sitemap:** `sitemap-index.xml` is built automatically, with last-modified dates from `date`/`updated`. Tag pages and the 404 page are `noindex`. The PUFAnalytics and NebulaTransfer apps are listed too.
 - **`/llms.txt`** is generated from the site data, so AI assistants and AI search get an accurate summary of you, your posts, apps and papers.
 
-## Still placeholder (DEMO)
+## Contact form
 
-- `web3formsKey` in `src/data/site.ts` (free key from https://web3forms.com)
+The form on `/contact/` sends messages through [Web3Forms](https://web3forms.com) to the inbox registered with the access key.
+The key is not stored in the repository; the build reads it from `PUBLIC_WEB3FORMS_KEY`:
+
+- **GitHub:** the `WEB3FORMS_KEY` repository variable (Settings → Secrets and variables → Actions → Variables), passed in by `deploy.yml`.
+- **Locally:** a `.env` file (git-ignored) with `PUBLIC_WEB3FORMS_KEY=<key>`.
+
+Without a key the form tells visitors to email instead. Limit the key to `koustavmondal.com` in the Web3Forms dashboard.
+The subject line shows the topic and the sender's name, and replying to the email replies to the sender.
 
 ## Deployment
 
